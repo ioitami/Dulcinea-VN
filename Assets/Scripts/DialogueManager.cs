@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
+    private bool allowStoryClicks = true;
+
     [Header("UI Components - Basic")]
     public TextMeshProUGUI dialogueText;
     public Image nextIcon; // sprite icon for "continue"
@@ -233,6 +235,8 @@ public class DialogueManager : MonoBehaviour
 
     public void OnContinueClicked()
     {
+        if (allowStoryClicks == false) return;
+
         if (isTyping == true)
         {
             // if already typing, skip typing and show the full segment immediately

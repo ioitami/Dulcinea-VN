@@ -11,7 +11,6 @@ public class DialogueManager : MonoBehaviour
 {
     [Header("UI Components - Basic")]
     public TextMeshProUGUI dialogueText;
-    public Button continueButton;
     public Image nextIcon; // sprite icon for "continue"
 
     [Header("UI Components - Choices")]
@@ -73,7 +72,7 @@ public class DialogueManager : MonoBehaviour
     private void Start()
     {
         story = new Story(inkJSONAsset.text);
-        continueButton.onClick.AddListener(OnContinueClicked);
+
         StartStory();
         InitializeVariables();
     }
@@ -96,8 +95,8 @@ public class DialogueManager : MonoBehaviour
         story.BindExternalFunction("ShowCharacter", (string name, string mood, int positionID)
              => characterManager.ShowCharacter(name, mood, positionID));
 
-        //story.BindExternalFunction("HideCharacter", (string name)
-        //    => _characterManager.HideCharacter(name));
+        story.BindExternalFunction("ChangeTypingSpeed", (float speed)
+             => ChangeTypingSpeed(speed));
 
         //story.BindExternalFunction("ChangeMood", (string name, string mood)
         //     => _characterManager.ChangeMood(name, mood));
@@ -130,7 +129,7 @@ public class DialogueManager : MonoBehaviour
     // ====================================================================================================================
     // Add functions to edit variables here from Unity to Ink, probably at the start of Ink scripts for save/load files
     // ====================================================================================================================
-    private void UpdatePlayerName(string name)
+    public void UpdatePlayerName(string name)
     {
         story.variablesState["PlayerName"] = name;
     }
@@ -151,8 +150,6 @@ public class DialogueManager : MonoBehaviour
             // Show next part
             ShowSentencePart(currentSentenceParts[currentPartIndex], append: false);
 
-            // REPLACE WITH INPUT CLICKS
-            continueButton.gameObject.SetActive(true);
         }
         else if (story.currentChoices.Count > 0)
         {
@@ -234,7 +231,7 @@ public class DialogueManager : MonoBehaviour
     }
 
 
-    private void OnContinueClicked()
+    public void OnContinueClicked()
     {
         if (isTyping == true)
         {
@@ -319,11 +316,18 @@ public class DialogueManager : MonoBehaviour
 
     private void EndDialogue()
     {
-        continueButton.gameObject.SetActive(false);
         HideNextIcon();
     }
 
+    public void ChangeTypingSpeed(float speed)
+    {
+        if (speed <= 0f)
+        {
+            speed = 0.01f;
+        }
 
+        typingSpeed = speed;
+    }
 
 
     // ================================

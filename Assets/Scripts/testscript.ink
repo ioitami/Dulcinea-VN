@@ -4,7 +4,7 @@ VAR HealthPoints = 50
 
 // Unity Functions
 EXTERNAL ShowCharacter(name, mood, positionID)
-//EXTERNAL HideCharacter(characterName)
+EXTERNAL TypingSpeed(speed)
 //EXTERNAL ChangeMood(characterName, mood)
 
 // STARTS HERE
@@ -21,7 +21,7 @@ Once upon a time...
 === Chapter_1 ===
 {ShowCharacter("Dulcinea", "Default", 1)}
  ...
-//{ChangeMood("Me","Sad")}
+//{TypingSpeed(2.2)}
 * Choice1
  "Picked choice 1. (SPLIT) HP -20."
  ~HealthPoints -= 20 // update variable value

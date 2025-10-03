@@ -16,7 +16,7 @@ public class CameraViewportAdjuster : MonoBehaviour
 
     [Header("Smoothing Settings")]
     [Tooltip("SmoothDamp time for camera movement/zoom")]
-    public float smoothTime = 0.03f;
+    public float smoothTime = 0.01f;
     [Tooltip("Speed of ratio interpolation (higher = snappier)")]
     public float ratioLerpSpeed = 10f;
 

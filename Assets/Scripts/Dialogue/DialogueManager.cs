@@ -1,4 +1,5 @@
 
+
 using Ink.Runtime;
 using System.Collections;
 using TMPro;
@@ -331,6 +332,11 @@ public class DialogueManager : MonoBehaviour
         }
 
         typingSpeed = speed;
+    }
+
+    public string GetStoryState()
+    {
+        return story.state.ToJson();
     }
 
 

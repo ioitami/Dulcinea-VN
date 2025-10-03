@@ -558,10 +558,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundRenderer: {fileID: 351312543}
-  startupWidth: 800
-  startupHeight: 600
-  smoothTime: 0.15
-  ratioLerpSpeed: 50
+  startupWidth: 1280
+  startupHeight: 720
+  smoothTime: 0.12
+  ratioLerpSpeed: 20
 --- !u!1 &351312541
 GameObject:
   m_ObjectHideFlags: 0

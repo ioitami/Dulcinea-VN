@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class CameraViewportAdjuster : MonoBehaviour
 {
+    public bool isActive = false;
     private Camera cam;
 
     [Header("Background Settings")]
@@ -52,26 +53,11 @@ public class CameraViewportAdjuster : MonoBehaviour
     private float currentXRatio = 0f;
     private float currentYRatio = 0f;
 
-    void Awake()
-    {
-        // Start in windowed mode
-        Screen.SetResolution(startupWidth, startupHeight, false);
-
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-        windowHandle = GetActiveWindow();
-#endif
-    }
-
-    void Start()
-    {
-        cam = GetComponent<Camera>();
-        UpdateTargetCamera(true); // snap once
-        cam.transform.position = targetPosition;
-        cam.orthographicSize = targetOrthoSize;
-    }
 
     void LateUpdate()
     {
+        if (!isActive) return;
+
         if (CheckWindowChanged())
         {
             UpdateTargetCamera();
@@ -92,6 +78,23 @@ public class CameraViewportAdjuster : MonoBehaviour
             ref sizeVelocity,
             smoothTime
         );
+    }
+
+    public void EnableWindowMode()
+    {
+        isActive = true;
+
+        // Start in windowed mode
+        Screen.SetResolution(startupWidth, startupHeight, false);
+
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+        windowHandle = GetActiveWindow();
+#endif
+
+        cam = GetComponent<Camera>();
+        UpdateTargetCamera(true); // snap once
+        cam.transform.position = targetPosition;
+        cam.orthographicSize = targetOrthoSize;
     }
 
     bool CheckWindowChanged()

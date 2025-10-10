@@ -2,11 +2,12 @@ using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 public class GameStateManager : MonoBehaviour
 {
-    public DialogueManager dialogueManager;
-    public CharacterManager characterManager;
+   
 
     [Serializable]
     public class SaveData
@@ -16,6 +17,7 @@ public class GameStateManager : MonoBehaviour
 
     public void StartGame()
     {
+
     }
 
     public void SaveGame()
@@ -33,19 +35,43 @@ public class GameStateManager : MonoBehaviour
 
         Debug.Log("Game saved");
 
+        // Save should include sprites, positions, animations, background sprite, variables, flags.
+
     }
 
     private SaveData CreateSaveGameObject()
     {
         return new SaveData
         {
-            InkStoryState = dialogueManager.GetStoryState(),
+            InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState(),
         };
     }
 
     public void LoadGame()
     {
         // Here we will load data from a file and make it available to other managers
+        var SavePath = Application.persistentDataPath + "/savedata.save";
+
+        if(File.Exists(SavePath))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+
+            FileStream file = File.Open(SavePath, FileMode.Open);
+
+            file.Position = 0;
+
+            SaveData save = (SaveData)bf.Deserialize(file);
+            file.Close();
+
+            GameSingleton.instance.dialogueManager.LoadState(save.InkStoryState);
+            Debug.Log("Game loaded");
+
+            SceneManager.LoadScene("VNScene");
+        }
+        else
+        {
+            Debug.Log("No save file found");
+        }
     }
 
     public void ExitGame()

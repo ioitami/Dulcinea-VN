@@ -10,32 +10,33 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
+    [SerializeField]
     private bool allowStoryClicks = true;
 
     [Header("UI Components - Basic")]
-    public TextMeshProUGUI dialogueText;
     public Image nextIcon; // sprite icon for "continue"
 
     [Header("UI Components - Choices")]
-    [SerializeField]
-    private VerticalLayoutGroup choiceButtonContainer;
     [SerializeField]
     private Button choiceButtonPrefab;
 
     [Header("Ink")]
     public TextAsset inkJSONAsset;
-    private Story story;
+    public Story story;
 
     private string[] currentSentenceParts;
     private int currentPartIndex = 0;
     private Coroutine typingCoroutine;
     private Coroutine iconBlinkCoroutine;
 
+    [Header("SaveLoad")]
+    private string loadedState;
+
 
     [Header("Typing Settings")]
     public float typingSpeed = 0.03f; // delay per character
-    private bool isTyping = false;
-    private string currentTypingPart = ""; // <- track the current segment being typed
+    public bool isTyping = false;
+    public string currentTypingPart = ""; // <- track the current segment being typed
     private bool appendMode = false;      // <- track if we're appending
 
     [Header("Next Icon Blink Settings")]
@@ -72,26 +73,45 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    public bool AllowStoryClicks
     {
-        story = new Story(inkJSONAsset.text);
-
-        StartStory();
-        InitializeVariables();
+        get => allowStoryClicks;
+        set => allowStoryClicks = value;
     }
+
+    public void LoadState(string state)
+    {
+        loadedState = state;
+    }
+
+    private void Awake()
+    {
+        //dialogueText = GameObject.Find("DialogueText").GetComponent<TextMeshProUGUI>();
+        //choiceButtonContainer = GameObject.Find("ChoiceContainer").GetComponent<VerticalLayoutGroup>();
+    }
+
 
     void Update()
     {
+        // ADD TO NVLMANAGER
         // Only update the icon position if sentence finished
-        if (isTyping == false && nextIcon != null && dialogueText != null)
-        {
-            UpdateNextIconPosition();
-        }
+        //if (isTyping == false && nextIcon != null && dialogueText != null)
+        //{
+        //    UpdateNextIconPosition();
+        //}
     }
 
-    private void StartStory()
+    public void StartStory(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText)
     {
+        nextIcon.transform.SetParent(dialogueText.transform.parent.parent, false);
+
         story = new Story(inkJSONAsset.text);
+        Debug.Log(string.IsNullOrEmpty(loadedState));
+        if (!string.IsNullOrEmpty(loadedState))
+        {
+            story?.state?.LoadJson(loadedState);
+            loadedState = null; // clear after loading
+        }
 
         // Link unity functions to Story in Ink
 
@@ -101,10 +121,9 @@ public class DialogueManager : MonoBehaviour
         story.BindExternalFunction("ChangeTypingSpeed", (float speed)
              => ChangeTypingSpeed(speed));
 
-        //story.BindExternalFunction("ChangeMood", (string name, string mood)
-        //     => _characterManager.ChangeMood(name, mood));
+        InitializeVariables();
 
-        DisplayNextLine();
+        DisplayNextLine(choiceButtonContainer, dialogueText);
     }
 
     // ====================================================================================================================
@@ -137,7 +156,7 @@ public class DialogueManager : MonoBehaviour
         story.variablesState["PlayerName"] = name;
     }
 
-    private void DisplayNextLine()
+    public void DisplayNextLine(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText)
     {
         if (story.canContinue)
         {
@@ -151,12 +170,12 @@ public class DialogueManager : MonoBehaviour
             dialogueText.text = "";
 
             // Show next part
-            ShowSentencePart(currentSentenceParts[currentPartIndex], append: false);
+            ShowSentencePart(dialogueText, currentSentenceParts[currentPartIndex], append: false);
 
         }
         else if (story.currentChoices.Count > 0)
         {
-            DisplayChoices();
+            DisplayChoices(choiceButtonContainer, dialogueText);
         }
         else
         {
@@ -167,7 +186,7 @@ public class DialogueManager : MonoBehaviour
 
     }
 
-    private void ShowSentencePart(string textPart, bool append)
+    private void ShowSentencePart(TextMeshProUGUI dialogueText, string textPart, bool append)
     {
         // If already typing, stop the previous coroutine to prevent two coroutines running at the same time
         if (typingCoroutine != null)
@@ -177,11 +196,11 @@ public class DialogueManager : MonoBehaviour
 
         appendMode = append;
         currentTypingPart = textPart;
-        typingCoroutine = StartCoroutine(TypeText(currentTypingPart, appendMode));
+        typingCoroutine = StartCoroutine(TypeText(dialogueText, currentTypingPart, appendMode));
     }
 
 
-    private IEnumerator TypeText(string textPart, bool append)
+    private IEnumerator TypeText(TextMeshProUGUI dialogueText, string textPart, bool append)
     {
         isTyping = true;
         HideNextIcon();
@@ -230,11 +249,11 @@ public class DialogueManager : MonoBehaviour
         }
 
         isTyping = false;
-        ShowNextIcon();
+        ShowNextIcon(dialogueText);
     }
 
 
-    public void OnContinueClicked()
+    public void OnContinueClicked(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText)
     {
         if (allowStoryClicks == false) return;
 
@@ -258,22 +277,22 @@ public class DialogueManager : MonoBehaviour
             isTyping = false;
 
             // Show icon
-            ShowNextIcon();
+            ShowNextIcon(dialogueText);
         }
         else if (currentSentenceParts != null && currentPartIndex < currentSentenceParts.Length - 1)
         {
             // Append next part instead of clearing
             currentPartIndex++;
-            ShowSentencePart(currentSentenceParts[currentPartIndex], append: true);
+            ShowSentencePart(dialogueText, currentSentenceParts[currentPartIndex], append: true);
         }
         else
         {
             // Go to next Ink line
-            DisplayNextLine();
+            DisplayNextLine(choiceButtonContainer,dialogueText);
         }
     }
 
-    private void DisplayChoices()
+    private void DisplayChoices(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText)
     {
         // checks if choices are already being displaye
         if (choiceButtonContainer.GetComponentsInChildren<Button>().Length > 0) return;
@@ -282,13 +301,13 @@ public class DialogueManager : MonoBehaviour
         {
 
             var choice = story.currentChoices[i];
-            var button = CreateChoiceButton(choice.text); // creates a choice button
+            var button = CreateChoiceButton(choiceButtonContainer, choice.text); // creates a choice button
 
-            button.onClick.AddListener(() => OnClickChoiceButton(choice));
+            button.onClick.AddListener(() => OnClickChoiceButton(choiceButtonContainer,dialogueText,choice));
         }
     }
 
-    Button CreateChoiceButton(string text)
+    Button CreateChoiceButton(VerticalLayoutGroup choiceButtonContainer, string text)
     {
         // creates the button from a prefab
         var choiceButton = Instantiate(choiceButtonPrefab, choiceButtonContainer.transform);
@@ -302,13 +321,13 @@ public class DialogueManager : MonoBehaviour
 
     // CAN EDIT TO IMPLEMENT CUSTOM EVENT ACTIONS ON EACH CHOICE HERE
     // ==================================================================
-    void OnClickChoiceButton(Choice choice)
+    void OnClickChoiceButton(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText, Choice choice)
     {
         story.ChooseChoiceIndex(choice.index); // tells ink which choice was selected
-        RefreshChoiceView(); // removes choices from the screen
-        DisplayNextLine();
+        RefreshChoiceView(choiceButtonContainer); // removes choices from the screen
+        DisplayNextLine(choiceButtonContainer, dialogueText);
     }
-    void RefreshChoiceView()
+    public void RefreshChoiceView(VerticalLayoutGroup choiceButtonContainer)
     {
         if (choiceButtonContainer != null)
         {
@@ -340,12 +359,13 @@ public class DialogueManager : MonoBehaviour
     }
 
 
+
     // ================================
     // Next Icon Control
     // ================================
-    private void ShowNextIcon()
+    private void ShowNextIcon(TextMeshProUGUI dialogueText)
     {
-        UpdateNextIconPosition();
+        UpdateNextIconPosition(dialogueText);
         nextIcon.gameObject.SetActive(true);
 
         if (iconBlinkCoroutine != null) StopCoroutine(iconBlinkCoroutine);
@@ -380,7 +400,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     // Position the next icon at the end of the current text.
-    private void UpdateNextIconPosition()
+    public void UpdateNextIconPosition(TextMeshProUGUI dialogueText)
     {
         int lastIndex = dialogueText.textInfo.characterCount - 1;
         if (lastIndex < 0) return;
@@ -402,4 +422,6 @@ public class DialogueManager : MonoBehaviour
         // Apply small padding to the right
         nextIcon.GetComponent<RectTransform>().localPosition = new Vector3(10f + localPos.x, localPos.y, 0);
     }
+
+
 }

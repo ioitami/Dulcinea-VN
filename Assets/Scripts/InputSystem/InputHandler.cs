@@ -14,7 +14,6 @@ public class InputHandler : MonoBehaviour
     {
         if(context.started)
         {
-            Debug.Log("Z key pressed");
             zPressDown.Invoke();
         }
     }
@@ -22,7 +21,6 @@ public class InputHandler : MonoBehaviour
     {
         if(context.started)
         {
-            Debug.Log("X key pressed");
             xPressDown.Invoke();
         }
     }
@@ -31,7 +29,6 @@ public class InputHandler : MonoBehaviour
     {
         if(context.started)
         {
-            Debug.Log("C key pressed");
             cPressDown.Invoke();
         }
     }
@@ -40,7 +37,7 @@ public class InputHandler : MonoBehaviour
     {
         if (context.started)
         {
-            Debug.Log("Left Click key pressed");
+            Debug.Log("Left click detected");
             leftClickPressDown.Invoke();
         }
     }

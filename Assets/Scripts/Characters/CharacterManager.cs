@@ -4,7 +4,8 @@ using UnityEngine.TextCore.Text;
 
 public class CharacterManager : MonoBehaviour
 {
-    public static CharacterManager Instance;
+    [SerializeField]
+    public Transform characterSpriteParent;
 
     [Header("Characters Setup")]
     public List<Character> characters = new List<Character>();
@@ -16,15 +17,6 @@ public class CharacterManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            Instance = this;
-        }
-
         InitializeCharacters();
     }
 
@@ -36,8 +28,6 @@ public class CharacterManager : MonoBehaviour
 
     public void InitializeCharacters()
     {
-        GameObject storyCanvas = GameObject.Find("CharacterCanvas");
-        Transform parent = storyCanvas.transform.Find("CharacterSpriteParent");
 
         foreach (Character c in characters)
         {
@@ -45,7 +35,7 @@ public class CharacterManager : MonoBehaviour
 
             // Create container object
             container = new GameObject(c.characterName + "_Container");
-            container.transform.SetParent(parent, true);
+            container.transform.SetParent(characterSpriteParent, true);
             container.transform.localPosition = Vector3.zero;
 
             c.ingameContainerObj = container;

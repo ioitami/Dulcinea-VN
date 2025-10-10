@@ -78,4 +78,18 @@ public class GameStateManager : MonoBehaviour
     {
     }
 
+    public void LoadMainMenu()
+    {
+
+    }
+
+    public void LoadMainGameWindow()
+    {
+
+    }
+
+    public void LoadSettingsMenu()
+    {
+
+    }
 }

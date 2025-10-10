@@ -14,9 +14,12 @@ public class DialogueManager : MonoBehaviour
     private bool allowStoryClicks = true;
 
     [Header("UI Components - Basic")]
+    public TextMeshProUGUI dialogueText;
     public Image nextIcon; // sprite icon for "continue"
 
     [Header("UI Components - Choices")]
+    [SerializeField]
+    private VerticalLayoutGroup choiceButtonContainer;
     [SerializeField]
     private Button choiceButtonPrefab;
 
@@ -84,24 +87,19 @@ public class DialogueManager : MonoBehaviour
         loadedState = state;
     }
 
-    private void Awake()
-    {
-        //dialogueText = GameObject.Find("DialogueText").GetComponent<TextMeshProUGUI>();
-        //choiceButtonContainer = GameObject.Find("ChoiceContainer").GetComponent<VerticalLayoutGroup>();
-    }
 
 
     void Update()
     {
         // ADD TO NVLMANAGER
         // Only update the icon position if sentence finished
-        //if (isTyping == false && nextIcon != null && dialogueText != null)
-        //{
-        //    UpdateNextIconPosition();
-        //}
+        if (isTyping == false && nextIcon != null && dialogueText != null)
+        {
+            UpdateNextIconPosition();
+        }
     }
 
-    public void StartStory(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText)
+    public void StartStory()
     {
         nextIcon.transform.SetParent(dialogueText.transform.parent.parent, false);
 
@@ -123,7 +121,7 @@ public class DialogueManager : MonoBehaviour
 
         InitializeVariables();
 
-        DisplayNextLine(choiceButtonContainer, dialogueText);
+        DisplayNextLine();
     }
 
     // ====================================================================================================================
@@ -156,7 +154,7 @@ public class DialogueManager : MonoBehaviour
         story.variablesState["PlayerName"] = name;
     }
 
-    public void DisplayNextLine(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText)
+    public void DisplayNextLine()
     {
         if (story.canContinue)
         {
@@ -170,12 +168,12 @@ public class DialogueManager : MonoBehaviour
             dialogueText.text = "";
 
             // Show next part
-            ShowSentencePart(dialogueText, currentSentenceParts[currentPartIndex], append: false);
+            ShowSentencePart(currentSentenceParts[currentPartIndex], append: false);
 
         }
         else if (story.currentChoices.Count > 0)
         {
-            DisplayChoices(choiceButtonContainer, dialogueText);
+            DisplayChoices();
         }
         else
         {
@@ -186,7 +184,7 @@ public class DialogueManager : MonoBehaviour
 
     }
 
-    private void ShowSentencePart(TextMeshProUGUI dialogueText, string textPart, bool append)
+    private void ShowSentencePart(string textPart, bool append)
     {
         // If already typing, stop the previous coroutine to prevent two coroutines running at the same time
         if (typingCoroutine != null)
@@ -196,11 +194,11 @@ public class DialogueManager : MonoBehaviour
 
         appendMode = append;
         currentTypingPart = textPart;
-        typingCoroutine = StartCoroutine(TypeText(dialogueText, currentTypingPart, appendMode));
+        typingCoroutine = StartCoroutine(TypeText(currentTypingPart, appendMode));
     }
 
 
-    private IEnumerator TypeText(TextMeshProUGUI dialogueText, string textPart, bool append)
+    private IEnumerator TypeText(string textPart, bool append)
     {
         isTyping = true;
         HideNextIcon();
@@ -249,11 +247,11 @@ public class DialogueManager : MonoBehaviour
         }
 
         isTyping = false;
-        ShowNextIcon(dialogueText);
+        ShowNextIcon();
     }
 
 
-    public void OnContinueClicked(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText)
+    public void OnContinueClicked()
     {
         if (allowStoryClicks == false) return;
 
@@ -277,22 +275,22 @@ public class DialogueManager : MonoBehaviour
             isTyping = false;
 
             // Show icon
-            ShowNextIcon(dialogueText);
+            ShowNextIcon();
         }
         else if (currentSentenceParts != null && currentPartIndex < currentSentenceParts.Length - 1)
         {
             // Append next part instead of clearing
             currentPartIndex++;
-            ShowSentencePart(dialogueText, currentSentenceParts[currentPartIndex], append: true);
+            ShowSentencePart(currentSentenceParts[currentPartIndex], append: true);
         }
         else
         {
             // Go to next Ink line
-            DisplayNextLine(choiceButtonContainer,dialogueText);
+            DisplayNextLine();
         }
     }
 
-    private void DisplayChoices(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText)
+    private void DisplayChoices()
     {
         // checks if choices are already being displaye
         if (choiceButtonContainer.GetComponentsInChildren<Button>().Length > 0) return;
@@ -301,9 +299,10 @@ public class DialogueManager : MonoBehaviour
         {
 
             var choice = story.currentChoices[i];
-            var button = CreateChoiceButton(choiceButtonContainer, choice.text); // creates a choice button
-
-            button.onClick.AddListener(() => OnClickChoiceButton(choiceButtonContainer,dialogueText,choice));
+            Button button = CreateChoiceButton(choiceButtonContainer, choice.text); // creates a choice button
+            Debug.Log("test");
+            button.onClick.AddListener((
+                ) => OnClickChoiceButton(choice));
         }
     }
 
@@ -321,13 +320,13 @@ public class DialogueManager : MonoBehaviour
 
     // CAN EDIT TO IMPLEMENT CUSTOM EVENT ACTIONS ON EACH CHOICE HERE
     // ==================================================================
-    void OnClickChoiceButton(VerticalLayoutGroup choiceButtonContainer, TextMeshProUGUI dialogueText, Choice choice)
+    void OnClickChoiceButton( Choice choice)
     {
         story.ChooseChoiceIndex(choice.index); // tells ink which choice was selected
-        RefreshChoiceView(choiceButtonContainer); // removes choices from the screen
-        DisplayNextLine(choiceButtonContainer, dialogueText);
+        RefreshChoiceView(); // removes choices from the screen
+        DisplayNextLine();
     }
-    public void RefreshChoiceView(VerticalLayoutGroup choiceButtonContainer)
+    public void RefreshChoiceView()
     {
         if (choiceButtonContainer != null)
         {
@@ -363,9 +362,9 @@ public class DialogueManager : MonoBehaviour
     // ================================
     // Next Icon Control
     // ================================
-    private void ShowNextIcon(TextMeshProUGUI dialogueText)
+    private void ShowNextIcon()
     {
-        UpdateNextIconPosition(dialogueText);
+        UpdateNextIconPosition();
         nextIcon.gameObject.SetActive(true);
 
         if (iconBlinkCoroutine != null) StopCoroutine(iconBlinkCoroutine);
@@ -400,7 +399,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     // Position the next icon at the end of the current text.
-    public void UpdateNextIconPosition(TextMeshProUGUI dialogueText)
+    public void UpdateNextIconPosition()
     {
         int lastIndex = dialogueText.textInfo.characterCount - 1;
         if (lastIndex < 0) return;

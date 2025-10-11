@@ -15,8 +15,7 @@ public class GameSingleton : MonoBehaviour
     public DialogueManager dialogueManager                  { get; private set; }
     public CharacterManager characterManager                { get; private set; }
     public GameStateManager gameStateManager                { get; private set; }
-    public Canvas nvlCanvas                                  { get; private set; }
-    public GameObject worldSpriteCanvas                    { get; private set; }
+    public SceneLoaderManager sceneLoaderManager            { get; private set; }
 
 
     void Awake()
@@ -41,8 +40,7 @@ public class GameSingleton : MonoBehaviour
         dialogueManager         = GetComponentInChildren<DialogueManager>();
         characterManager        = GetComponentInChildren<CharacterManager>();
         gameStateManager        = GetComponentInChildren<GameStateManager>();
-        nvlCanvas               = GetComponentInChildren<Canvas>();
-        worldSpriteCanvas       = GameObject.Find("WorldSpriteCanvas");
+        sceneLoaderManager      = GetComponentInChildren<SceneLoaderManager>();
 
     }
 

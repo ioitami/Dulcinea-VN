@@ -401,6 +401,8 @@ public class DialogueManager : MonoBehaviour
     // Position the next icon at the end of the current text.
     public void UpdateNextIconPosition()
     {
+        if (!GameSingleton.instance.sceneLoaderManager.nvlCanvas.gameObject.activeSelf) return;
+
         int lastIndex = dialogueText.textInfo.characterCount - 1;
         if (lastIndex < 0) return;
 

@@ -15,9 +15,16 @@ public class GameStateManager : MonoBehaviour
         public string InkStoryState;
     }
 
-    public void StartGame()
+    // GAME STATE STARTS HERE ON EXE OPEN
+    private void Awake()
     {
-
+        GameSingleton.instance.sceneLoaderManager.LoadMainMenu();
+    }
+    // ==================================
+    public void StartNewGame()
+    {
+        GameSingleton.instance.dialogueManager.ResetStory();
+        GameSingleton.instance.dialogueManager.StartStory(instant:false);
     }
 
     public void SaveGame()
@@ -66,7 +73,6 @@ public class GameStateManager : MonoBehaviour
             GameSingleton.instance.dialogueManager.LoadState(save.InkStoryState);
             Debug.Log("Game loaded");
 
-            SceneManager.LoadScene("VNScene");
         }
         else
         {

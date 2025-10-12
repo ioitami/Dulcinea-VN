@@ -24,6 +24,10 @@ public class SceneLoaderManager : MonoBehaviour
     // TODO: SCENE TRANSITIONS WILL GO HERE (TRANSITION FUNCTIONS SOMEWHERE ELSE)
     public void LoadMainMenu()
     {
+        // TODO: ADD SCENE TRANSITION HERE
+
+        //==============
+        GameSingleton.instance.characterManager.SelectCharacterSpriteParent(mainMenuCharacterSprites.transform);
         ResetCanvasActiveUIList();
         EnableCanvas(mainMenuCanvas);
         MoveCameraTo(mainMenuLocation.position);
@@ -31,6 +35,7 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void LoadWindow1()
     {
+        GameSingleton.instance.characterManager.SelectCharacterSpriteParent(window1CharacterSprites.transform);
         ResetCanvasActiveUIList();
         EnableCanvas(nvlCanvas);
         MoveCameraTo(window1Location.position);
@@ -67,4 +72,5 @@ public class SceneLoaderManager : MonoBehaviour
     {
         cameraTransform.localPosition = new Vector3(cameraPosition.x, cameraPosition.y, 0);
     }
+
 }

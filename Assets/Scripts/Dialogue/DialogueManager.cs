@@ -85,6 +85,8 @@ public class DialogueManager : MonoBehaviour
     public void LoadState(string state)
     {
         loadedState = state;
+        StartStory(true);
+        ShowNextIcon();
     }
 
 
@@ -95,21 +97,16 @@ public class DialogueManager : MonoBehaviour
         // Only update the icon position if sentence finished
         if (isTyping == false && nextIcon != null && dialogueText != null)
         {
+            Debug.Log("updating");
             UpdateNextIconPosition();
         }
     }
 
-    public void StartStory()
+    public void StartStory(bool instant)
     {
         nextIcon.transform.SetParent(dialogueText.transform.parent.parent, false);
 
         story = new Story(inkJSONAsset.text);
-        Debug.Log(string.IsNullOrEmpty(loadedState));
-        if (!string.IsNullOrEmpty(loadedState))
-        {
-            story?.state?.LoadJson(loadedState);
-            loadedState = null; // clear after loading
-        }
 
         // Link unity functions to Story in Ink
 
@@ -119,9 +116,26 @@ public class DialogueManager : MonoBehaviour
         story.BindExternalFunction("ChangeTypingSpeed", (float speed)
              => ChangeTypingSpeed(speed));
 
-        InitializeVariables();
+        if (string.IsNullOrEmpty(loadedState) == false)
+        {
+            story?.state?.LoadJson(loadedState);
+            loadedState = null; // clear after loading
 
-        DisplayNextLine();
+            InitializeVariables();
+            DisplayCurrentLine(instant);
+        }
+        else
+        {
+            InitializeVariables();
+            DisplayNextLine();
+        }
+
+
+    }
+
+    public void ResetStory()
+    {
+        loadedState = null;
     }
 
     // ====================================================================================================================
@@ -152,6 +166,67 @@ public class DialogueManager : MonoBehaviour
     public void UpdatePlayerName(string name)
     {
         story.variablesState["PlayerName"] = name;
+    }
+
+    public void DisplayFullCurrentLine()
+    {
+        string rawLine = story.currentText.Trim();
+        dialogueText.text = rawLine;
+
+        if (story.currentChoices.Count > 0)
+        {
+            DisplayChoices();
+        }
+    }
+
+    public void ShowFullSentenceInstant(string sentence)
+    {
+        StopAllCoroutines();
+        nextIcon.gameObject.SetActive(true);
+        sentence = sentence.Trim().Replace(SEGMENT_DELIMITER, "");
+        dialogueText.text = sentence;
+
+        // ensure the layout updates before placing the next icon
+        dialogueText.ForceMeshUpdate();
+
+
+        // Mark as fully typed
+        isTyping = false;
+        ShowNextIcon();
+
+    }
+
+    public void DisplayCurrentLine(bool instant)
+    {
+        string rawLine = story.currentText.Trim();
+
+        if (instant)
+        {
+            ShowFullSentenceInstant(rawLine);
+        }
+        else
+        {
+            // Split with delimiter
+            currentSentenceParts = rawLine.Split(SEGMENT_DELIMITER);
+            currentPartIndex = 0;
+
+            // reset for new Ink line
+            dialogueText.text = "";
+
+            // Show next part
+            ShowSentencePart(currentSentenceParts[currentPartIndex], append: false);
+        }
+    
+        if (story.currentChoices.Count > 0)
+        {
+            DisplayChoices();
+        }
+        else
+        {
+            // Put function here like continuing to next scene or ink script
+            // ===============================================================================
+            EndDialogue();
+        }
     }
 
     public void DisplayNextLine()
@@ -248,6 +323,11 @@ public class DialogueManager : MonoBehaviour
 
         isTyping = false;
         ShowNextIcon();
+
+        if (story.currentChoices.Count > 0)
+        {
+            DisplayChoices();
+        }
     }
 
 
@@ -270,6 +350,11 @@ public class DialogueManager : MonoBehaviour
             else
             {
                 dialogueText.text = currentTypingPart; // replace with full part
+            }
+
+            if (story.currentChoices.Count > 0)
+            {
+                DisplayChoices();
             }
 
             isTyping = false;

@@ -20,11 +20,7 @@ public class CharacterManager : MonoBehaviour
         InitializeCharacters();
     }
 
-    private void Start()
-    {
-        //ShowCharacter("Dulcinea", "Default", centerAnchor);
-       // ShowCharacter("Io", "Default", rightAnchor);
-    }
+
 
     public void InitializeCharacters()
     {
@@ -52,6 +48,11 @@ public class CharacterManager : MonoBehaviour
             HideCharacter(c.characterName);
         }
 
+    }
+
+    public void SelectCharacterSpriteParent(Transform transform)
+    {
+        characterSpriteParent = transform;
     }
 
     public Character GetCharacter(string name)

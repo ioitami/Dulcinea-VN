@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class LoadGameButton : MonoBehaviour
 {
-    public void LoadGame()
+    public void LoadGame(int saveFileNumber)
     {
-        GameSingleton.instance.gameStateManager.LoadGame();
+        GameSingleton.instance.gameStateManager.LoadGame(saveFileNumber);
     }
 }

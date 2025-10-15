@@ -97,7 +97,6 @@ public class DialogueManager : MonoBehaviour
         // Only update the icon position if sentence finished
         if (isTyping == false && nextIcon != null && dialogueText != null)
         {
-            Debug.Log("updating");
             UpdateNextIconPosition();
         }
     }

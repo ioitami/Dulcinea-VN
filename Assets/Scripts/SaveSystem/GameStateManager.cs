@@ -27,12 +27,12 @@ public class GameStateManager : MonoBehaviour
         GameSingleton.instance.dialogueManager.StartStory(instant:false);
     }
 
-    public void SaveGame()
+    public void SaveGame(int saveFileNumber)
     {
         SaveData save = CreateSaveGameObject();
         var bf = new BinaryFormatter();
 
-        var savePath = Application.persistentDataPath + "/savedata.save";
+        var savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveFileNumber.ToString() + GlobalVariables.saveFileExtension;
 
         FileStream file = File.Create(savePath); // creates a file at the specified location
 
@@ -54,10 +54,9 @@ public class GameStateManager : MonoBehaviour
         };
     }
 
-    public void LoadGame()
+    public void LoadGame(int saveFileNumber)
     {
-        // Here we will load data from a file and make it available to other managers
-        var SavePath = Application.persistentDataPath + "/savedata.save";
+        string SavePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveFileNumber.ToString() + GlobalVariables.saveFileExtension;
 
         if(File.Exists(SavePath))
         {

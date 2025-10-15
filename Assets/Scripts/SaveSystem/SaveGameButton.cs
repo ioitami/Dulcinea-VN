@@ -5,8 +5,8 @@ using System.Collections.Generic;
 public class SaveGameButton : MonoBehaviour
 {
 
-    public void SaveGame()
+    public void SaveGame(int saveFileNumber)
     {
-        GameSingleton.instance.gameStateManager?.SaveGame();
+        GameSingleton.instance.gameStateManager?.SaveGame(saveFileNumber);
     }
 }

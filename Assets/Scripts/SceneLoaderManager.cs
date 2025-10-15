@@ -19,6 +19,9 @@ public class SceneLoaderManager : MonoBehaviour
     public GameObject window1CharacterSprites;
     public GameObject window1BackgroundSprites;
 
+    [Header("Save/Load Menu")]
+    public SaveLoadMenu_UI saveLoadMenu_UI;
+
     [Header("NVL")]
     public Canvas nvlCanvas;
     // TODO: SCENE TRANSITIONS WILL GO HERE (TRANSITION FUNCTIONS SOMEWHERE ELSE)
@@ -31,6 +34,13 @@ public class SceneLoaderManager : MonoBehaviour
         ResetCanvasActiveUIList();
         EnableCanvas(mainMenuCanvas);
         MoveCameraTo(mainMenuLocation.position);
+    }
+
+    public void LoadLoadMenu()
+    {
+        ResetCanvasActiveUIList();
+        DisableCanvas(nvlCanvas);
+        EnableCanvas(saveLoadMenu_UI.loadMenu);
     }
 
     public void LoadWindow1()

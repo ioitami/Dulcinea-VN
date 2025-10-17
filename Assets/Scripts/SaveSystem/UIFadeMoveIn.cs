@@ -1,10 +1,13 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class UIFadeMoveIn : MonoBehaviour
 {
+    [Header("Timing")]
+    public float initialDelay = 0f; // delay before animation starts
+
     [Header("Movement Settings")]
     public Vector3 moveOffset = new Vector3(0, -50f, 0); // start offset (from below)
 
@@ -34,6 +37,10 @@ public class UIFadeMoveIn : MonoBehaviour
 
     private IEnumerator AnimateIn()
     {
+        // Wait for optional delay before animation starts
+        if (initialDelay > 0f)
+            yield return new WaitForSeconds(initialDelay);
+
         float duration = Random.Range(minDuration, maxDuration);
 
         // Start from offset + transparent
@@ -43,7 +50,7 @@ public class UIFadeMoveIn : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            elapsed += Time.unscaledDeltaTime; // unaffected by timescale
+            elapsed += Time.unscaledDeltaTime; // unaffected by Time.timeScale
             float t = ease.Evaluate(elapsed / duration);
 
             rectTransform.anchoredPosition = Vector3.Lerp(

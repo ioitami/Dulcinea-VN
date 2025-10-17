@@ -43,6 +43,13 @@ public class SceneLoaderManager : MonoBehaviour
         EnableCanvas(saveLoadMenu_UI.loadMenu);
     }
 
+    public void LoadSaveMenu()
+    {
+        ResetCanvasActiveUIList();
+        DisableCanvas(nvlCanvas);
+        EnableCanvas(saveLoadMenu_UI.saveMenu);
+    }
+
     public void LoadWindow1()
     {
         GameSingleton.instance.characterManager.SelectCharacterSpriteParent(window1CharacterSprites.transform);

@@ -2,7 +2,98 @@ using Ink.Parsed;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MainCameraID
+{
+    MainMenu    = 0,
+    Window1     = 1, 
+    Window2     = 2,
+}
+
+public enum OverlayCameraID
+{
+    SaveLoadOptionsMenu  = 0,
+    NVL                  = 1
+}
+
 public class CameraManager : MonoBehaviour
 {
-    public List<Transform> cameraList;
+    public List<Transform> mainCameraList;
+    public List<Transform> overlayCameraList;
+    public List<Canvas> overlayCanvasList;
+
+    public void EnableCamera(bool isMain, int id)
+    {
+        if(isMain == true)
+        {
+            ResetActiveCameraList(isMain); // only one main cam should be active at a time
+            mainCameraList[id].gameObject.SetActive(true);
+        }
+        else
+        {
+            overlayCameraList[id].gameObject.SetActive(true);
+        }
+    }
+
+    public void DisableCamera(bool isMain, int id)
+    {
+        if (isMain == true)
+        {
+            mainCameraList[id].gameObject.SetActive(false);
+        }
+        else
+        {
+            overlayCameraList[id].gameObject.SetActive(false);
+        }
+    }
+
+    public void DisableAllCameras()
+    {
+        foreach (Transform t in mainCameraList)
+        {
+            t.gameObject.SetActive(false);
+        }
+
+        foreach (Transform t in overlayCameraList)
+        {
+            t.gameObject.SetActive(false);
+        }
+    }
+
+    private void ResetActiveCameraList(bool isMain)
+    {
+        if (isMain == true) 
+        {
+            foreach (Transform t in mainCameraList)
+            {
+                t.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            foreach (Transform t in overlayCameraList)
+            {
+                t.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void EnableOverlayCanvas(int id)
+    {
+        overlayCanvasList[id].gameObject.SetActive(true);
+    }
+    public void DisableOverlayCanvas(int id)
+    {
+        overlayCanvasList[id].gameObject.SetActive(false);
+    }
+
+    public void DisableAllOverlayCanvas()
+    {
+        foreach (Canvas c in overlayCanvasList)
+        {
+            c.gameObject.SetActive(false);
+        }
+    }
+
 }
+
+

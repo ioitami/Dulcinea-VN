@@ -18,6 +18,7 @@ public class GameStateManager : MonoBehaviour
     // GAME STATE STARTS HERE ON EXE OPEN
     private void Awake()
     {
+        GameSingleton.instance.cameraManager.DisableAllCameras();
         GameSingleton.instance.sceneLoaderManager.LoadMainMenu();
     }
     // ==================================

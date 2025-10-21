@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Camera
   layers:
   - Default
   - TransparentFX
@@ -11,7 +12,7 @@ TagManager:
   - Characters
   - Water
   - UI
-  - 
+  - Camera
   - 
   - 
   - 
@@ -46,6 +47,9 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 1571311555
+    locked: 0
+  - name: Cameras
+    uniqueID: 699610081
     locked: 0
   m_RenderingLayers:
   - Default

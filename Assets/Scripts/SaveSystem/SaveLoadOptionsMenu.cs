@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SaveLoadMenu_UI : MonoBehaviour
+public class SaveLoadOptionsMenu : MonoBehaviour
 {
+    public Transform saveLoadOptionsCameraParent;
     public Canvas saveMenu;
     public Canvas loadMenu;
     public Button returnBtn;

@@ -12,6 +12,7 @@ public class GameStateManager : MonoBehaviour
     [Serializable]
     public class SaveData
     {
+        public int SaveID;
         public string InkStoryState;
     }
 
@@ -28,12 +29,12 @@ public class GameStateManager : MonoBehaviour
         GameSingleton.instance.dialogueManager.StartStory(instant:false);
     }
 
-    public void SaveGame(int saveFileNumber)
+    public void SaveGame(int saveID)
     {
-        SaveData save = CreateSaveGameObject();
+        SaveData save = CreateSaveGameObject(saveID);
         var bf = new BinaryFormatter();
 
-        var savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveFileNumber.ToString() + GlobalVariables.saveFileExtension;
+        var savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
 
         FileStream file = File.Create(savePath); // creates a file at the specified location
 
@@ -47,10 +48,11 @@ public class GameStateManager : MonoBehaviour
 
     }
 
-    private SaveData CreateSaveGameObject()
+    private SaveData CreateSaveGameObject(int id)
     {
         return new SaveData
         {
+            SaveID = id,
             InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState(),
         };
     }

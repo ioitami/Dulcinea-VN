@@ -385,8 +385,7 @@ public class DialogueManager : MonoBehaviour
             var choice = story.currentChoices[i];
             Button button = CreateChoiceButton(choiceButtonContainer, choice.text); // creates a choice button
             Debug.Log("test");
-            button.onClick.AddListener((
-                ) => OnClickChoiceButton(choice));
+            button.onClick.AddListener(() => OnClickChoiceButton(choice));
         }
     }
 

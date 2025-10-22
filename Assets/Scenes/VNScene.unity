@@ -1048,7 +1048,6 @@ GameObject:
   m_Component:
   - component: {fileID: 527621881}
   - component: {fileID: 527621878}
-  - component: {fileID: 527621880}
   - component: {fileID: 527621879}
   m_Layer: 6
   m_Name: NVLCamera
@@ -1089,7 +1088,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 37
   orthographic: 1
   orthographic size: 1
@@ -1152,14 +1151,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &527621880
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 527621877}
-  m_Enabled: 1
 --- !u!4 &527621881
 Transform:
   m_ObjectHideFlags: 0
@@ -1294,7 +1285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da30be01b95fe3540a9c9f64611dff06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowStoryClicks: 0
+  allowStoryClicks: 1
   dialogueText: {fileID: 1388025002}
   nextIcon: {fileID: 542767783}
   choiceButtonContainer: {fileID: 1237805811}
@@ -1449,7 +1440,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 1571311555
-  m_SortingOrder: 10
+  m_SortingOrder: 5
   m_TargetDisplay: 0
 --- !u!1001 &659129958
 PrefabInstance:
@@ -2866,9 +2857,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1174147789}
   - component: {fileID: 1174147793}
-  - component: {fileID: 1174147792}
   - component: {fileID: 1174147791}
-  - component: {fileID: 1174147790}
   m_Layer: 6
   m_Name: SaveLoadOptionsMenuCamera
   m_TagString: MainCamera
@@ -2891,24 +2880,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1171426194}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1174147790
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1174147788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e991f580f61f31f4e8bea939996020bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 0
-  backgroundRenderer: {fileID: 0}
-  startupWidth: 1280
-  startupHeight: 720
-  smoothTime: 0.12
-  ratioLerpSpeed: 20
 --- !u!114 &1174147791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2953,14 +2924,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &1174147792
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1174147788}
-  m_Enabled: 1
 --- !u!20 &1174147793
 Camera:
   m_ObjectHideFlags: 0
@@ -2993,7 +2956,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 37
   orthographic: 1
   orthographic size: 1
@@ -3064,14 +3027,14 @@ Canvas:
   m_PlaneDistance: 2
   m_PixelPerfect: 1
   m_ReceivesEvents: 1
-  m_OverrideSorting: 0
+  m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingLayerID: 1571311555
+  m_SortingOrder: 6
   m_TargetDisplay: 0
 --- !u!1 &1187526969
 GameObject:
@@ -3843,14 +3806,14 @@ Canvas:
   m_PlaneDistance: 2
   m_PixelPerfect: 1
   m_ReceivesEvents: 1
-  m_OverrideSorting: 0
+  m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingLayerID: 1571311555
+  m_SortingOrder: 6
   m_TargetDisplay: 0
 --- !u!1 &1388024999
 GameObject:
@@ -5654,9 +5617,9 @@ RectTransform:
   - {fileID: 1663322700}
   m_Father: {fileID: 613142352}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -637.4, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -129.51001, y: 47}
   m_SizeDelta: {x: 160, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1997018898
@@ -5715,18 +5678,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2059959440}
-        m_TargetAssemblyTypeName: TVSwitchEffect, Assembly-CSharp
-        m_MethodName: PlayOnEffect
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1666357725}
         m_TargetAssemblyTypeName: SceneLoaderManager, Assembly-CSharp
         m_MethodName: LoadSaveMenu
@@ -5856,8 +5807,8 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 699610081
-  m_SortingOrder: 100
+  m_SortingLayerID: 1571311555
+  m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!224 &2021777807
 RectTransform:
@@ -6512,7 +6463,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 1, g: 0.4509434, b: 0.4509434, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
@@ -7207,6 +7158,42 @@ PrefabInstance:
     - target: {fileID: 6276288999499707647, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6970885238199054882, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: initialDelay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562714596571497151, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562714596571497151, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562714596571497151, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 268989549}
+    - target: {fileID: 7562714596571497151, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562714596571497151, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SaveGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562714596571497151, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GameStateManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562714596571497151, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562714596571497151, guid: 0be73cf2f63e2154aae0749f1f293ad7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

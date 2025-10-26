@@ -8,8 +8,8 @@ public class UIController : MonoBehaviour
     [Header("Save/Load Menu")]
     public SaveLoadOptionsMenu saveLoadMenu;
 
-    [Header("NVL")]
-    public NVL nvl;
+    [Header("AVL")]
+    public AVL avl;
 
     [Header("Window1")]
     public Window1 window1;

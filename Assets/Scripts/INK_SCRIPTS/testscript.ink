@@ -3,7 +3,7 @@ VAR PlayerName = "Io"
 VAR HealthPoints = 50
 
 // Unity Functions
-EXTERNAL ShowCharacter(name, mood, positionID)
+EXTERNAL ShowCharacter(name, mood, positionName)
 EXTERNAL TypingSpeed(speed)
 //EXTERNAL ChangeMood(characterName, mood)
 
@@ -13,13 +13,13 @@ EXTERNAL TypingSpeed(speed)
 === Chapter_0 ===
 <size=50>Your</size> <b><color=green>name</color> <i>is</i> {PlayerName}.</b>
 
-{ShowCharacter("Dulcinea", "Default", 0)}
+{ShowCharacter("Dulcinea", "Default", "Middle")}
 Once upon a time...
 -> Chapter_1
 
 
 === Chapter_1 ===
-{ShowCharacter("Dulcinea", "Default", 1)}
+{ShowCharacter("Dulcinea", "Happy", "Bottom")}
  ...
 //{TypingSpeed(2.2)}
 * Choice1

@@ -20,16 +20,28 @@ public class SceneLoaderManager : MonoBehaviour
         //==============
 
         GameSingleton.instance.cameraManager.DisableAllOverlayCanvas();
+        GameSingleton.instance.cameraManager.ResetActiveCameraList(isMain: true);
+
         GameSingleton.instance.cameraManager.EnableCamera(isMain: true, (int)MainCameraID.MainMenu);
+
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.CharacterScreen);
+        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.CharacterScreen);
+
+        // Display Dulci here? Or maybe full BG art
 
     }
     public void LoadWindow1()
     {
-        GameSingleton.instance.cameraManager.EnableCamera(isMain: true, (int)MainCameraID.Window1);
-        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.NVL);
-
+        GameSingleton.instance.cameraManager.ResetActiveCameraList(isMain: true);
         GameSingleton.instance.cameraManager.DisableAllOverlayCanvas();
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.NVL);
+
+        GameSingleton.instance.cameraManager.EnableCamera(isMain: true, (int)MainCameraID.Window1);
+
+        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.AVL);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.AVL);
+
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.CharacterScreen);
+        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.CharacterScreen);
     }
 
 
@@ -45,6 +57,7 @@ public class SceneLoaderManager : MonoBehaviour
 
         // UI Transition Animation here
 
+        // =====
     }
 
     public void LoadSaveMenu()
@@ -55,6 +68,8 @@ public class SceneLoaderManager : MonoBehaviour
         uiController.saveLoadMenu.loadMenu.gameObject.SetActive(false);
 
         // UI Transition Animation here
+
+        // =====
 
     }
 
@@ -73,15 +88,15 @@ public class SceneLoaderManager : MonoBehaviour
         GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)OverlayCameraID.SaveLoadOptionsMenu);
     }
 
-    public void ToggleNVL(bool toggle)
+    public void ToggleAVL(bool toggle)
     {
         if (toggle == true)
         {
-            GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.NVL);
+            GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.AVL);
         }
         else
         {
-            GameSingleton.instance.cameraManager.DisableCamera(isMain: false, (int)OverlayCameraID.NVL);
+            GameSingleton.instance.cameraManager.DisableCamera(isMain: false, (int)OverlayCameraID.AVL);
         }
 
     }

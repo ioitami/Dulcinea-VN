@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NVL : MonoBehaviour
+public class AVL : MonoBehaviour
 {
     public Transform nvlCamera;
     public Canvas nvlCanvas;

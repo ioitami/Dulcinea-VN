@@ -5,14 +5,15 @@ using UnityEngine.TextCore.Text;
 public class CharacterManager : MonoBehaviour
 {
     [SerializeField]
-    public Transform characterSpriteParent;
+    private Transform characterSpriteParent;
 
     [Header("Characters Setup")]
     public List<Character> characters = new List<Character>();
 
     //NOTE: MAKE IT RELATIVE TO CAMERA POSITION AND ACCOUNT FOR SCREEN SIZE OF WINDOW
-    [Header("Default Anchors (World Space)")]
-    public List<Vector3> customAnchors = new List<Vector3>();
+    [Header("Default Anchors (Local Space)")]
+    public List<CharacterPosPresets> customPositions = new List<CharacterPosPresets>();
+
 
 
     private void Awake()
@@ -50,7 +51,7 @@ public class CharacterManager : MonoBehaviour
 
     }
 
-    public void SelectCharacterSpriteParent(Transform transform)
+    public void SetCharacterSpriteParent(Transform transform)
     {
         characterSpriteParent = transform;
     }
@@ -67,19 +68,29 @@ public class CharacterManager : MonoBehaviour
 
         return characters[0]; // default to first character if not found
     }
-    public void ShowCharacter(string name, string mood, int positionID)
+    public void ShowCharacter(string name, string mood, string positionName = null)
     {
         Character character = GetCharacter(name);
 
         if (character == null) return;
 
         character.ingameContainerObj.SetActive(true);
-
         SetCharacterMood(name, mood);
 
-        MoveCharacter(name, customAnchors[positionID]);
 
+        if (positionName == null) return;
+
+        Vector3 pos = Vector3.zero;
+        foreach (CharacterPosPresets preset in customPositions)
+        {
+            if (preset.positionName.ToLower() == positionName.ToLower())
+            {
+                pos = preset.position;
+            }
+        }
+        MoveCharacter(name, pos);
     }
+
     public void ShowCharacter(string name, string mood = null, Vector3? position = null)
     {
         Character character = GetCharacter(name);
@@ -139,4 +150,11 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
+}
+
+[System.Serializable]
+public class CharacterPosPresets
+{
+    public string positionName;
+    public Vector3 position;
 }

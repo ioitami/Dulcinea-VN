@@ -12,10 +12,12 @@ public class DialogueManager : MonoBehaviour
 {
     [SerializeField]
     private bool allowStoryClicks = true;
+    [SerializeField]
+    private bool isAVL = true;
 
     [Header("UI Components - Basic")]
-    public TextMeshProUGUI dialogueText;
-    public Image nextIcon; // sprite icon for "continue"
+    public TextMeshProUGUI dialogueTextAVL;
+    public Image nextIconAVL; // sprite icon for "continue"
 
     [Header("UI Components - Choices")]
     [SerializeField]
@@ -56,7 +58,16 @@ public class DialogueManager : MonoBehaviour
     public string playerName;
     public int healthPoints;
 
-    public string PlayerName
+    public bool IsAVL
+    {
+        get => isAVL;
+        private set
+        {
+            isAVL = value;
+        }
+    }
+
+public string PlayerName
     {
         get => playerName;
         private set
@@ -86,7 +97,7 @@ public class DialogueManager : MonoBehaviour
     {
         loadedState = state;
         StartStory(true);
-        ShowNextIcon();
+        //ShowNextIcon();
     }
 
 
@@ -95,22 +106,27 @@ public class DialogueManager : MonoBehaviour
     {
         // ADD TO NVLMANAGER
         // Only update the icon position if sentence finished
-        if (isTyping == false && nextIcon != null && dialogueText != null)
-        {
-            UpdateNextIconPosition();
-        }
+        //if (isTyping == false && nextIconAVL != null && dialogueTextAVL != null)
+        //{
+        //    UpdateNextIconPosition();
+        //}
+    }
+
+    public void SetAVL(bool x)
+    {
+        isAVL = x;
     }
 
     public void StartStory(bool instant)
     {
-        nextIcon.transform.SetParent(dialogueText.transform.parent.parent, false);
+        //nextIconAVL.transform.SetParent(dialogueTextAVL.transform.parent.parent, false);
 
         story = new Story(inkJSONAsset.text);
 
         // Link unity functions to Story in Ink
 
-        story.BindExternalFunction("ShowCharacter", (string name, string mood, int positionID)
-             => characterManager.ShowCharacter(name, mood, positionID));
+        story.BindExternalFunction("ShowCharacter", (string name, string mood, string positionName)
+             => characterManager.ShowCharacter(name, mood, positionName));
 
         story.BindExternalFunction("ChangeTypingSpeed", (float speed)
              => ChangeTypingSpeed(speed));
@@ -170,7 +186,7 @@ public class DialogueManager : MonoBehaviour
     public void DisplayFullCurrentLine()
     {
         string rawLine = story.currentText.Trim();
-        dialogueText.text = rawLine;
+        dialogueTextAVL.text = rawLine;
 
         if (story.currentChoices.Count > 0)
         {
@@ -181,17 +197,18 @@ public class DialogueManager : MonoBehaviour
     public void ShowFullSentenceInstant(string sentence)
     {
         StopAllCoroutines();
-        nextIcon.gameObject.SetActive(true);
+        //nextIconAVL.gameObject.SetActive(true);
         sentence = sentence.Trim().Replace(SEGMENT_DELIMITER, "");
-        dialogueText.text = sentence;
+        dialogueTextAVL.text = sentence;
 
         // ensure the layout updates before placing the next icon
-        dialogueText.ForceMeshUpdate();
+        dialogueTextAVL.ForceMeshUpdate();
 
 
         // Mark as fully typed
         isTyping = false;
-        ShowNextIcon();
+
+        //ShowNextIcon();
 
     }
 
@@ -210,7 +227,7 @@ public class DialogueManager : MonoBehaviour
             currentPartIndex = 0;
 
             // reset for new Ink line
-            dialogueText.text = "";
+            dialogueTextAVL.text = "";
 
             // Show next part
             ShowSentencePart(currentSentenceParts[currentPartIndex], append: false);
@@ -239,7 +256,7 @@ public class DialogueManager : MonoBehaviour
             currentPartIndex = 0;
 
             // reset for new Ink line
-            dialogueText.text = "";
+            dialogueTextAVL.text = "";
 
             // Show next part
             ShowSentencePart(currentSentenceParts[currentPartIndex], append: false);
@@ -275,22 +292,22 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator TypeText(string textPart, bool append)
     {
         isTyping = true;
-        HideNextIcon();
+        //HideNextIcon();
 
         if (!append)
         {
-            dialogueText.text = "";
+            dialogueTextAVL.text = "";
         }
 
         string displayedText = "";
 
         if (append == true)
         {
-            displayedText = dialogueText.text;
+            displayedText = dialogueTextAVL.text;
         }
         else
         {
-            dialogueText.text = "";
+            dialogueTextAVL.text = "";
         }
 
 
@@ -307,21 +324,21 @@ public class DialogueManager : MonoBehaviour
                     // Append full tag immediately
                     displayedText += textPart.Substring(i, tagEnd - i + 1);
                     i = tagEnd + 1;
-                    dialogueText.text = displayedText;
+                    dialogueTextAVL.text = displayedText;
                     continue;
                 }
             }
 
             // Append normal character
             displayedText += textPart[i];
-            dialogueText.text = displayedText;
+            dialogueTextAVL.text = displayedText;
             i++;
 
             yield return new WaitForSeconds(typingSpeed);
         }
 
         isTyping = false;
-        ShowNextIcon();
+        //ShowNextIcon();
 
         if (story.currentChoices.Count > 0)
         {
@@ -344,11 +361,11 @@ public class DialogueManager : MonoBehaviour
 
             if (appendMode == true)
             {
-                dialogueText.text += currentTypingPart; // append full part
+                dialogueTextAVL.text += currentTypingPart; // append full part
             }
             else
             {
-                dialogueText.text = currentTypingPart; // replace with full part
+                dialogueTextAVL.text = currentTypingPart; // replace with full part
             }
 
             if (story.currentChoices.Count > 0)
@@ -359,7 +376,7 @@ public class DialogueManager : MonoBehaviour
             isTyping = false;
 
             // Show icon
-            ShowNextIcon();
+            //ShowNextIcon();
         }
         else if (currentSentenceParts != null && currentPartIndex < currentSentenceParts.Length - 1)
         {
@@ -422,7 +439,7 @@ public class DialogueManager : MonoBehaviour
 
     private void EndDialogue()
     {
-        HideNextIcon();
+        //HideNextIcon();
     }
 
     public void ChangeTypingSpeed(float speed)
@@ -448,7 +465,7 @@ public class DialogueManager : MonoBehaviour
     private void ShowNextIcon()
     {
         UpdateNextIconPosition();
-        nextIcon.gameObject.SetActive(true);
+        nextIconAVL.gameObject.SetActive(true);
 
         if (iconBlinkCoroutine != null) StopCoroutine(iconBlinkCoroutine);
         iconBlinkCoroutine = StartCoroutine(BlinkNextIcon());
@@ -457,25 +474,25 @@ public class DialogueManager : MonoBehaviour
     private void HideNextIcon()
     {
         if (iconBlinkCoroutine != null) StopCoroutine(iconBlinkCoroutine);
-        nextIcon.gameObject.SetActive(false);
+        nextIconAVL.gameObject.SetActive(false);
     }
     private IEnumerator BlinkNextIcon()
     {
-        Color baseColor = nextIcon.color;
+        Color baseColor = nextIconAVL.color;
 
         while (true)
         {
             // Fade out
             for (float t = 0; t < 1; t += Time.deltaTime / blinkSpeed)
             {
-                nextIcon.color = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(1f, 0f, t));
+                nextIconAVL.color = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(1f, 0f, t));
                 yield return null;
             }
 
             // Fade in
             for (float t = 0; t < 1; t += Time.deltaTime / blinkSpeed)
             {
-                nextIcon.color = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0f, 1f, t));
+                nextIconAVL.color = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0f, 1f, t));
                 yield return null;
             }
         }
@@ -484,27 +501,27 @@ public class DialogueManager : MonoBehaviour
     // Position the next icon at the end of the current text.
     public void UpdateNextIconPosition()
     {
-        if (!GameSingleton.instance.sceneLoaderManager.uiController.nvl.gameObject.activeSelf) return;
+        if (!GameSingleton.instance.sceneLoaderManager.uiController.avl.gameObject.activeSelf) return;
 
-        int lastIndex = dialogueText.textInfo.characterCount - 1;
+        int lastIndex = dialogueTextAVL.textInfo.characterCount - 1;
         if (lastIndex < 0) return;
 
-        var charInfo = dialogueText.textInfo.characterInfo[lastIndex];
+        var charInfo = dialogueTextAVL.textInfo.characterInfo[lastIndex];
 
         // Use bottomRight for a clean attachment point
-        Vector3 worldPos = dialogueText.transform.TransformPoint(charInfo.bottomRight);
+        Vector3 worldPos = dialogueTextAVL.transform.TransformPoint(charInfo.bottomRight);
 
         // Convert world -> local canvas space
         Vector2 localPos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            dialogueText.canvas.transform as RectTransform,
+            dialogueTextAVL.canvas.transform as RectTransform,
             RectTransformUtility.WorldToScreenPoint(null, worldPos),
             null,
             out localPos
         );
 
         // Apply small padding to the right
-        nextIcon.GetComponent<RectTransform>().localPosition = new Vector3(10f + localPos.x, localPos.y, 0);
+        nextIconAVL.GetComponent<RectTransform>().localPosition = new Vector3(10f + localPos.x, localPos.y, 0);
     }
 
 

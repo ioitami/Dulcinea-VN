@@ -12,7 +12,9 @@ public enum MainCameraID
 public enum OverlayCameraID
 {
     SaveLoadOptionsMenu  = 0,
-    NVL                  = 1
+    AVL                  = 1,
+    NVL                  = 2,
+    CharacterScreen      = 3,
 }
 
 public class CameraManager : MonoBehaviour
@@ -59,7 +61,7 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    private void ResetActiveCameraList(bool isMain)
+    public void ResetActiveCameraList(bool isMain)
     {
         if (isMain == true) 
         {

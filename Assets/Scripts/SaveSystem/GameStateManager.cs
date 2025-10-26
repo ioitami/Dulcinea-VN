@@ -72,6 +72,7 @@ public class GameStateManager : MonoBehaviour
             SaveData save = (SaveData)bf.Deserialize(file);
             file.Close();
 
+            GameSingleton.instance.sceneLoaderManager.LoadWindow1();
             GameSingleton.instance.dialogueManager.LoadState(save.InkStoryState);
             Debug.Log("Game loaded");
 

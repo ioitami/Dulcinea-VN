@@ -28,24 +28,16 @@ public class CharacterManager : MonoBehaviour
 
         foreach (Character c in characters)
         {
-            GameObject container;
+            GameObject container = c.ingameContainerObj;
 
             // Create container object
-            container = new GameObject(c.characterName + "_Container");
             container.transform.SetParent(characterSpriteParent, true);
             container.transform.localPosition = Vector3.zero;
 
             c.ingameContainerObj = container;
+
             c.currentMood = c.moods[0];
-
-            // Add SpriteRenderer as child
-            GameObject spriteObj = new GameObject(c + "_Sprite");
-            spriteObj.transform.SetParent(container.transform, true);
-            spriteObj.transform.localPosition = Vector3.zero;
-
-            SpriteRenderer spriteRenderer = spriteObj.AddComponent<SpriteRenderer>();
             SetCharacterMood(c.characterName, 0);
-            spriteRenderer.sortingOrder = 1; // ensure in front of background
 
             HideCharacter(c.characterName);
         }
@@ -148,7 +140,7 @@ public class CharacterManager : MonoBehaviour
 
         if (character != null)
         {
-            character.ingameContainerObj.GetComponentInChildren<SpriteRenderer>().sprite = character.moods[moodID].sprite;
+            character.ingameContainerObj.GetComponentInChildren<SpriteRenderer>().sprite = character.currentMood.sprite;
         }
     }
 

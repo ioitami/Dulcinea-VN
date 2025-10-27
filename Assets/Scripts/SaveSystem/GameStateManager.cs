@@ -18,8 +18,38 @@ public class GameStateManager : MonoBehaviour
         public int SaveID;
         public List<string> charOnScreen;
         public List<string> charMood;
-        public List<Vector3> charPosition;
+        public List<SerializableVector3> charPosition;
         public string InkStoryState;
+    }
+
+    [System.Serializable]
+    public class SerializableVector3
+    {
+        public float x, y, z;
+
+        public SerializableVector3(Vector3 v)
+        {
+            x = v.x;
+            y = v.y;
+            z = v.z;
+        }
+
+        public Vector3 ToVector3()
+        {
+            return new Vector3(x, y, z);
+        }
+    }
+
+    private SaveData CreateSaveGameObject(int id)
+    {
+        return new SaveData
+        {
+            SaveID = id,
+            charOnScreen = new List<string>(),
+            charMood = new List<string>(),
+            charPosition = new List<SerializableVector3>(),
+            InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState(),
+        };
     }
 
     // GAME STATE STARTS HERE ON EXE OPEN
@@ -46,9 +76,10 @@ public class GameStateManager : MonoBehaviour
 
             if (c.ingameContainerObj.activeSelf == true)
             {
-                save.charOnScreen.Add(c.ingameContainerObj.name.Replace("_Container", ""));
+                //save.charOnScreen.Add(c.ingameContainerObj.name.Replace("_Container", ""));
+                save.charOnScreen.Add("Dulcinea");
 
-                if(string.IsNullOrEmpty(c.currentMood.moodName) == false)
+                if (string.IsNullOrEmpty(c.currentMood.moodName) == false)
                 {
                     save.charMood.Add(c.currentMood.moodName);
                 }
@@ -57,7 +88,7 @@ public class GameStateManager : MonoBehaviour
                     save.charMood.Add(c.moods[0].moodName);
                 }
 
-                save.charPosition.Add(c.transform.localPosition);
+                save.charPosition.Add(new SerializableVector3(c.ingameContainerObj.transform.localPosition));
             }
         }
 
@@ -73,14 +104,6 @@ public class GameStateManager : MonoBehaviour
 
     }
 
-    private SaveData CreateSaveGameObject(int id)
-    {
-        return new SaveData
-        {
-            SaveID = id,
-            InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState(),
-        };
-    }
 
     public void LoadGame(int saveFileNumber)
     {
@@ -102,7 +125,7 @@ public class GameStateManager : MonoBehaviour
 
             for(int i = 0; i < save.charOnScreen.Count; i++)
             {
-                GameSingleton.instance.characterManager.ShowCharacter(save.charOnScreen[i], save.charMood[i], save.charPosition[i]);
+                GameSingleton.instance.characterManager.ShowCharacter(save.charOnScreen[i], save.charMood[i], save.charPosition[i].ToVector3());
             }
 
             Debug.Log("Game loaded");

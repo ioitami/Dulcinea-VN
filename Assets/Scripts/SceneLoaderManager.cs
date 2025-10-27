@@ -24,8 +24,7 @@ public class SceneLoaderManager : MonoBehaviour
 
         GameSingleton.instance.cameraManager.EnableCamera(isMain: true, (int)MainCameraID.MainMenu);
 
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.CharacterScreen);
-        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.CharacterScreen);
+        LoadBaseCharacterLayerScreen();
 
         // Display Dulci here? Or maybe full BG art
 
@@ -40,13 +39,25 @@ public class SceneLoaderManager : MonoBehaviour
         GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.AVL);
         GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.AVL);
 
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.CharacterScreen);
-        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.CharacterScreen);
+        LoadBaseCharacterLayerScreen();
     }
 
 
 
     // OVERLAY CAMERA CONTROLS
+
+    public void LoadBaseCharacterLayerScreen()
+    {
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.CharacterScreen);
+        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.CharacterScreen);
+        GameSingleton.instance.characterManager.HideAllCharacters();
+    }
+
+    public void LoadCurrentCharacterLayerScreen()
+    {
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.CharacterScreen);
+        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.CharacterScreen);
+    }
 
     public void LoadLoadMenu()
     {

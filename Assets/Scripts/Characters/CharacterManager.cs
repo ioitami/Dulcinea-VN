@@ -5,7 +5,7 @@ using UnityEngine.TextCore.Text;
 public class CharacterManager : MonoBehaviour
 {
     [SerializeField]
-    private Transform characterSpriteParent;
+    public Transform characterSpriteParent;
 
     [Header("Characters Setup")]
     public List<Character> characters = new List<Character>();
@@ -36,6 +36,7 @@ public class CharacterManager : MonoBehaviour
             container.transform.localPosition = Vector3.zero;
 
             c.ingameContainerObj = container;
+            c.currentMood = c.moods[0];
 
             // Add SpriteRenderer as child
             GameObject spriteObj = new GameObject(c + "_Sprite");
@@ -120,10 +121,20 @@ public class CharacterManager : MonoBehaviour
 
     }
 
+    public void HideAllCharacters()
+    {
+        foreach (Character character in characters)
+        {
+            character.ingameContainerObj.SetActive(false);
+        }
+    }
+
     public void SetCharacterMood(string name, string mood)
     {
         Character character = GetCharacter(name);
-        Sprite charMoodSprite = character.moods.Find(m => m.moodName.ToLower() == mood.ToLower())?.sprite;
+        CharacterMood currentMood = character.moods.Find(m => m.moodName.ToLower() == mood.ToLower());
+        character.currentMood = currentMood;
+        Sprite charMoodSprite = currentMood.sprite;
 
         if (character != null)
         {
@@ -133,6 +144,7 @@ public class CharacterManager : MonoBehaviour
     public void SetCharacterMood(string name, int moodID)
     {
         Character character = GetCharacter(name);
+        character.currentMood = character.moods[moodID];
 
         if (character != null)
         {

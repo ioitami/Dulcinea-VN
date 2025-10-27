@@ -363,39 +363,6 @@ Transform:
   - {fileID: 667570200}
   m_Father: {fileID: 2106359677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &117003108
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 117003109}
-  m_Layer: 5
-  m_Name: MainMenuUI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &117003109
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 117003108}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 245323222}
-  - {fileID: 1884840739}
-  m_Father: {fileID: 1794083509}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &145703984
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,7 +588,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1022289615}
-  m_Father: {fileID: 117003109}
+  m_Father: {fileID: 1272064919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &250264059
 GameObject:
@@ -4622,7 +4589,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 454528882}
+  - {fileID: 245323222}
   - {fileID: 1862107830}
+  - {fileID: 1884840739}
   - {fileID: 1075825187}
   m_Father: {fileID: 1794083509}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6890,7 +6859,6 @@ Transform:
   - {fileID: 2106359677}
   - {fileID: 1520577080}
   - {fileID: 448405498}
-  - {fileID: 117003109}
   - {fileID: 1602417139}
   - {fileID: 1325962795}
   - {fileID: 2059494184}
@@ -6952,6 +6920,9 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 74686a844a3b84b4296ad20b51547c57, type: 3}
   container: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  currentMood:
+    moodName: 
+    sprite: {fileID: 0}
   ingameContainerObj: {fileID: 0}
 --- !u!4 &1830483041
 Transform:
@@ -7104,7 +7075,7 @@ RectTransform:
   - {fileID: 605706677}
   - {fileID: 428269411}
   - {fileID: 55519364}
-  m_Father: {fileID: 117003109}
+  m_Father: {fileID: 1272064919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -7271,6 +7242,9 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 492b9988436bd45049a9a6bc52ac8fb0, type: 3}
   container: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  currentMood:
+    moodName: 
+    sprite: {fileID: 0}
   ingameContainerObj: {fileID: 0}
 --- !u!4 &1911436329
 Transform:

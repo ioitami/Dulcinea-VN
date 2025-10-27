@@ -19,9 +19,7 @@ public class Character : MonoBehaviour
     [HideInInspector] public GameObject container;
     [HideInInspector] public SpriteRenderer spriteRenderer;
 
+    public CharacterMood currentMood;
     public GameObject ingameContainerObj;
-
-
-
 
 }

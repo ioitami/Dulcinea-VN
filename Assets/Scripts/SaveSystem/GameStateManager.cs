@@ -4,7 +4,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
 using TMPro;
+using Ink.Parsed;
+
 public class GameStateManager : MonoBehaviour
 {
    
@@ -13,6 +16,9 @@ public class GameStateManager : MonoBehaviour
     public class SaveData
     {
         public int SaveID;
+        public List<string> charOnScreen;
+        public List<string> charMood;
+        public List<Vector3> charPosition;
         public string InkStoryState;
     }
 
@@ -32,14 +38,33 @@ public class GameStateManager : MonoBehaviour
     public void SaveGame(int saveID)
     {
         SaveData save = CreateSaveGameObject(saveID);
+
+        save.SaveID = saveID;
+        
+        foreach(Character c in GameSingleton.instance.characterManager.characters)
+        {
+
+            if (c.ingameContainerObj.activeSelf == true)
+            {
+                save.charOnScreen.Add(c.ingameContainerObj.name.Replace("_Container", ""));
+
+                if(string.IsNullOrEmpty(c.currentMood.moodName) == false)
+                {
+                    save.charMood.Add(c.currentMood.moodName);
+                }
+                else
+                {
+                    save.charMood.Add(c.moods[0].moodName);
+                }
+
+                save.charPosition.Add(c.transform.localPosition);
+            }
+        }
+
         var bf = new BinaryFormatter();
-
         var savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
-
         FileStream file = File.Create(savePath); // creates a file at the specified location
-
         bf.Serialize(file, save); // writes the content of SaveData object into the file
-
         file.Close();
 
         Debug.Log("Game saved");
@@ -74,6 +99,12 @@ public class GameStateManager : MonoBehaviour
 
             GameSingleton.instance.sceneLoaderManager.LoadWindow1();
             GameSingleton.instance.dialogueManager.LoadState(save.InkStoryState);
+
+            for(int i = 0; i < save.charOnScreen.Count; i++)
+            {
+                GameSingleton.instance.characterManager.ShowCharacter(save.charOnScreen[i], save.charMood[i], save.charPosition[i]);
+            }
+
             Debug.Log("Game loaded");
 
         }

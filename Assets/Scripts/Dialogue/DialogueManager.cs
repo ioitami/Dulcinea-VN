@@ -54,6 +54,7 @@ public class DialogueManager : MonoBehaviour
     [Header("Story Variables")]
     public string playerName;
     public int healthPoints;
+    public bool needSecondWindow = false;
 
     public bool IsAVL
     {
@@ -64,7 +65,7 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-public string PlayerName
+    public string PlayerName
     {
         get => playerName;
         private set

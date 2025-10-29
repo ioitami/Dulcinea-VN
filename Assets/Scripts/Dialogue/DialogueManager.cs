@@ -51,9 +51,6 @@ public class DialogueManager : MonoBehaviour
     [Tooltip("Delimiter used in Ink files to split a line into segments (e.g., '||').")]
     private const string SEGMENT_DELIMITER = "(SPLIT)";
 
-    [Header("CharacterManager")]
-    public CharacterManager characterManager;
-
     [Header("Story Variables")]
     public string playerName;
     public int healthPoints;
@@ -126,10 +123,13 @@ public string PlayerName
         // Link unity functions to Story in Ink
 
         story.BindExternalFunction("ShowCharacter", (string name, string mood, string positionName)
-             => characterManager.ShowCharacter(name, mood, positionName));
+             => GameSingleton.instance.characterManager.ShowCharacter(name, mood, positionName));
 
         story.BindExternalFunction("ChangeTypingSpeed", (float speed)
              => ChangeTypingSpeed(speed));
+
+        story.BindExternalFunction("PlayAnimationCharacter", (string charName, string animName)
+            => GameSingleton.instance.characterManager.PlayAnimationCharacter(charName, animName, null));
 
         if (string.IsNullOrEmpty(loadedState) == false)
         {
@@ -350,6 +350,12 @@ public string PlayerName
     public void OnContinueClicked()
     {
         if (allowStoryClicks == false) return;
+
+        // Checks if any sprite animations are playing, stop it if so
+        if (GameSingleton.instance.spriteAnimationManager.IsAnyAnimationPlaying() == true)
+        {
+            GameSingleton.instance.spriteAnimationManager.SkipAllToEnd();
+        }
 
         if (isTyping == true)
         {

@@ -10,7 +10,7 @@ using Ink.Parsed;
 
 public class GameStateManager : MonoBehaviour
 {
-   
+   public SaveData currentSave;
 
     [Serializable]
     public class SaveData
@@ -40,17 +40,17 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    private SaveData CreateSaveGameObject(int id)
-    {
-        return new SaveData
-        {
-            SaveID = id,
-            charOnScreen = new List<string>(),
-            charMood = new List<string>(),
-            charPosition = new List<SerializableVector3>(),
-            InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState(),
-        };
-    }
+    //private SaveData CreateSaveGameObject(int id)
+    //{
+    //    return new SaveData
+    //    {
+    //        SaveID = id,
+    //        charOnScreen = new List<string>(),
+    //        charMood = new List<string>(),
+    //        charPosition = new List<SerializableVector3>(),
+    //        InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState(),
+    //    };
+    //}
 
     // GAME STATE STARTS HERE ON EXE OPEN
     private void Awake()
@@ -67,35 +67,41 @@ public class GameStateManager : MonoBehaviour
 
     public void SaveGame(int saveID)
     {
-        SaveData save = CreateSaveGameObject(saveID);
-
-        save.SaveID = saveID;
+        currentSave.SaveID = saveID;
         
         foreach(Character c in GameSingleton.instance.characterManager.characters)
         {
 
             if (c.ingameContainerObj.activeSelf == true)
             {
-                //save.charOnScreen.Add(c.ingameContainerObj.name.Replace("_Container", ""));
-                save.charOnScreen.Add("Dulcinea");
+                currentSave.charOnScreen.Add(c.ingameContainerObj.name.Replace("_Container", ""));
 
                 if (string.IsNullOrEmpty(c.currentMood.moodName) == false)
                 {
-                    save.charMood.Add(c.currentMood.moodName);
+                    currentSave.charMood.Add(c.currentMood.moodName);
                 }
                 else
                 {
-                    save.charMood.Add(c.moods[0].moodName);
+                    currentSave.charMood.Add(c.moods[0].moodName);
                 }
 
-                save.charPosition.Add(new SerializableVector3(c.ingameContainerObj.transform.localPosition));
+                // If any animations are playing, skip them to the end before saving position
+                if (GameSingleton.instance.spriteAnimationManager.IsAnyAnimationPlaying())
+                {
+                    GameSingleton.instance.spriteAnimationManager.SkipAllToEnd();
+                }
+
+                currentSave.charPosition.Add(new SerializableVector3(c.ingameContainerObj.transform.localPosition));
+
             }
         }
+
+        currentSave.InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState();
 
         var bf = new BinaryFormatter();
         var savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
         FileStream file = File.Create(savePath); // creates a file at the specified location
-        bf.Serialize(file, save); // writes the content of SaveData object into the file
+        bf.Serialize(file, currentSave); // writes the content of SaveData object into the file
         file.Close();
 
         Debug.Log("Game saved");
@@ -103,6 +109,7 @@ public class GameStateManager : MonoBehaviour
         // Save should include sprites, positions, animations, background sprite, variables, flags.
 
     }
+
 
 
     public void LoadGame(int saveFileNumber)
@@ -117,15 +124,15 @@ public class GameStateManager : MonoBehaviour
 
             file.Position = 0;
 
-            SaveData save = (SaveData)bf.Deserialize(file);
+            currentSave = (SaveData)bf.Deserialize(file);
             file.Close();
 
             GameSingleton.instance.sceneLoaderManager.LoadWindow1();
-            GameSingleton.instance.dialogueManager.LoadState(save.InkStoryState);
+            GameSingleton.instance.dialogueManager.LoadState(currentSave.InkStoryState);
 
-            for(int i = 0; i < save.charOnScreen.Count; i++)
+            for(int i = 0; i < currentSave.charOnScreen.Count; i++)
             {
-                GameSingleton.instance.characterManager.ShowCharacter(save.charOnScreen[i], save.charMood[i], save.charPosition[i].ToVector3());
+                GameSingleton.instance.characterManager.ShowCharacter(currentSave.charOnScreen[i], currentSave.charMood[i], currentSave.charPosition[i].ToVector3());
             }
 
             Debug.Log("Game loaded");

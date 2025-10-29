@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
@@ -154,6 +155,27 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
+    public void PlayAnimationCharacter(string charName, string animName, System.Action onComplete = null)
+    {
+        Character character = GetCharacter(charName);
+
+        if (character != null)
+        {
+
+            SpriteAnimationManager animationManager = GameSingleton.instance.spriteAnimationManager;
+
+            if (animationManager != null)
+            {
+                animationManager.PlayAnimation(animationName:animName, spriteTransform: character.ingameContainerObj.transform, onComplete: onComplete);
+            }
+        }
+        else
+        {
+            Debug.Log("No character found");
+        }
+    }
+
+
 }
 
 [System.Serializable]
@@ -162,3 +184,4 @@ public class CharacterPosPresets
     public string positionName;
     public Vector3 position;
 }
+

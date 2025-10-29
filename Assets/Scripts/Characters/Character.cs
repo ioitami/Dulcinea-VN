@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 [System.Serializable]
 public class CharacterMood

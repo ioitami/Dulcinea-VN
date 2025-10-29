@@ -5,6 +5,7 @@ VAR HealthPoints = 50
 // Unity Functions
 EXTERNAL ShowCharacter(name, mood, positionName)
 EXTERNAL TypingSpeed(speed)
+EXTERNAL PlayAnimationCharacter(charName, animName)
 //EXTERNAL ChangeMood(characterName, mood)
 
 // STARTS HERE
@@ -14,6 +15,7 @@ EXTERNAL TypingSpeed(speed)
 <size=50>Your</size> <b><color=green>name</color> <i>is</i> {PlayerName}.</b>
 
 {ShowCharacter("Dulcinea", "Default", "Middle")}
+{PlayAnimationCharacter("Dulcinea", "Wobble")}
 Once upon a time...
 -> Chapter_1
 

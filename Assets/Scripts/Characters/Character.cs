@@ -22,5 +22,19 @@ public class Character : MonoBehaviour
 
     public CharacterMood currentMood;
     public GameObject ingameContainerObj;
+}
 
+[System.Serializable]
+public struct CharacterTransformData
+{
+    public Vector3 position;
+    public Quaternion rotation;
+    public Vector3 scale;
+
+    public CharacterTransformData(Vector3 pos, Quaternion rot, Vector3 scl)
+    {
+        position = pos;
+        rotation = rot;
+        scale = scl;
+    }
 }

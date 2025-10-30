@@ -3,9 +3,7 @@ VAR PlayerName = "Io"
 VAR HealthPoints = 50
 
 // Unity Functions
-EXTERNAL ShowCharacter(name, mood, positionName)
-EXTERNAL TypingSpeed(speed)
-EXTERNAL PlayAnimationCharacter(charName, animName)
+
 //EXTERNAL ChangeMood(characterName, mood)
 
 // STARTS HERE
@@ -14,15 +12,12 @@ EXTERNAL PlayAnimationCharacter(charName, animName)
 === Chapter_0 ===
 <size=50>Your</size> <b><color=green>name</color> <i>is</i> {PlayerName}.</b>
 
-{ShowCharacter("Dulcinea", "Default", "Middle")}
-{PlayAnimationCharacter("Dulcinea", "Wobble")}
-Once upon a time...
+Once upon a time... #Command ShowCharacter dulcinea default middle #Command PlayAnimationCharacter Dulcinea Wobble
 -> Chapter_1
 
 
 === Chapter_1 ===
-{ShowCharacter("Dulcinea", "Happy", "Bottom")}
- ...
+ ... #Command ShowCharacter dulcinea happy left
 //{TypingSpeed(2.2)}
 * Choice1
  "Picked choice 1. (SPLIT) HP -20."

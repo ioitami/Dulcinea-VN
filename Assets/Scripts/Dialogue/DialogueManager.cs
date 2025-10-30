@@ -2,6 +2,7 @@
 
 using Ink.Runtime;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -94,7 +95,8 @@ public class DialogueManager : MonoBehaviour
     public void LoadState(string state)
     {
         loadedState = state;
-        StartStory(true);
+        StartStory(false);
+        
         //ShowNextIcon();
     }
 
@@ -123,15 +125,16 @@ public class DialogueManager : MonoBehaviour
 
         // Link unity functions to Story in Ink
 
-        story.BindExternalFunction("ShowCharacter", (string name, string mood, string positionName)
-             => GameSingleton.instance.characterManager.ShowCharacter(name, mood, positionName));
+        //story.BindExternalFunction("ShowCharacter", (string name, string mood, string positionName)
+        //     => GameSingleton.instance.characterManager.ShowCharacter(name, mood, positionName));
 
-        story.BindExternalFunction("ChangeTypingSpeed", (float speed)
-             => ChangeTypingSpeed(speed));
+        //story.BindExternalFunction("ChangeTypingSpeed", (float speed)
+        //     => ChangeTypingSpeed(speed));
 
-        story.BindExternalFunction("PlayAnimationCharacter", (string charName, string animName)
-            => GameSingleton.instance.characterManager.PlayAnimationCharacter(charName, animName, null));
+        //story.BindExternalFunction("PlayAnimationCharacter", (string charName, string animName)
+        //    => GameSingleton.instance.characterManager.PlayAnimationCharacter(charName, animName, null));
 
+        // IF LOADING A SAVE FILE
         if (string.IsNullOrEmpty(loadedState) == false)
         {
             story?.state?.LoadJson(loadedState);
@@ -216,6 +219,7 @@ public class DialogueManager : MonoBehaviour
     public void DisplayCurrentLine(bool instant)
     {
         string rawLine = story.currentText.Trim();
+        HandleTags(story.currentTags);
 
         if (instant)
         {
@@ -251,6 +255,7 @@ public class DialogueManager : MonoBehaviour
         if (story.canContinue)
         {
             string rawLine = story.Continue().Trim();
+            HandleTags(story.currentTags);
 
             // Split with delimiter
             currentSentenceParts = rawLine.Split(SEGMENT_DELIMITER);
@@ -344,6 +349,67 @@ public class DialogueManager : MonoBehaviour
         if (story.currentChoices.Count > 0)
         {
             DisplayChoices();
+        }
+    }
+
+    public void HandleTags(List<string> tags)
+    {
+        foreach (string tag in tags)
+        {
+            // Each tag might look like "show Luna happy" or "bg forest"
+            string[] parts = tag.Split(' ');
+
+            if (parts.Length == 0) continue;
+
+            string command = parts[0].ToLower();
+
+            switch (command)
+            {
+                case "command":
+                    // Format: #Command hide CharacterName
+                    if (parts.Length >= 2)
+                    {
+                        GameSingleton.instance.dialogueTagManager.HandleCommandTags(parts);
+                    }
+                    break;
+
+
+                case "scommand":
+                    // SPECIAL COMMANDS FOR ONE TIME USE AND STUFF
+
+                    break;
+
+                //case "bg":
+                //    // Format: #bg BackgroundName
+                //    if (parts.Length >= 2)
+                //    {
+                //        string bgName = parts[1];
+                //        BackgroundManager.Instance.SetBackground(bgName);
+                //    }
+                //    break;
+
+                //case "music":
+                //    // Format: #music TrackName
+                //    if (parts.Length >= 2)
+                //    {
+                //        string track = parts[1];
+                //        AudioManager.Instance.PlayMusic(track);
+                //    }
+                //    break;
+
+                //case "sfx":
+                //    // Format: #sfx SoundEffectName
+                //    if (parts.Length >= 2)
+                //    {
+                //        string sfx = parts[1];
+                //        AudioManager.Instance.PlaySFX(sfx);
+                //    }
+                //    break;
+
+                default:
+                    Debug.LogWarning($"Unknown tag: {tag}");
+                    break;
+            }
         }
     }
 

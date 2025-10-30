@@ -20,6 +20,8 @@ public class GameStateManager : MonoBehaviour
         public List<string> charMood;
         public List<SerializableVector3> charPosition;
         public string InkStoryState;
+
+        // Other flags and whatever else to save game state
     }
 
     [System.Serializable]
@@ -68,8 +70,11 @@ public class GameStateManager : MonoBehaviour
     public void SaveGame(int saveID)
     {
         currentSave.SaveID = saveID;
-        
-        foreach(Character c in GameSingleton.instance.characterManager.characters)
+        currentSave.charOnScreen.Clear();
+        currentSave.charMood.Clear();
+        currentSave.charPosition.Clear();
+
+        foreach (Character c in GameSingleton.instance.characterManager.characters)
         {
 
             if (c.ingameContainerObj.activeSelf == true)
@@ -127,6 +132,7 @@ public class GameStateManager : MonoBehaviour
             currentSave = (SaveData)bf.Deserialize(file);
             file.Close();
 
+
             GameSingleton.instance.sceneLoaderManager.LoadWindow1();
             GameSingleton.instance.dialogueManager.LoadState(currentSave.InkStoryState);
 
@@ -144,22 +150,4 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    public void ExitGame()
-    {
-    }
-
-    public void LoadMainMenu()
-    {
-
-    }
-
-    public void LoadMainGameWindow()
-    {
-
-    }
-
-    public void LoadSettingsMenu()
-    {
-
-    }
 }

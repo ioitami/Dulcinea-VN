@@ -38,4 +38,27 @@ public class DialogueTagManager : MonoBehaviour
 
     }
 
+    public void HandleSCommandTags(string[] tags)
+    {
+        string command = tags[1].ToLower();
+
+        switch (command)
+        {
+            default:
+                Debug.LogWarning($"Unknown command tag: {command}");
+                break;
+        }
+
+    }
+
+    public void HandleIDTags(string[] tags)
+    {
+        string id = tags[1];
+
+        if (!string.IsNullOrEmpty(id))
+        {
+            
+        }
+
+    }
 }

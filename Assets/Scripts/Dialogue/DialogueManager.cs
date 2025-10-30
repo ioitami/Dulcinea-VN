@@ -3,6 +3,7 @@
 using Ink.Runtime;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,6 +45,8 @@ public class DialogueManager : MonoBehaviour
     public bool isTyping = false;
     public string currentTypingPart = ""; // <- track the current segment being typed
     private bool appendMode = false;      // <- track if we're appending
+
+    public bool isSkipping = false;
 
     [Header("Next Icon Blink Settings")]
     public float blinkSpeed = 0.5f; // seconds between fade
@@ -352,6 +355,11 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    public void SetSkipping(bool skipping)
+    {
+        isSkipping = skipping;
+    }
+
     public void HandleTags(List<string> tags)
     {
         foreach (string tag in tags)
@@ -376,6 +384,20 @@ public class DialogueManager : MonoBehaviour
 
                 case "scommand":
                     // SPECIAL COMMANDS FOR ONE TIME USE AND STUFF
+
+                    break;
+
+
+                case "id":
+                    // Format: #id someIDValue
+                    if (parts.Length == 2)
+                    {
+                        GameSingleton.instance.dialogueTagManager.HandleIDTags(parts);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid 'id' tag format: {tag}");
+                    }
 
                     break;
 
@@ -598,4 +620,92 @@ public class DialogueManager : MonoBehaviour
     }
 
 
+}
+
+
+
+[System.Serializable]
+public class ReadLineTracker
+{
+    public HashSet<string> readLineIDs = new HashSet<string>();
+    private static readonly string readLineIDFileName = "LoggedPages.json";
+
+    private string SavePath => System.IO.Path.Combine(Application.persistentDataPath, readLineIDFileName);
+
+    // Mark a line as read
+    public void MarkAsRead(string id)
+    {
+        if (!string.IsNullOrEmpty(id))
+            readLineIDs.Add(id);
+    }
+
+    // Check if a line has been read
+    public bool HasBeenRead(string id)
+    {
+        return !string.IsNullOrEmpty(id) && readLineIDs.Contains(id);
+    }
+
+    // Save to independent JSON file
+    public void Save()
+    {
+        try
+        {
+            var wrapper = new Wrapper { ids = new List<string>(readLineIDs) };
+            string json = JsonUtility.ToJson(wrapper, true);
+            File.WriteAllText(SavePath, json);
+#if UNITY_EDITOR
+            Debug.Log($"[ReadLineTracker] Saved {readLineIDs.Count} read lines to {SavePath}");
+#endif
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[ReadLineTracker] Failed to save LoggedPages: {e}");
+        }
+    }
+
+    // Load from JSON file
+    public void Load()
+    {
+        try
+        {
+            if (File.Exists(SavePath))
+            {
+                string json = File.ReadAllText(SavePath);
+                var wrapper = JsonUtility.FromJson<Wrapper>(json);
+                readLineIDs = new HashSet<string>(wrapper.ids);
+#if UNITY_EDITOR
+                Debug.Log($"[ReadLineTracker] Loaded {readLineIDs.Count} read lines from {SavePath}");
+#endif
+            }
+            else
+            {
+                readLineIDs = new HashSet<string>();
+#if UNITY_EDITOR
+                Debug.Log("[ReadLineTracker] No LoggedPages file found — starting fresh.");
+#endif
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[ReadLineTracker] Failed to load LoggedPages: {e}");
+            readLineIDs = new HashSet<string>();
+        }
+    }
+
+    // Delete saved data (useful for testing or resets)
+    public void Clear()
+    {
+        readLineIDs.Clear();
+        if (File.Exists(SavePath))
+            File.Delete(SavePath);
+#if UNITY_EDITOR
+        Debug.Log("[ReadLineTracker] LoggedPages file cleared.");
+#endif
+    }
+
+    [System.Serializable]
+    private class Wrapper
+    {
+        public List<string> ids;
+    }
 }

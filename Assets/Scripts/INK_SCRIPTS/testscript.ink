@@ -3,7 +3,6 @@ VAR PlayerName = "Io"
 VAR HealthPoints = 50
 
 // Unity Functions
-
 //EXTERNAL ChangeMood(characterName, mood)
 
 // STARTS HERE
@@ -12,12 +11,19 @@ VAR HealthPoints = 50
 === Chapter_0 ===
 <size=50>Your</size> <b><color=green>name</color> <i>is</i> {PlayerName}.</b>
 
-Once upon a time... #Command ShowCharacter dulcinea default middle #Command PlayAnimationCharacter Dulcinea Wobble
+#id testscript_ch0_00000
+#Command ShowCharacter dulcinea default middle 
+#Command PlayAnimationCharacter Dulcinea Wobble 
+Once upon a time... 
+
+
 -> Chapter_1
 
 
 === Chapter_1 ===
- ... #Command ShowCharacter dulcinea happy left
+#id testscript_ch0_00001
+#Command ShowCharacter dulcinea happy left
+Options here
 //{TypingSpeed(2.2)}
 * Choice1
  "Picked choice 1. (SPLIT) HP -20."

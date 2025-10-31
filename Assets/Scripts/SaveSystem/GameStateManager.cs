@@ -103,13 +103,24 @@ public class GameStateManager : MonoBehaviour
 
         currentSave.InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState();
 
-        var bf = new BinaryFormatter();
-        var savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
-        FileStream file = File.Create(savePath); // creates a file at the specified location
-        bf.Serialize(file, currentSave); // writes the content of SaveData object into the file
-        file.Close();
+        //var bf = new BinaryFormatter();
+        //var savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
+        //FileStream file = File.Create(savePath); // creates a file at the specified location
+        //bf.Serialize(file, currentSave); // writes the content of SaveData object into the file
+        //file.Close();
 
-        Debug.Log("Game saved");
+        string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
+
+        try
+        {
+            string json = JsonUtility.ToJson(currentSave, true);
+            File.WriteAllText(savePath, json);
+            Debug.Log($"Game saved as JSON to {savePath}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to save game: {e}");
+        }
 
         // Save should include sprites, positions, animations, background sprite, variables, flags.
 
@@ -119,30 +130,47 @@ public class GameStateManager : MonoBehaviour
 
     public void LoadGame(int saveFileNumber)
     {
-        string SavePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveFileNumber.ToString() + GlobalVariables.saveFileExtension;
+        string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveFileNumber.ToString() + GlobalVariables.saveFileExtension;
 
-        if(File.Exists(SavePath))
+        if(File.Exists(savePath))
         {
-            BinaryFormatter bf = new BinaryFormatter();
+            //BinaryFormatter bf = new BinaryFormatter();
 
-            FileStream file = File.Open(SavePath, FileMode.Open);
+            //FileStream file = File.Open(SavePath, FileMode.Open);
 
-            file.Position = 0;
+            //file.Position = 0;
 
-            currentSave = (SaveData)bf.Deserialize(file);
-            file.Close();
+            //currentSave = (SaveData)bf.Deserialize(file);
+            //file.Close();
 
 
-            GameSingleton.instance.sceneLoaderManager.LoadWindow1();
-            GameSingleton.instance.dialogueManager.LoadState(currentSave.InkStoryState);
+            //GameSingleton.instance.sceneLoaderManager.LoadWindow1();
+            //GameSingleton.instance.dialogueManager.LoadState(currentSave.InkStoryState);
 
-            for(int i = 0; i < currentSave.charOnScreen.Count; i++)
+            //for(int i = 0; i < currentSave.charOnScreen.Count; i++)
+            //{
+            //    GameSingleton.instance.characterManager.ShowCharacter(currentSave.charOnScreen[i], currentSave.charMood[i], currentSave.charPosition[i].ToVector3());
+            //}
+            try
             {
-                GameSingleton.instance.characterManager.ShowCharacter(currentSave.charOnScreen[i], currentSave.charMood[i], currentSave.charPosition[i].ToVector3());
+                string json = File.ReadAllText(savePath);
+                currentSave = JsonUtility.FromJson<SaveData>(json);
+
+                // Load game data
+                GameSingleton.instance.sceneLoaderManager.LoadWindow1();
+                GameSingleton.instance.dialogueManager.LoadState(currentSave.InkStoryState);
+
+                for (int i = 0; i < currentSave.charOnScreen.Count; i++)
+                {
+                    GameSingleton.instance.characterManager.ShowCharacter(currentSave.charOnScreen[i], currentSave.charMood[i], currentSave.charPosition[i].ToVector3());
+                }
+
+                Debug.Log($"Game loaded from JSON: {savePath}");
             }
-
-            Debug.Log("Game loaded");
-
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to load game: {e}");
+            }
         }
         else
         {

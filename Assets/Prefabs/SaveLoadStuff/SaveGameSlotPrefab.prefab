@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6276288999499707647}
+  - component: {fileID: 5221841646016651136}
   m_Layer: 5
   m_Name: SaveGameSlotPrefab
   m_TagString: Untagged
@@ -36,6 +37,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5221841646016651136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3435986145270969083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7325fbfdfc3077b43a194938d68480d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveSlotNumber: 1
+  saveSpritePreview: {fileID: 8172199997060114997}
+  saveID_Text: {fileID: 2576977723525372082}
+  chapterName_Text: {fileID: 0}
+  saveTimeStamp_Text: {fileID: 0}
 --- !u!1 &6178526433342186664
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,8 +123,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 0}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -158,7 +176,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8172199997060114997}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5221841646016651136}
+        m_TargetAssemblyTypeName: SaveGameButton, Assembly-CSharp
+        m_MethodName: SaveGame
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!225 &8104635290054215715
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -183,7 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb8a833f33208714eb0523f6e9bdd423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialDelay: 0.2
+  initialDelay: 0
   moveOffset: {x: 0, y: -35, z: 0}
   minDuration: 0.25
   maxDuration: 0.6

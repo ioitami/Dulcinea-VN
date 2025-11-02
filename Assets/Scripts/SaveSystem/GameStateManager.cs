@@ -8,19 +8,31 @@ using System.Collections.Generic;
 using TMPro;
 using Ink.Parsed;
 using Unity.XR.OpenVR;
+using System.Collections;
+using Unity.VisualScripting;
+//using static System.Net.Mime.MediaTypeNames;
 
 public class GameStateManager : MonoBehaviour
 {
     public SaveData currentSave;
     public ReadLineTracker readLineSave;
+    public string screenshotBase64_saved;
 
     [Serializable]
     public class SaveData
     {
-        public int SaveID;
+        public int saveID;
+        public string chapterName;
+        [HideInInspector]
+        public string saveTimeStamp;
+        [HideInInspector]
+        public string screenshotBase64;
+
         public List<string> charOnScreen;
         public List<string> charMood;
         public List<SerializableVector3> charPosition;
+
+        [HideInInspector]
         public string InkStoryState;
 
         // Other flags and whatever else to save game state
@@ -175,10 +187,13 @@ public class GameStateManager : MonoBehaviour
 
     public void SaveGame(int saveID)
     {
-        currentSave.SaveID = saveID;
+        currentSave.saveID = saveID;
         currentSave.charOnScreen.Clear();
         currentSave.charMood.Clear();
         currentSave.charPosition.Clear();
+        currentSave.saveID = saveID;
+        currentSave.chapterName = 0.ToString(); // CHANGE THIS LATER
+        currentSave.saveTimeStamp = System.DateTime.Now.ToString();
 
         foreach (Character c in GameSingleton.instance.characterManager.characters)
         {
@@ -213,9 +228,7 @@ public class GameStateManager : MonoBehaviour
 
         try
         {
-            string json = JsonUtility.ToJson(currentSave, true);
-            File.WriteAllText(savePath, json);
-            Debug.Log($"Game saved as JSON to {savePath}");
+            FinalizeSave(saveID);
         }
         catch (System.Exception e)
         {
@@ -228,7 +241,18 @@ public class GameStateManager : MonoBehaviour
 
     }
 
+    private void FinalizeSave(int saveID)
+    {
+        StartCoroutine(CaptureScreenshotAsBase64((base64) =>
+        {
+            currentSave.screenshotBase64 = base64;
 
+            string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
+            string json = JsonUtility.ToJson(currentSave, true);
+            File.WriteAllText(savePath, json);
+            Debug.Log($"Game saved as JSON to {savePath}");
+        }));
+    }
 
     public void LoadGame(int saveFileNumber)
     {
@@ -262,6 +286,58 @@ public class GameStateManager : MonoBehaviour
         else
         {
             Debug.Log("No save file found");
+        }
+    }
+
+    private List<Camera> saveCamList;
+    public IEnumerator CaptureScreenshotAsBase64(System.Action<string> onComplete)
+    {
+        yield return new WaitForEndOfFrame();
+
+        int width = Screen.width;
+        int height = Screen.height;
+
+        Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture();
+
+        byte[] bytes = tex.EncodeToPNG();
+        UnityEngine.Object.Destroy(tex);
+
+        string base64 = System.Convert.ToBase64String(bytes);
+
+        onComplete?.Invoke(base64);
+
+    }
+
+
+    public Sprite GetLoadedScreenshotSprite()
+    {
+        if (string.IsNullOrEmpty(currentSave.screenshotBase64)) return null;
+
+
+        byte[] imageData = System.Convert.FromBase64String(currentSave.screenshotBase64);
+        Texture2D tex = new Texture2D(2, 2);
+        tex.LoadImage(imageData);
+        return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+    }
+
+    public Sprite LoadScreenshotSprite(int saveID)
+    {
+        string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
+
+        if (File.Exists(savePath))
+        {
+            string json = File.ReadAllText(savePath);
+            string screenShotData = JsonUtility.FromJson<SaveData>(json).screenshotBase64;
+
+            byte[] imageData = System.Convert.FromBase64String(screenShotData);
+            Texture2D tex = new Texture2D(2, 2);
+            tex.LoadImage(imageData);
+
+            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+        }
+        else
+        {
+            return null;
         }
     }
 

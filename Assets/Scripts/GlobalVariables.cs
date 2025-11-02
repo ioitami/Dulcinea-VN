@@ -2,6 +2,7 @@ public static class GlobalVariables
 {
     public static string saveFileBaseName = "/Dulci_";
     public static string saveFileExtension = ".bookmark";
+    public static string saveFileMetaExtension = ".meta";
 
 
     public static string readLines_global_saveFileName = "/CollectedPages";

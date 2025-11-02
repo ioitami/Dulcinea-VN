@@ -23,6 +23,8 @@ public class CameraManager : MonoBehaviour
     public List<Transform> overlayCameraList;
     public List<Canvas> overlayCanvasList;
 
+    public List<Transform> savedOverlayCameraList;
+
     public void EnableCamera(bool isMain, int id)
     {
         if(isMain == true)
@@ -61,6 +63,30 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    public void DisableAllOverlayCameras()
+    {
+        foreach (Transform t in overlayCameraList)
+        {
+            if (t.gameObject.activeSelf == true)
+            {
+                savedOverlayCameraList.Add(t.gameObject.transform);
+                t.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void EnablePreviouslyDisabledOverlayCameras()
+    {
+        foreach (Transform t in savedOverlayCameraList)
+        {
+            t.gameObject.SetActive(true);
+        }
+
+        savedOverlayCameraList.Clear();
+    }
+
+
+
     public void ResetActiveCameraList(bool isMain)
     {
         if (isMain == true) 
@@ -79,6 +105,14 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    public void DisableAllOverlayCanvas()
+    {
+        foreach (Canvas c in overlayCanvasList)
+        {
+            c.gameObject.SetActive(false);
+        }
+    }
+
     public void EnableOverlayCanvas(int id)
     {
         overlayCanvasList[id].gameObject.SetActive(true);
@@ -88,13 +122,6 @@ public class CameraManager : MonoBehaviour
         overlayCanvasList[id].gameObject.SetActive(false);
     }
 
-    public void DisableAllOverlayCanvas()
-    {
-        foreach (Canvas c in overlayCanvasList)
-        {
-            c.gameObject.SetActive(false);
-        }
-    }
 
 }
 

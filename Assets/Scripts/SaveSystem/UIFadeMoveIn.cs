@@ -45,7 +45,6 @@ public class UIFadeMoveIn : MonoBehaviour
 
     private IEnumerator AnimateIn()
     {
-        Debug.Log("1");
         // Wait for optional delay before animation starts
         if (initialDelay > 0f)
             yield return new WaitForSeconds(initialDelay);
@@ -69,7 +68,6 @@ public class UIFadeMoveIn : MonoBehaviour
 
             yield return null;
         }
-        Debug.Log("2");
 
         rectTransform.anchoredPosition = initialPosition;
         canvasGroup.alpha = 1f;

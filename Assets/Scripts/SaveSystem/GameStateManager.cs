@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
@@ -7,10 +7,12 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
 using Ink.Parsed;
+using Unity.XR.OpenVR;
 
 public class GameStateManager : MonoBehaviour
 {
-   public SaveData currentSave;
+    public SaveData currentSave;
+    public ReadLineTracker readLineSave;
 
     [Serializable]
     public class SaveData
@@ -42,17 +44,119 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    //private SaveData CreateSaveGameObject(int id)
-    //{
-    //    return new SaveData
-    //    {
-    //        SaveID = id,
-    //        charOnScreen = new List<string>(),
-    //        charMood = new List<string>(),
-    //        charPosition = new List<SerializableVector3>(),
-    //        InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState(),
-    //    };
-    //}
+    [Serializable]
+    public class ReadLineTracker
+    {
+        public HashSet<string> readLineIDs = new HashSet<string>();
+
+        private int linesSinceLastSave = 0;
+        private const int saveThreshold = 10; // save every 10 lines
+
+        // Mark a line as read
+        public void MarkAsRead(string id)
+        {
+            if (string.IsNullOrEmpty(id) == false)
+            {
+                readLineIDs.Add(id);
+
+
+                linesSinceLastSave++;
+                if (linesSinceLastSave >= saveThreshold)
+                {
+                    SaveReadLinesFile();
+                    linesSinceLastSave = 0;
+                }
+            }
+
+        }
+
+        // Check if a line has been read
+        public bool HasBeenRead(string id)
+        {
+            return !string.IsNullOrEmpty(id) && readLineIDs.Contains(id);
+        }
+
+        // Save to independent JSON file
+        public void SaveReadLinesFile()
+        {
+            string savePath = Application.persistentDataPath + GlobalVariables.readLines_global_saveFileName + GlobalVariables.readLines_global_saveFileExtension;
+
+            try
+            {
+                var wrapper = new Wrapper { readLineIDs = new List<string>(readLineIDs) };
+                string json = JsonUtility.ToJson(wrapper, true);
+                File.WriteAllText(savePath, json);
+#if UNITY_EDITOR
+                Debug.Log($"[ReadLineTracker] Saved {readLineIDs.Count} read lines to {savePath}");
+#endif
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[ReadLineTracker] Failed to save LoggedPages: {e}");
+            }
+        }
+
+        // Load from JSON file
+        public void LoadReadLinesFile()
+        {
+            string savePath = Application.persistentDataPath + GlobalVariables.readLines_global_saveFileName + GlobalVariables.readLines_global_saveFileExtension;
+
+            try
+            {
+                if (File.Exists(savePath))
+                {
+                    string json = File.ReadAllText(savePath);
+                    var wrapper = JsonUtility.FromJson<Wrapper>(json);
+                    readLineIDs = new HashSet<string>(wrapper.readLineIDs);
+#if UNITY_EDITOR
+                    Debug.Log($"[ReadLineTracker] Loaded {readLineIDs.Count} read lines from {savePath}");
+#endif
+                }
+                else
+                {
+                    readLineIDs = new HashSet<string>();
+#if UNITY_EDITOR
+                    Debug.Log("[ReadLineTracker] No LoggedPages file found — starting fresh.");
+#endif
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[ReadLineTracker] Failed to load LoggedPages: {e}");
+                readLineIDs = new HashSet<string>();
+            }
+        }
+
+        // Delete saved data (useful for testing or resets)
+        public void ClearReadLinesFile()
+        {
+            string savePath = Application.persistentDataPath + GlobalVariables.readLines_global_saveFileName + GlobalVariables.readLines_global_saveFileExtension;
+
+            readLineIDs.Clear();
+            if (File.Exists(savePath))
+                File.Delete(savePath);
+#if UNITY_EDITOR
+            Debug.Log("[ReadLineTracker] LoggedPages file cleared.");
+#endif
+        }
+
+        [System.Serializable]
+        private class Wrapper
+        {
+            public List<string> readLineIDs;
+        }
+    }
+
+
+
+
+
+
+
+
+    // =========================================================================================
+    // GAME STATE MANAGER STUFF BELOW HERE
+    // =========================================================================================
 
     // GAME STATE STARTS HERE ON EXE OPEN
     private void Awake()
@@ -65,6 +169,8 @@ public class GameStateManager : MonoBehaviour
     {
         GameSingleton.instance.dialogueManager.ResetStory();
         GameSingleton.instance.dialogueManager.StartStory(instant:false);
+
+        GameSingleton.instance.gameStateManager.readLineSave.LoadReadLinesFile();
     }
 
     public void SaveGame(int saveID)
@@ -103,12 +209,6 @@ public class GameStateManager : MonoBehaviour
 
         currentSave.InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState();
 
-        //var bf = new BinaryFormatter();
-        //var savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
-        //FileStream file = File.Create(savePath); // creates a file at the specified location
-        //bf.Serialize(file, currentSave); // writes the content of SaveData object into the file
-        //file.Close();
-
         string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
 
         try
@@ -122,6 +222,8 @@ public class GameStateManager : MonoBehaviour
             Debug.LogError($"Failed to save game: {e}");
         }
 
+        readLineSave.SaveReadLinesFile();
+
         // Save should include sprites, positions, animations, background sprite, variables, flags.
 
     }
@@ -134,23 +236,6 @@ public class GameStateManager : MonoBehaviour
 
         if(File.Exists(savePath))
         {
-            //BinaryFormatter bf = new BinaryFormatter();
-
-            //FileStream file = File.Open(SavePath, FileMode.Open);
-
-            //file.Position = 0;
-
-            //currentSave = (SaveData)bf.Deserialize(file);
-            //file.Close();
-
-
-            //GameSingleton.instance.sceneLoaderManager.LoadWindow1();
-            //GameSingleton.instance.dialogueManager.LoadState(currentSave.InkStoryState);
-
-            //for(int i = 0; i < currentSave.charOnScreen.Count; i++)
-            //{
-            //    GameSingleton.instance.characterManager.ShowCharacter(currentSave.charOnScreen[i], currentSave.charMood[i], currentSave.charPosition[i].ToVector3());
-            //}
             try
             {
                 string json = File.ReadAllText(savePath);
@@ -171,6 +256,8 @@ public class GameStateManager : MonoBehaviour
             {
                 Debug.LogError($"Failed to load game: {e}");
             }
+
+            readLineSave.LoadReadLinesFile();
         }
         else
         {
@@ -178,4 +265,9 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
+
+    private void OnApplicationQuit()
+    {
+        readLineSave.SaveReadLinesFile();
+    }
 }

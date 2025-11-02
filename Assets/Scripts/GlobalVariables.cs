@@ -4,5 +4,6 @@ public static class GlobalVariables
     public static string saveFileExtension = ".bookmark";
 
 
-    public static string PlayerPrefs_ReadLines_Key = "ReadLines";
+    public static string readLines_global_saveFileName = "/CollectedPages";
+    public static string readLines_global_saveFileExtension = ".memory";
 }

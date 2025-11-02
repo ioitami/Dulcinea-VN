@@ -9,9 +9,10 @@ VAR HealthPoints = 50
 -> Chapter_0
 
 === Chapter_0 ===
+#id testscript_ch0_00000
 <size=50>Your</size> <b><color=green>name</color> <i>is</i> {PlayerName}.</b>
 
-#id testscript_ch0_00000
+#id testscript_ch0_00001
 #Command ShowCharacter dulcinea default middle 
 #Command PlayAnimationCharacter Dulcinea Wobble 
 Once upon a time... 
@@ -21,16 +22,18 @@ Once upon a time...
 
 
 === Chapter_1 ===
-#id testscript_ch0_00001
+#id testscript_ch0_00002
 #Command ShowCharacter dulcinea happy left
 Options here
-//{TypingSpeed(2.2)}
+
 * Choice1
+#id testscript_ch0_C1_00000
  "Picked choice 1. (SPLIT) HP -20."
  ~HealthPoints -= 20 // update variable value
 -> Choice1Continue
 
 * Choice2
+#id testscript_ch0_C2_00000
 Picked choice 2
 -> Choice2Continue
     

@@ -55,10 +55,6 @@ public class DialogueTagManager : MonoBehaviour
     {
         string id = tags[1];
 
-        if (!string.IsNullOrEmpty(id))
-        {
-            
-        }
-
+        GameSingleton.instance.gameStateManager.readLineSave.MarkAsRead(id);
     }
 }

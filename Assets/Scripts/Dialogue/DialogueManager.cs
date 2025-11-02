@@ -1,10 +1,11 @@
-
+ï»¿
 
 using Ink.Runtime;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
+using Unity.XR.OpenVR;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,7 +35,6 @@ public class DialogueManager : MonoBehaviour
     private string[] currentSentenceParts;
     private int currentPartIndex = 0;
     private Coroutine typingCoroutine;
-    private Coroutine iconBlinkCoroutine;
 
     [Header("SaveLoad")]
     private string loadedState;
@@ -46,7 +46,9 @@ public class DialogueManager : MonoBehaviour
     public string currentTypingPart = ""; // <- track the current segment being typed
     private bool appendMode = false;      // <- track if we're appending
 
-    public bool isSkipping = false;
+    public bool isFastForwarding = false;
+    public float FastForwardDelay = 0.01f;
+    private Coroutine fastForwardRoutine;
 
     [Header("Next Icon Blink Settings")]
     public float blinkSpeed = 0.5f; // seconds between fade
@@ -57,7 +59,6 @@ public class DialogueManager : MonoBehaviour
 
     [Header("Story Variables")]
     public string playerName;
-    public int healthPoints;
     public bool needSecondWindow = false;
 
     public bool IsAVL
@@ -79,16 +80,6 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public int HealthPoints
-    {
-        get => healthPoints;
-        private set
-        {
-            Debug.Log($"Updating HealthPoints value. Old value: {healthPoints}, new value: {value}");
-            healthPoints = value;
-        }
-    }
-
     public bool AllowStoryClicks
     {
         get => allowStoryClicks;
@@ -99,21 +90,8 @@ public class DialogueManager : MonoBehaviour
     {
         loadedState = state;
         StartStory(false);
-        
-        //ShowNextIcon();
     }
 
-
-
-    void Update()
-    {
-        // ADD TO NVLMANAGER
-        // Only update the icon position if sentence finished
-        //if (isTyping == false && nextIconAVL != null && dialogueTextAVL != null)
-        //{
-        //    UpdateNextIconPosition();
-        //}
-    }
 
     public void SetAVL(bool x)
     {
@@ -167,19 +145,11 @@ public class DialogueManager : MonoBehaviour
     private void InitializeVariables()
     {
         PlayerName = (string)story.variablesState["PlayerName"];
-        HealthPoints = (int)story.variablesState["HealthPoints"];
 
         story.ObserveVariable("PlayerName", (arg, value) =>
         {
             playerName = (string)value;
-        });
-
-        story.ObserveVariable("HealthPoints", (arg, value) =>
-        {
-            HealthPoints = (int)value;
-        });
-
-       
+        });      
     }
 
     // ====================================================================================================================
@@ -203,7 +173,14 @@ public class DialogueManager : MonoBehaviour
 
     public void ShowFullSentenceInstant(string sentence)
     {
-        StopAllCoroutines();
+        if(typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+
+        GameSingleton.instance.spriteAnimationManager.StopAllAnimations();
+
         //nextIconAVL.gameObject.SetActive(true);
         sentence = sentence.Trim().Replace(SEGMENT_DELIMITER, "");
         dialogueTextAVL.text = sentence;
@@ -214,8 +191,6 @@ public class DialogueManager : MonoBehaviour
 
         // Mark as fully typed
         isTyping = false;
-
-        //ShowNextIcon();
 
     }
 
@@ -260,16 +235,22 @@ public class DialogueManager : MonoBehaviour
             string rawLine = story.Continue().Trim();
             HandleTags(story.currentTags);
 
-            // Split with delimiter
-            currentSentenceParts = rawLine.Split(SEGMENT_DELIMITER);
-            currentPartIndex = 0;
+            if(isFastForwarding == false)
+            {
+                // Split with delimiter
+                currentSentenceParts = rawLine.Split(SEGMENT_DELIMITER);
+                currentPartIndex = 0;
 
-            // reset for new Ink line
-            dialogueTextAVL.text = "";
+                // reset for new Ink line
+                dialogueTextAVL.text = "";
 
-            // Show next part
-            ShowSentencePart(currentSentenceParts[currentPartIndex], append: false);
-
+                // Show next part
+                ShowSentencePart(currentSentenceParts[currentPartIndex], append: false);
+            }
+            else
+            {
+                ShowFullSentenceInstant(rawLine);
+            }
         }
         else if (story.currentChoices.Count > 0)
         {
@@ -282,6 +263,60 @@ public class DialogueManager : MonoBehaviour
             EndDialogue();
         }
 
+    }
+
+    public void StartFastForward()
+    {
+        if (fastForwardRoutine != null)
+        {
+            StopCoroutine(fastForwardRoutine);
+        }
+
+        isFastForwarding = true;
+        allowStoryClicks = false;
+
+        fastForwardRoutine = StartCoroutine(FastForwardRoutine());
+    }
+
+    public void StopFastForward()
+    {
+        isFastForwarding = false;
+        allowStoryClicks = true;
+
+        if (fastForwardRoutine != null)
+        {
+            StopCoroutine(fastForwardRoutine);
+            fastForwardRoutine = null;
+        }
+    }
+
+    private IEnumerator FastForwardRoutine()
+    {
+        Debug.Log("[DialogueManager] Starting fast-forward...");
+
+        while (isFastForwarding)
+        {
+            Debug.Log("fastforward trigger");
+
+            string currentID = GetLineID(story.currentTags);
+            Debug.Log(currentID);
+
+            // Fast forward if line has been read, otherwise stop
+            if (GameSingleton.instance.gameStateManager.readLineSave.HasBeenRead(currentID) == true)
+            {
+                DisplayNextLine();
+            }
+            else
+            {
+                Debug.Log($"[FastForward] Stopped at new line: {currentID}");
+                StopFastForward();
+                yield break;
+            }
+
+            yield return new WaitForSeconds(FastForwardDelay);
+        }
+
+        Debug.Log("[DialogueManager] Fast-forward finished (end of story).");
     }
 
     private void ShowSentencePart(string textPart, bool append)
@@ -301,7 +336,6 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator TypeText(string textPart, bool append)
     {
         isTyping = true;
-        //HideNextIcon();
 
         if (!append)
         {
@@ -347,7 +381,6 @@ public class DialogueManager : MonoBehaviour
         }
 
         isTyping = false;
-        //ShowNextIcon();
 
         if (story.currentChoices.Count > 0)
         {
@@ -355,10 +388,6 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public void SetSkipping(bool skipping)
-    {
-        isSkipping = skipping;
-    }
 
     public void HandleTags(List<string> tags)
     {
@@ -401,38 +430,32 @@ public class DialogueManager : MonoBehaviour
 
                     break;
 
-                //case "bg":
-                //    // Format: #bg BackgroundName
-                //    if (parts.Length >= 2)
-                //    {
-                //        string bgName = parts[1];
-                //        BackgroundManager.Instance.SetBackground(bgName);
-                //    }
-                //    break;
-
-                //case "music":
-                //    // Format: #music TrackName
-                //    if (parts.Length >= 2)
-                //    {
-                //        string track = parts[1];
-                //        AudioManager.Instance.PlayMusic(track);
-                //    }
-                //    break;
-
-                //case "sfx":
-                //    // Format: #sfx SoundEffectName
-                //    if (parts.Length >= 2)
-                //    {
-                //        string sfx = parts[1];
-                //        AudioManager.Instance.PlaySFX(sfx);
-                //    }
-                //    break;
-
                 default:
                     Debug.LogWarning($"Unknown tag: {tag}");
                     break;
             }
         }
+    }
+
+    public string GetLineID(List<string> tags)
+    {
+        foreach (string tag in tags)
+        {
+            // Each tag might look like "show Luna happy" or "bg forest"
+            string[] parts = tag.Split(' ');
+
+            if (parts.Length == 0) continue;
+
+            string command = parts[0].ToLower();
+
+            if(command == "id")
+            {
+                return parts[1];
+            }
+
+        }
+
+        return "";
     }
 
 
@@ -470,8 +493,6 @@ public class DialogueManager : MonoBehaviour
 
             isTyping = false;
 
-            // Show icon
-            //ShowNextIcon();
         }
         else if (currentSentenceParts != null && currentPartIndex < currentSentenceParts.Length - 1)
         {
@@ -520,6 +541,7 @@ public class DialogueManager : MonoBehaviour
         story.ChooseChoiceIndex(choice.index); // tells ink which choice was selected
         RefreshChoiceView(); // removes choices from the screen
         DisplayNextLine();
+        DisplayNextLine();
     }
     public void RefreshChoiceView()
     {
@@ -541,7 +563,7 @@ public class DialogueManager : MonoBehaviour
     {
         if (speed <= 0f)
         {
-            speed = 0.01f;
+            speed = 0.0001f;
         }
 
         typingSpeed = speed;
@@ -552,160 +574,6 @@ public class DialogueManager : MonoBehaviour
         return story.state.ToJson();
     }
 
-
-
-    // ================================
-    // Next Icon Control
-    // ================================
-    private void ShowNextIcon()
-    {
-        UpdateNextIconPosition();
-        nextIconAVL.gameObject.SetActive(true);
-
-        if (iconBlinkCoroutine != null) StopCoroutine(iconBlinkCoroutine);
-        iconBlinkCoroutine = StartCoroutine(BlinkNextIcon());
-    }
-
-    private void HideNextIcon()
-    {
-        if (iconBlinkCoroutine != null) StopCoroutine(iconBlinkCoroutine);
-        nextIconAVL.gameObject.SetActive(false);
-    }
-    private IEnumerator BlinkNextIcon()
-    {
-        Color baseColor = nextIconAVL.color;
-
-        while (true)
-        {
-            // Fade out
-            for (float t = 0; t < 1; t += Time.deltaTime / blinkSpeed)
-            {
-                nextIconAVL.color = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(1f, 0f, t));
-                yield return null;
-            }
-
-            // Fade in
-            for (float t = 0; t < 1; t += Time.deltaTime / blinkSpeed)
-            {
-                nextIconAVL.color = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0f, 1f, t));
-                yield return null;
-            }
-        }
-    }
-
-    // Position the next icon at the end of the current text.
-    public void UpdateNextIconPosition()
-    {
-        if (!GameSingleton.instance.sceneLoaderManager.uiController.avl.gameObject.activeSelf) return;
-
-        int lastIndex = dialogueTextAVL.textInfo.characterCount - 1;
-        if (lastIndex < 0) return;
-
-        var charInfo = dialogueTextAVL.textInfo.characterInfo[lastIndex];
-
-        // Use bottomRight for a clean attachment point
-        Vector3 worldPos = dialogueTextAVL.transform.TransformPoint(charInfo.bottomRight);
-
-        // Convert world -> local canvas space
-        Vector2 localPos;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            dialogueTextAVL.canvas.transform as RectTransform,
-            RectTransformUtility.WorldToScreenPoint(null, worldPos),
-            null,
-            out localPos
-        );
-
-        // Apply small padding to the right
-        nextIconAVL.GetComponent<RectTransform>().localPosition = new Vector3(10f + localPos.x, localPos.y, 0);
-    }
-
-
 }
 
 
-
-[System.Serializable]
-public class ReadLineTracker
-{
-    public HashSet<string> readLineIDs = new HashSet<string>();
-    private static readonly string readLineIDFileName = "LoggedPages.json";
-
-    private string SavePath => System.IO.Path.Combine(Application.persistentDataPath, readLineIDFileName);
-
-    // Mark a line as read
-    public void MarkAsRead(string id)
-    {
-        if (!string.IsNullOrEmpty(id))
-            readLineIDs.Add(id);
-    }
-
-    // Check if a line has been read
-    public bool HasBeenRead(string id)
-    {
-        return !string.IsNullOrEmpty(id) && readLineIDs.Contains(id);
-    }
-
-    // Save to independent JSON file
-    public void Save()
-    {
-        try
-        {
-            var wrapper = new Wrapper { ids = new List<string>(readLineIDs) };
-            string json = JsonUtility.ToJson(wrapper, true);
-            File.WriteAllText(SavePath, json);
-#if UNITY_EDITOR
-            Debug.Log($"[ReadLineTracker] Saved {readLineIDs.Count} read lines to {SavePath}");
-#endif
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"[ReadLineTracker] Failed to save LoggedPages: {e}");
-        }
-    }
-
-    // Load from JSON file
-    public void Load()
-    {
-        try
-        {
-            if (File.Exists(SavePath))
-            {
-                string json = File.ReadAllText(SavePath);
-                var wrapper = JsonUtility.FromJson<Wrapper>(json);
-                readLineIDs = new HashSet<string>(wrapper.ids);
-#if UNITY_EDITOR
-                Debug.Log($"[ReadLineTracker] Loaded {readLineIDs.Count} read lines from {SavePath}");
-#endif
-            }
-            else
-            {
-                readLineIDs = new HashSet<string>();
-#if UNITY_EDITOR
-                Debug.Log("[ReadLineTracker] No LoggedPages file found — starting fresh.");
-#endif
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"[ReadLineTracker] Failed to load LoggedPages: {e}");
-            readLineIDs = new HashSet<string>();
-        }
-    }
-
-    // Delete saved data (useful for testing or resets)
-    public void Clear()
-    {
-        readLineIDs.Clear();
-        if (File.Exists(SavePath))
-            File.Delete(SavePath);
-#if UNITY_EDITOR
-        Debug.Log("[ReadLineTracker] LoggedPages file cleared.");
-#endif
-    }
-
-    [System.Serializable]
-    private class Wrapper
-    {
-        public List<string> ids;
-    }
-}

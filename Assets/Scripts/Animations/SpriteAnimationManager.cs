@@ -227,7 +227,7 @@ public class SpriteAnimationManager : MonoBehaviour
             Transform spriteTransform = kvp.Key;
 
             // Try to find which animation this sprite is playing
-            // (optional — depends on your tracking setup)
+            // (optional Edepends on your tracking setup)
             // For now, assume we skip to the last animation played on it
             // You can extend this later with per-transform tracking.
             SpriteAnimation anim = FindLastPlayedAnimationFor(spriteTransform);
@@ -251,7 +251,7 @@ public class SpriteAnimationManager : MonoBehaviour
     // by storing last-played animation names in a dictionary.
     private SpriteAnimation FindLastPlayedAnimationFor(Transform spriteTransform)
     {
-        // PLACEHOLDER — return the first or default animation
+        // PLACEHOLDER Ereturn the first or default animation
         // extend this to remember last-played animation per sprite.
         if (animations.Count > 0)
             return animations[0];

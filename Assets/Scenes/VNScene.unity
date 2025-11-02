@@ -1991,9 +1991,10 @@ MonoBehaviour:
   typingSpeed: 0.04
   isTyping: 0
   currentTypingPart: 
+  isFastForwarding: 0
+  FastForwardDelay: 0.06
   blinkSpeed: 0.5
   playerName: 
-  healthPoints: 0
   needSecondWindow: 0
 --- !u!114 &586249824
 MonoBehaviour:
@@ -8678,25 +8679,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zPressDown:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1666357725}
-        m_TargetAssemblyTypeName: SceneLoaderManager, Assembly-CSharp
-        m_MethodName: LoadMainMenu
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   xPressDown:
     m_PersistentCalls:
+      m_Calls: []
+  cPressDown:
+    m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1666357725}
-        m_TargetAssemblyTypeName: SceneLoaderManager, Assembly-CSharp
-        m_MethodName: LoadWindow1
+      - m_Target: {fileID: 586249823}
+        m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
+        m_MethodName: StartFastForward
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8706,12 +8698,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  cPressDown:
-    m_PersistentCalls:
-      m_Calls: []
   leftClickPressDown:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 586249823}
+        m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
+        m_MethodName: StopFastForward
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2051292519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8770,7 +8771,19 @@ MonoBehaviour:
     m_ActionId: f3ff9061-c33a-4c3d-a7e3-99b723055db7
     m_ActionName: 'Controls/X[/Keyboard/x]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2051292518}
+        m_TargetAssemblyTypeName: InputHandler, Assembly-CSharp
+        m_MethodName: OnC
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 8a0515ef-04be-4847-b6f7-a29f6e186c50
     m_ActionName: 'Controls/C[/Keyboard/c]'
   - m_PersistentCalls:

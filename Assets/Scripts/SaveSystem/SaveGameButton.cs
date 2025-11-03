@@ -12,11 +12,6 @@ public class SaveGameButton : MonoBehaviour
     //public TextMeshProUGUI chapterName_Text;
     //public TextMeshProUGUI saveTimeStamp_Text;
 
-    private void Start()
-    {
-        saveSpritePreview.sprite = GameSingleton.instance.gameStateManager.LoadScreenshotSprite(saveSlotNumber);
-    }
-
     public void SaveGame(int saveFileNumber)
     {
         GameSingleton.instance.gameStateManager?.SaveGame(saveFileNumber);
@@ -29,6 +24,7 @@ public class SaveGameButton : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         saveSpritePreview.sprite = GameSingleton.instance.gameStateManager.GetLoadedScreenshotSprite();
+        GameSingleton.instance.sceneLoaderManager.uiController.saveLoadMenu.UpdateSaveLoadSlots();
     }
 
 }

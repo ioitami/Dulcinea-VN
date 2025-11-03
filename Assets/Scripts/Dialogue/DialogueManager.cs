@@ -255,12 +255,14 @@ public class DialogueManager : MonoBehaviour
         else if (story.currentChoices.Count > 0)
         {
             DisplayChoices();
+            StopFastForward();
         }
         else
         {
             // Put function here like continuing to next scene or ink script
             // ===============================================================================
             EndDialogue();
+            StopFastForward();
         }
 
     }
@@ -273,7 +275,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         isFastForwarding = true;
-        allowStoryClicks = false;
+        //allowStoryClicks = false;
 
         fastForwardRoutine = StartCoroutine(FastForwardRoutine());
     }
@@ -281,7 +283,7 @@ public class DialogueManager : MonoBehaviour
     public void StopFastForward()
     {
         isFastForwarding = false;
-        allowStoryClicks = true;
+        //allowStoryClicks = true;
 
         if (fastForwardRoutine != null)
         {
@@ -296,8 +298,6 @@ public class DialogueManager : MonoBehaviour
 
         while (isFastForwarding)
         {
-            Debug.Log("fastforward trigger");
-
             string currentID = GetLineID(story.currentTags);
             Debug.Log(currentID);
 
@@ -305,10 +305,11 @@ public class DialogueManager : MonoBehaviour
             if (GameSingleton.instance.gameStateManager.readLineSave.HasBeenRead(currentID) == true)
             {
                 DisplayNextLine();
+                //OnContinueClicked();
             }
             else
             {
-                Debug.Log($"[FastForward] Stopped at new line: {currentID}");
+                Debug.Log($"[FastForward] Stopped at line: {currentID}");
                 StopFastForward();
                 yield break;
             }
@@ -461,6 +462,11 @@ public class DialogueManager : MonoBehaviour
 
     public void OnContinueClicked()
     {
+        if(isFastForwarding == true)
+        {
+            StopFastForward();
+        }
+
         if (allowStoryClicks == false) return;
 
         // Checks if any sprite animations are playing, stop it if so

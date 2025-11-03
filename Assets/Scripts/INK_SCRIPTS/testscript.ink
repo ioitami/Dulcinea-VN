@@ -9,7 +9,7 @@ VAR HealthPoints = 50
 -> Chapter_0
 
 === Chapter_0 ===
-#id testscript_ch0_00000
+#id testscript_ch0_0000
 <size=50>Your</size> <b><color=green>name</color> <i>is</i> {PlayerName}.</b>
 
 #id testscript_ch0_00001
@@ -38,6 +38,7 @@ Picked choice 2
 -> Choice2Continue
     
 === Choice1Continue ===
+#id testscript_choice1_00000
 test1
 -> Chapter_2
 
@@ -46,10 +47,12 @@ test2 #thought
 -> Chapter_2
 
 === Chapter_2 ===
+#id testscript_ch2_00000
 Chap2 here. Displaying HP: {HealthPoints}.
 
 
 { Choice1Continue:
+#id testscript_ch2_choice1_00000
     Picked choice 1
     -> END
 }

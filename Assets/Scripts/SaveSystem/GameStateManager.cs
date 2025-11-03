@@ -70,7 +70,7 @@ public class GameStateManager : MonoBehaviour
             if (string.IsNullOrEmpty(id) == false)
             {
                 readLineIDs.Add(id);
-
+                Debug.Log(id);
 
                 linesSinceLastSave++;
                 if (linesSinceLastSave >= saveThreshold)
@@ -235,6 +235,7 @@ public class GameStateManager : MonoBehaviour
             Debug.LogError($"Failed to save game: {e}");
         }
 
+        readLineSave.LoadReadLinesFile();
         readLineSave.SaveReadLinesFile();
 
         // Save should include sprites, positions, animations, background sprite, variables, flags.
@@ -290,6 +291,7 @@ public class GameStateManager : MonoBehaviour
     }
 
     private List<Camera> saveCamList;
+    public Camera targetScreenshotCamera;
     public IEnumerator CaptureScreenshotAsBase64(System.Action<string> onComplete)
     {
         yield return new WaitForEndOfFrame();
@@ -297,10 +299,37 @@ public class GameStateManager : MonoBehaviour
         int width = Screen.width;
         int height = Screen.height;
 
-        Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture();
+        // Create a new RenderTexture with the desired dimensions
+        RenderTexture renderTexture = new RenderTexture(width, height, 16);
+        // Set the target camera to render into this new texture
+        targetScreenshotCamera.targetTexture = renderTexture;
 
-        byte[] bytes = tex.EncodeToPNG();
-        UnityEngine.Object.Destroy(tex);
+        // This is only needed if the camera is otherwise disabled or not rendering automatically
+        // If the camera is active and rendering, skip this manual Render() call.
+        targetScreenshotCamera.Render();
+
+        // Set the active RenderTexture to the one we just rendered into
+        RenderTexture.active = renderTexture;
+
+        // Create a new Texture2D to store the pixel data
+        Texture2D screenShot = new Texture2D(width, height, TextureFormat.RGBA32, false);
+
+        // Read the pixels from the active RenderTexture into the Texture2D
+        screenShot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        // Apply the changes to the Texture2D
+        screenShot.Apply();
+
+        // Clean up: restore the camera's original target texture and the active render texture
+        targetScreenshotCamera.targetTexture = null;
+        RenderTexture.active = null;
+
+        // Release the temporary RenderTexture from memory
+        renderTexture.Release();
+        Destroy(renderTexture);
+
+
+        byte[] bytes = screenShot.EncodeToJPG(50);
+        UnityEngine.Object.Destroy(screenShot);
 
         string base64 = System.Convert.ToBase64String(bytes);
 
@@ -337,6 +366,7 @@ public class GameStateManager : MonoBehaviour
         }
         else
         {
+            // TODO: IF NO SAVE FILE FOUND, RETURN A DEFAULT IMAGE
             return null;
         }
     }

@@ -1506,9 +1506,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 610dc8c74c87eb74fa49bd880df2f772, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BGMList: []
-  CharacterVoiceList: []
+  masterMixer: {fileID: 24100000, guid: d2ecce8617a573848b696a0e5802116f, type: 2}
+  bgmGroup: {fileID: -7636403103594160613, guid: d2ecce8617a573848b696a0e5802116f, type: 2}
+  sfxGroup: {fileID: -171254569395717433, guid: d2ecce8617a573848b696a0e5802116f, type: 2}
+  characterGroup: {fileID: 4971679616828864207, guid: d2ecce8617a573848b696a0e5802116f, type: 2}
+  BGMList:
+  - {fileID: 11400000, guid: d95282cb788f57e46820160b502ca0d8, type: 2}
   SFXList: []
+  CharacterVoiceList: []
   MasterVolume: 1
   BGMVolume: 1
   CharacterVolume: 1

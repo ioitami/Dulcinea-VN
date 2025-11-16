@@ -2007,7 +2007,7 @@ MonoBehaviour:
   isTyping: 0
   currentTypingPart: 
   isFastForwarding: 0
-  FastForwardDelay: 0.06
+  FastForwardDelay: 0.1
   blinkSpeed: 0.5
   playerName: 
   needSecondWindow: 0
@@ -8971,34 +8971,10 @@ MonoBehaviour:
       m_Calls: []
   cPressDown:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 586249823}
-        m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: StartFastForward
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   leftClickPressDown:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 586249823}
-        m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: StopFastForward
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2051292519
 MonoBehaviour:
   m_ObjectHideFlags: 0

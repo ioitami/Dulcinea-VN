@@ -9,6 +9,7 @@ public class GameSingleton : MonoBehaviour
     public static GameSingleton instance                    { get; private set; }
 
     public CameraManager cameraManager                      { get; private set; }
+    public AudioManager audioManager                        { get; private set; }
     public PlayerInput playerInput                          { get; private set; }
     public InputHandler inputHandler                        { get; private set; }
     public EventSystem eventSystem                          { get; private set; }
@@ -37,6 +38,7 @@ public class GameSingleton : MonoBehaviour
 
         // Load all the connected scripts
         cameraManager           = GetComponentInChildren<CameraManager>();
+        audioManager            = GetComponentInChildren<AudioManager>();
         playerInput             = GetComponentInChildren<PlayerInput>();
         inputHandler            = GetComponentInChildren<InputHandler>();
         eventSystem             = GetComponentInChildren<EventSystem>();

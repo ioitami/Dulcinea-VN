@@ -78,7 +78,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // ===========================
-    // 🎵 BGM with Crossfade
+    // BGM with Crossfade
     // ===========================
     public void PlayBGM(string name)
     {
@@ -143,7 +143,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // ===========================
-    // 🔊 SFX
+    // SFX
     // ===========================
     public void PlaySFX(string name)
     {
@@ -162,9 +162,9 @@ public class AudioManager : MonoBehaviour
     }
 
     // ===========================
-    // 🗣️ Character Voice
+    // Character Voice
     // ===========================
-    public void PlayVoice(string name)
+    public void PlayCharacter(string name)
     {
         var data = FindClipData(name, CharacterVoiceList);
         if (data == null) return;
@@ -181,7 +181,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // ===========================
-    // 🧠 Utility
+    // Utility
     // ===========================
     private AudioClipData FindClipData(string name, List<AudioClipData> list)
     {

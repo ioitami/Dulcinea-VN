@@ -1,3 +1,5 @@
+using Ink.Runtime;
+using System.Globalization;
 using UnityEngine;
 
 public class DialogueTagManager : MonoBehaviour
@@ -28,6 +30,66 @@ public class DialogueTagManager : MonoBehaviour
 
                     GameSingleton.instance.characterManager.PlayAnimationCharacter(characterName,animationName);
 
+                }
+                break;
+
+            case "playsound":
+                // Format: #command playsound bgm mainmenuBGM
+                if (tags.Length == 4)
+                {
+                    string playcommand = tags[2].ToLower();
+
+                    string AudioName = tags[3];
+
+                    if (playcommand == "bgm")
+                    {
+                        GameSingleton.instance.audioManager.PlayBGM(AudioName);
+                    }
+                    else if (playcommand == "sfx")
+                    {
+                        GameSingleton.instance.audioManager.PlaySFX(AudioName);
+                    }
+                    else if (playcommand == "character")
+                    {
+                        GameSingleton.instance.audioManager.PlayCharacter(AudioName);
+                    }
+                }
+                break;
+
+            case "adjustvolume":
+                // Format: #command adjustvolume bgm 0.5 (0-1 volume)
+                if (tags.Length == 3)
+                {
+                    string playcommand = tags[2].ToLower();
+
+                    float volume = 1f;
+
+                    try
+                    {
+                        volume = float.Parse(tags[3]);
+                    }
+                    catch (System.FormatException e)
+                    {
+                        Debug.LogError("Invalid string format: " + e.Message);
+                    }
+                    catch (System.OverflowException e)
+                    {
+                        Debug.LogError("Value too large or too small for a float: " + e.Message);
+                    }
+
+
+                    if (playcommand == "bgm")
+                    {
+                        GameSingleton.instance.audioManager.BGMVolume = volume;
+                    }
+                    else if (playcommand == "sfx")
+                    {
+                        GameSingleton.instance.audioManager.SFXVolume = volume;
+                    }
+                    else if (playcommand == "character")
+                    {
+                        GameSingleton.instance.audioManager.CharacterVolume = volume;
+                    }
                 }
                 break;
 

@@ -299,12 +299,13 @@ public class DialogueManager : MonoBehaviour
         while (isFastForwarding)
         {
             string currentID = GetLineID(story.currentTags);
-            Debug.Log(currentID);
+            //Debug.Log(currentID);
 
             // Fast forward if line has been read, otherwise stop
             if (GameSingleton.instance.gameStateManager.readLineSave.HasBeenRead(currentID) == true)
             {
                 DisplayNextLine();
+                Debug.Log(currentID);
                 //OnContinueClicked();
             }
             else
@@ -419,21 +420,41 @@ public class DialogueManager : MonoBehaviour
 
 
                 case "id":
-                    // Format: #id someIDValue
-                    if (parts.Length == 2)
-                    {
-                        GameSingleton.instance.dialogueTagManager.HandleIDTags(parts);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Invalid 'id' tag format: {tag}");
-                    }
-
                     break;
 
                 default:
                     Debug.LogWarning($"Unknown tag: {tag}");
                     break;
+            }
+        }
+    }
+
+    public void HandleIDTag(List<string> tags)
+    {
+        foreach (string tag in tags)
+        {
+            // Each tag might look like "show Luna happy" or "bg forest"
+            string[] parts = tag.Split(' ');
+
+            if (parts.Length == 0) continue;
+
+            string command = parts[0].ToLower();
+
+            if(command == "id")
+            {
+                // Format: #id someIDValue
+                if (parts.Length == 2)
+                {
+                    GameSingleton.instance.dialogueTagManager.HandleIDTags(parts);
+                }
+                else
+                {
+                    Debug.LogWarning($"Invalid 'id' tag format: {tag}");
+                }
+            }
+            else
+            {
+                continue;
             }
         }
     }
@@ -468,6 +489,8 @@ public class DialogueManager : MonoBehaviour
         }
 
         if (allowStoryClicks == false) return;
+
+        HandleIDTag(story.currentTags);
 
         // Checks if any sprite animations are playing, stop it if so
         if (GameSingleton.instance.spriteAnimationManager.IsAnyAnimationPlaying() == true)

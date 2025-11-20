@@ -304,9 +304,9 @@ public class DialogueManager : MonoBehaviour
             // Fast forward if line has been read, otherwise stop
             if (GameSingleton.instance.gameStateManager.readLineSave.HasBeenRead(currentID) == true)
             {
-                DisplayNextLine();
+                //DisplayNextLine();
                 Debug.Log(currentID);
-                //OnContinueClicked();
+                OnContinueClickedFastForward();
             }
             else
             {
@@ -483,9 +483,10 @@ public class DialogueManager : MonoBehaviour
 
     public void OnContinueClicked()
     {
-        if(isFastForwarding == true)
+        if (isFastForwarding == true)
         {
             StopFastForward();
+
         }
 
         if (allowStoryClicks == false) return;
@@ -518,6 +519,58 @@ public class DialogueManager : MonoBehaviour
             if (story.currentChoices.Count > 0)
             {
                 DisplayChoices();
+            }
+
+            isTyping = false;
+
+        }
+        else if (currentSentenceParts != null && currentPartIndex < currentSentenceParts.Length - 1)
+        {
+            // Append next part instead of clearing
+            currentPartIndex++;
+            ShowSentencePart(currentSentenceParts[currentPartIndex], append: true);
+        }
+        else
+        {
+            // Go to next Ink line
+            DisplayNextLine();
+        }
+    }
+
+    public void OnContinueClickedFastForward()
+    {
+
+        if (allowStoryClicks == false) return;
+
+        HandleIDTag(story.currentTags);
+
+        // Checks if any sprite animations are playing, stop it if so
+        if (GameSingleton.instance.spriteAnimationManager.IsAnyAnimationPlaying() == true)
+        {
+            GameSingleton.instance.spriteAnimationManager.SkipAllToEnd();
+        }
+
+        if (story.currentChoices.Count > 0)
+        {
+            OnContinueClicked();
+            StopFastForward();
+        }
+
+        if (isTyping == true)
+        {
+            // if already typing, skip typing and show the full segment immediately
+            if (typingCoroutine != null)
+            {
+                StopCoroutine(typingCoroutine);
+            }
+
+            if (appendMode == true)
+            {
+                dialogueTextAVL.text += currentTypingPart; // append full part
+            }
+            else
+            {
+                dialogueTextAVL.text = currentTypingPart; // replace with full part
             }
 
             isTyping = false;

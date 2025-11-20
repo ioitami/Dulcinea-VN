@@ -70,7 +70,6 @@ public class GameStateManager : MonoBehaviour
             if (string.IsNullOrEmpty(id) == false)
             {
                 readLineIDs.Add(id);
-                Debug.Log(id);
 
                 linesSinceLastSave++;
                 if (linesSinceLastSave >= saveThreshold)

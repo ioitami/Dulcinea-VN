@@ -84,9 +84,23 @@ public class SceneLoaderManager : MonoBehaviour
 
     }
 
-    public void LoadOptionsMenu()
+    public void LoadPreferencesOptionsMenu()
     {
+        GameSingleton.instance.cameraManager.EnableCamera(isMain: false, (int)OverlayCameraID.PreferencesOptionsMenu);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.PreferencesOptionsMenu);
 
+        // UI Transition Animation here
+
+        // =====
+    }
+
+    public void ClosePreferencesOptionsMenu()
+    {
+        // UI Transition Animation here
+
+        // =====
+        GameSingleton.instance.cameraManager.DisableCamera(isMain: false, (int)OverlayCameraID.PreferencesOptionsMenu);
+        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)OverlayCameraID.PreferencesOptionsMenu);
     }
 
     public void CloseSaveLoadOptionsMenu()

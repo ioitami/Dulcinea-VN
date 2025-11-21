@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BGM1
   m_EditorClassIdentifier: 
   audioName: BGM1
-  clip: {fileID: 0}
+  clip: {fileID: 8300000, guid: c585b61c7f802984c968ab03db88ecc2, type: 3}
   defaultVolume: 1
   pitch: 1
   loop: 0

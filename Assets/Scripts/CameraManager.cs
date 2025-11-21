@@ -11,10 +11,11 @@ public enum MainCameraID
 
 public enum OverlayCameraID
 {
-    SaveLoadOptionsMenu  = 0,
-    AVL                  = 1,
-    NVL                  = 2,
-    CharacterScreen      = 3,
+    SaveLoadOptionsMenu     = 0,
+    PreferencesOptionsMenu  = 1,
+    AVL                     = 2,
+    NVL                     = 3,
+    CharacterScreen         = 4,
 }
 
 public class CameraManager : MonoBehaviour

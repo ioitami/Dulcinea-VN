@@ -269,6 +269,12 @@ public class DialogueManager : MonoBehaviour
 
     public void StartFastForward()
     {
+        if (GameSingleton.instance.cameraManager.overlayCameraList[(int)OverlayCameraID.AVL].gameObject.activeSelf == false)
+        {
+            Debug.Log("[DialogueManager] AVL not active. Cannot fast forward.");
+            return;
+        }
+
         if (fastForwardRoutine != null)
         {
             StopCoroutine(fastForwardRoutine);
@@ -289,6 +295,8 @@ public class DialogueManager : MonoBehaviour
         {
             StopCoroutine(fastForwardRoutine);
             fastForwardRoutine = null;
+
+            Debug.Log("[DialogueManager] Fast-forward finished (end of story).");
         }
     }
 
@@ -304,8 +312,6 @@ public class DialogueManager : MonoBehaviour
             // Fast forward if line has been read, otherwise stop
             if (GameSingleton.instance.gameStateManager.readLineSave.HasBeenRead(currentID) == true)
             {
-                //DisplayNextLine();
-                Debug.Log(currentID);
                 OnContinueClickedFastForward();
             }
             else
@@ -318,7 +324,6 @@ public class DialogueManager : MonoBehaviour
             yield return new WaitForSeconds(FastForwardDelay);
         }
 
-        Debug.Log("[DialogueManager] Fast-forward finished (end of story).");
     }
 
     private void ShowSentencePart(string textPart, bool append)

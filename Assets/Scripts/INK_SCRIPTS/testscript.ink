@@ -23,6 +23,7 @@ Once upon a time...
 
 === Chapter_1 ===
 #id testscript_ch0_00002
+#Command playsound bgm BGM1
 #Command ShowCharacter dulcinea happy left
 Options here
 

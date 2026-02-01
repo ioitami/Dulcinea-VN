@@ -2531,7 +2531,6 @@ MonoBehaviour:
   nextIconAVL: {fileID: 0}
   choiceButtonContainer: {fileID: 1237805811}
   choiceButtonPrefab: {fileID: 8413301162198007759, guid: 9ff0dd23fc875b64491542795c185849, type: 3}
-  inkJSONAsset: {fileID: 4900000, guid: 25dfb231f86934a4f8ded9dc2f728632, type: 3}
   typingSpeed: 0.04
   isTyping: 0
   currentTypingPart: 
@@ -3383,6 +3382,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 753343396}
+  - component: {fileID: 753343397}
   m_Layer: 5
   m_Name: ===MAIN WINDOWS===
   m_TagString: Untagged
@@ -3405,6 +3405,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1794083509}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &753343397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753343395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 
+  entries:
+  - entryType: 0
+    text: 
+    command: 0
+    overwriteTextSpeed: 0
+    scriptEvent:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1001 &754387512
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -16,7 +16,6 @@ public class GameSingleton : MonoBehaviour
     public CharacterManager characterManager                { get; private set; }
     public SpriteAnimationManager spriteAnimationManager    { get; private set; }
     public DialogueManager dialogueManager                  { get; private set; }
-    public DialogueTagManager dialogueTagManager            { get; private set; }
 
     public GameStateManager gameStateManager                { get; private set; }
     public SceneLoaderManager sceneLoaderManager            { get; private set; }
@@ -45,7 +44,6 @@ public class GameSingleton : MonoBehaviour
         characterManager        = GetComponentInChildren<CharacterManager>();
         spriteAnimationManager  = GetComponentInChildren<SpriteAnimationManager>();
         dialogueManager         = GetComponentInChildren<DialogueManager>();
-        dialogueTagManager      = GetComponentInChildren<DialogueTagManager>();
         gameStateManager        = GetComponentInChildren<GameStateManager>();
         sceneLoaderManager      = GetComponentInChildren<SceneLoaderManager>();
 

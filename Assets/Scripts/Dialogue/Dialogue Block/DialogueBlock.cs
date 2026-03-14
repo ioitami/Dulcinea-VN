@@ -1,12 +1,16 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 
 public class DialogueBlock : MonoBehaviour
 {
-    public string id;
-    public DialogueEntry[] entries;
+    public int ID;
+
+    [SerializeReference]
+    public DialogueBlockNode[] nodes;
 }
+
 
 [System.Serializable]
 public class DialogueEntry
@@ -15,10 +19,12 @@ public class DialogueEntry
 
     [TextArea(2, 5)]
     public string text;
+    
+
+    public bool overwriteTextSpeed;
+    public float textSpeed;
 
     public DialogueCommand command;
-
-    public float overwriteTextSpeed;
 
     public UnityEvent scriptEvent;
 }
@@ -33,7 +39,7 @@ public enum DialogueCommand
 {
     Pause,
     Choice,
-    OverwriteTextSpeed,
-    Script
+    Script,
+    PlayerCanClick
     // Add more commands as needed
 }

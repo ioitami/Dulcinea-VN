@@ -2548,9 +2548,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 586249821}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 082bdd43ce9ac0542b4fc352efafdcea, type: 3}
+  m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ID: 0
+  nodes:
+  - rid: 776523825933189200
+  - rid: 776523825933189203
+  - rid: 776523825933189204
+  references:
+    version: 2
+    RefIds:
+    - rid: 776523825933189200
+      type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
+      data:
+        text: 
+        overwriteTextSpeed: 0
+        textSpeed: 0.04
+    - rid: 776523825933189203
+      type: {class: DialogueScriptNode, ns: , asm: Assembly-CSharp}
+      data:
+        scriptEvent:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 0}
+              m_TargetAssemblyTypeName: 
+              m_MethodName: 
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: 
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 776523825933189204
+      type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
+      data:
+        text: 
+        overwriteTextSpeed: 0
+        textSpeed: 0.04
 --- !u!1 &595325731
 GameObject:
   m_ObjectHideFlags: 0
@@ -3417,15 +3455,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 
-  entries:
-  - entryType: 0
-    text: 
-    command: 0
-    overwriteTextSpeed: 0
-    scriptEvent:
-      m_PersistentCalls:
-        m_Calls: []
+  ID: 0
+  nodes: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &754387512
 PrefabInstance:
   m_ObjectHideFlags: 0

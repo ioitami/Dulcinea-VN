@@ -7,6 +7,7 @@ public class DialogueBlockEditor : Editor
 {
     SerializedProperty nodes;
     SerializedProperty id;
+    SerializedProperty textBox;
 
     bool[] foldouts;
 
@@ -14,15 +15,29 @@ public class DialogueBlockEditor : Editor
     {
         nodes = serializedObject.FindProperty("nodes");
         id = serializedObject.FindProperty("ID");
+        textBox = serializedObject.FindProperty("textBox");
 
         EnsureFoldoutArray();
     }
 
     void EnsureFoldoutArray()
     {
-        if (foldouts == null || foldouts.Length != nodes.arraySize)
+        if (foldouts == null)
         {
             foldouts = new bool[nodes.arraySize];
+            return;
+        }
+
+        if (foldouts.Length != nodes.arraySize)
+        {
+            bool[] newFoldouts = new bool[nodes.arraySize];
+
+            for (int i = 0; i < Mathf.Min(foldouts.Length, newFoldouts.Length); i++)
+            {
+                newFoldouts[i] = foldouts[i];
+            }
+
+            foldouts = newFoldouts;
         }
     }
 
@@ -31,6 +46,7 @@ public class DialogueBlockEditor : Editor
         serializedObject.Update();
 
         EditorGUILayout.PropertyField(id);
+        EditorGUILayout.PropertyField(textBox);
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Dialogue Nodes", EditorStyles.boldLabel);
@@ -59,8 +75,8 @@ public class DialogueBlockEditor : Editor
 
     void DrawNode(SerializedProperty node, int index)
     {
-        var parts = node.managedReferenceFullTypename.Split('.');
-        string typeName = parts[parts.Length - 1];
+        string fullType = node.managedReferenceFullTypename;
+        string typeName = fullType.Split(' ')[1];
 
 
         EditorGUILayout.BeginVertical("box");
@@ -131,6 +147,8 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Pause Node"), false, () => AddNode(typeof(DialoguePauseNode)));
         menu.AddItem(new GUIContent("Choice Node"), false, () => AddNode(typeof(DialogueChoiceNode)));
         menu.AddItem(new GUIContent("Script Node"), false, () => AddNode(typeof(DialogueScriptNode)));
+        menu.AddItem(new GUIContent("Change Font Node"), false, () => AddNode(typeof(DialogueChangeFontNode)));
+        menu.AddItem(new GUIContent("Req Player Click Continue Node"), false, () => AddNode(typeof(DialogueRequirePlayerClickContinueNode)));
 
         menu.ShowAsContext();
     }
@@ -147,6 +165,9 @@ public class DialogueBlockEditor : Editor
         newNode.managedReferenceValue = Activator.CreateInstance(type);
 
         EnsureFoldoutArray();
+
+        // Expand the newly created node
+        foldouts[index] = true;
 
         serializedObject.ApplyModifiedProperties();
     }

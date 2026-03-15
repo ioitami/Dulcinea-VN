@@ -2538,7 +2538,7 @@ MonoBehaviour:
   FastForwardDelay: 0.1
   blinkSpeed: 0.5
   playerName: 
-  needSecondWindow: 0
+  needSecondWindow: 1
 --- !u!114 &586249824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2551,44 +2551,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 0
+  ID: 
+  textBox: {fileID: 1388025002}
   nodes:
-  - rid: 776523825933189200
-  - rid: 776523825933189203
-  - rid: 776523825933189204
+  - rid: 776523844553015375
+  - rid: 776523844553015382
+  - rid: 776523844553015394
   references:
     version: 2
     RefIds:
-    - rid: 776523825933189200
+    - rid: 776523844553015375
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
         text: 
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
-    - rid: 776523825933189203
-      type: {class: DialogueScriptNode, ns: , asm: Assembly-CSharp}
+    - rid: 776523844553015382
+      type: {class: DialoguePauseNode, ns: , asm: Assembly-CSharp}
       data:
-        scriptEvent:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 0}
-              m_TargetAssemblyTypeName: 
-              m_MethodName: 
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: 
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 776523825933189204
-      type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
+        pauseDuration: 0.5
+    - rid: 776523844553015394
+      type: {class: DialogueRequirePlayerClickContinueNode, ns: , asm: Assembly-CSharp}
       data:
-        text: 
-        overwriteTextSpeed: 0
-        textSpeed: 0.04
+        enabled: 1
 --- !u!1 &595325731
 GameObject:
   m_ObjectHideFlags: 0
@@ -3455,7 +3441,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 0
+  ID: 
+  textBox: {fileID: 0}
   nodes: []
   references:
     version: 2
@@ -7973,10 +7960,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text New TextNew TextNew TextNew TextNew TextNew TextNew TextNew TextNew
+  m_text: New Text New TextNew <size=150%>TextNew</size> TextNew TextNew TextNew
+    TextNew TextNew Tew TextNew TextNew TextNew TextNew TextNew TextNew TextNew TextNew
     TextNew TextNew TextNew TextNew TextNew TextNew TextNew TextNew TextNew TextNew
-    TextNew TextNew TextNew TextNew TextNew TextNew TextNew TextNew TextNew TextNew
-    TextNew TextNew Text
+    TextNew TextNew TextNew TextNew Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

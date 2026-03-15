@@ -1,45 +1,66 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-
+using UnityEngine.TextCore.Text;
 
 public class DialogueBlock : MonoBehaviour
 {
-    public int ID;
+    public string ID;
+    public TextMeshProUGUI textBox;
 
     [SerializeReference]
     public DialogueBlockNode[] nodes;
 }
 
 
-[System.Serializable]
-public class DialogueEntry
+[Serializable]
+public abstract class DialogueBlockNode
 {
-    public EntryType entryType;
+}
 
+
+[Serializable]
+public class DialogueTextNode : DialogueBlockNode
+{
     [TextArea(2, 5)]
     public string text;
-    
 
+    public bool requirePlayerClickContinue;
     public bool overwriteTextSpeed;
-    public float textSpeed;
+    public float textSpeed = 0.04f;
+}
 
-    public DialogueCommand command;
 
+public class DialoguePauseNode : DialogueBlockNode
+{
+    public float pauseDuration = 0.5f;
+}
+
+
+[Serializable]
+public class DialogueChoiceNode : DialogueBlockNode
+{
+    public string[] choices;
+}
+
+
+[Serializable]
+public class DialogueScriptNode : DialogueBlockNode
+{
     public UnityEvent scriptEvent;
 }
 
-public enum EntryType
+
+[Serializable]
+public class DialogueChangeFontNode : DialogueBlockNode
 {
-    Text,
-    Command
+    public TMP_FontAsset fontAsset;
 }
 
-public enum DialogueCommand
+
+[Serializable]
+public class DialogueRequirePlayerClickContinueNode : DialogueBlockNode
 {
-    Pause,
-    Choice,
-    Script,
-    PlayerCanClick
-    // Add more commands as needed
+    public bool enabled = true;
 }

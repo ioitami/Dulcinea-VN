@@ -17,6 +17,12 @@ public class DialogueBlockEditor : Editor
         id = serializedObject.FindProperty("ID");
         textBox = serializedObject.FindProperty("textBox");
 
+        SerializedProperty nodesProp = serializedObject.FindProperty("nodes"); // your nodes array
+        foldouts = new bool[nodesProp.arraySize];
+
+        for (int i = 0; i < foldouts.Length; i++)
+            foldouts[i] = true; // open by default
+
         EnsureFoldoutArray();
     }
 
@@ -76,7 +82,9 @@ public class DialogueBlockEditor : Editor
     void DrawNode(SerializedProperty node, int index)
     {
         string fullType = node.managedReferenceFullTypename;
-        string typeName = fullType.Split(' ')[1];
+        string typeName = fullType.Split(' ')[1]
+                                  .Replace("Dialogue", "")
+                                  .Replace("Node", "");
 
 
         EditorGUILayout.BeginVertical("box");
@@ -148,6 +156,9 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Choice Node"), false, () => AddNode(typeof(DialogueChoiceNode)));
         menu.AddItem(new GUIContent("Script Node"), false, () => AddNode(typeof(DialogueScriptNode)));
         menu.AddItem(new GUIContent("Change Font Node"), false, () => AddNode(typeof(DialogueChangeFontNode)));
+        menu.AddItem(new GUIContent("Change Font Node"), false, () => AddNode(typeof(DialogueChangeFontNode)));
+        menu.AddItem(new GUIContent("Show Character Node"), false, () => AddNode(typeof(DialogueShowCharacterNode)));
+        menu.AddItem(new GUIContent("Hide Character Node"), false, () => AddNode(typeof(DialogueHideCharacterNode)));
         menu.AddItem(new GUIContent("Req Player Click Continue Node"), false, () => AddNode(typeof(DialogueRequirePlayerClickContinueNode)));
 
         menu.ShowAsContext();
@@ -168,6 +179,18 @@ public class DialogueBlockEditor : Editor
 
         // Expand the newly created node
         foldouts[index] = true;
+
+        SerializedProperty nodesProp = serializedObject.FindProperty("nodes");
+        nodesProp.arraySize++;
+        serializedObject.ApplyModifiedProperties();
+
+        // Resize foldouts array
+        bool[] newFoldouts = new bool[nodesProp.arraySize];
+        if (foldouts != null)
+            foldouts.CopyTo(newFoldouts, 0);
+
+        newFoldouts[newFoldouts.Length - 1] = true; // new node open by default
+        foldouts = newFoldouts;
 
         serializedObject.ApplyModifiedProperties();
     }

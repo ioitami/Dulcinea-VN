@@ -2538,7 +2538,7 @@ MonoBehaviour:
   FastForwardDelay: 0.1
   blinkSpeed: 0.5
   playerName: 
-  needSecondWindow: 1
+  needSecondWindow: 0
 --- !u!114 &586249824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2554,27 +2554,33 @@ MonoBehaviour:
   ID: 
   textBox: {fileID: 1388025002}
   nodes:
-  - rid: 776523844553015375
-  - rid: 776523844553015382
-  - rid: 776523844553015394
+  - rid: 776523870116511846
+  - rid: -2
+  - rid: 776523870116511847
+  - rid: -2
   references:
     version: 2
     RefIds:
-    - rid: 776523844553015375
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 776523870116511846
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
         text: 
         requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
-    - rid: 776523844553015382
-      type: {class: DialoguePauseNode, ns: , asm: Assembly-CSharp}
+    - rid: 776523870116511847
+      type: {class: DialogueShowCharacterNode, ns: , asm: Assembly-CSharp}
       data:
-        pauseDuration: 0.5
-    - rid: 776523844553015394
-      type: {class: DialogueRequirePlayerClickContinueNode, ns: , asm: Assembly-CSharp}
-      data:
-        enabled: 1
+        characterIndex: 0
+        moodIndex: 0
+        scaleCommand: 0
+        scale: {x: 1, y: 1, z: 1}
+        positionCommand: 0
+        positionMode: 0
+        presetPositionIndex: 0
+        manualPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &595325731
 GameObject:
   m_ObjectHideFlags: 0

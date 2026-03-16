@@ -60,6 +60,84 @@ public class DialogueChangeFontNode : DialogueBlockNode
 
 
 [Serializable]
+public class DialogueShowCharacterNode : DialogueBlockNode
+{
+    public int characterIndex;
+    public int moodIndex;
+
+    [Header("Scale")]
+    public bool scaleCommand;
+    public Vector3 scale = Vector3.one;
+
+    [Header("Position")]
+    public bool positionCommand;
+
+    public PositionMode positionMode = PositionMode.Preset;
+
+    public int presetPositionIndex;
+    public Vector3 manualPosition;
+
+    public void Execute(CharacterManager manager)
+    {
+        if (manager == null) return;
+
+        if (characterIndex < 0 || characterIndex >= manager.characters.Count)
+            return;
+
+        Character character = manager.characters[characterIndex];
+
+        string charName = character.characterName;
+        string moodName = character.moods[moodIndex].moodName;
+
+        if (positionCommand)
+        {
+            if (positionMode == PositionMode.Preset)
+            {
+                var preset = manager.customPositions[presetPositionIndex];
+                manager.ShowCharacter(charName, moodName, preset.positionName);
+            }
+            else
+            {
+                manager.ShowCharacter(charName, moodName, manualPosition);
+            }
+        }
+        else
+        {
+            manager.ShowCharacter(charName, moodName, charName = null);
+        }
+
+        if (scaleCommand)
+        {
+            character.ingameContainerObj.transform.localScale = scale;
+        }
+    }
+}
+
+public enum PositionMode
+{
+    Preset,
+    Manual
+}
+
+
+[Serializable]
+public class DialogueHideCharacterNode : DialogueBlockNode
+{
+    public int characterIndex;
+
+    public void Execute(CharacterManager manager)
+    {
+        if (manager == null) return;
+
+        if (characterIndex < 0 || characterIndex >= manager.characters.Count)
+            return;
+
+        manager.HideCharacter(manager.characters[characterIndex].characterName);
+    }
+}
+
+
+[Serializable]
 public class DialogueRequirePlayerClickContinueNode : DialogueBlockNode
 {
     public bool enabled = true;

@@ -67,46 +67,44 @@ public class DialogueShowCharacterNodeDrawer : PropertyDrawer
         EditorGUI.PropertyField(new Rect(position.x, y, width, h), scaleCommand);
         y += h + spacing;
 
-        if (scaleCommand.boolValue)
-        {
-            h = EditorGUI.GetPropertyHeight(scale);
-            EditorGUI.PropertyField(new Rect(position.x, y, width, h), scale);
-            y += h + spacing;
-        }
+
+        h = EditorGUI.GetPropertyHeight(scale);
+        EditorGUI.PropertyField(new Rect(position.x, y, width, h), scale);
+        y += h + spacing;
+
 
         // Position toggle
         h = EditorGUI.GetPropertyHeight(positionCommand);
         EditorGUI.PropertyField(new Rect(position.x, y, width, h), positionCommand);
         y += h + spacing;
 
-        if (positionCommand.boolValue)
+
+        h = EditorGUI.GetPropertyHeight(positionMode);
+        EditorGUI.PropertyField(new Rect(position.x, y, width, h), positionMode);
+        y += h + spacing;
+
+        if ((PositionMode)positionMode.enumValueIndex == PositionMode.Preset)
         {
-            h = EditorGUI.GetPropertyHeight(positionMode);
-            EditorGUI.PropertyField(new Rect(position.x, y, width, h), positionMode);
-            y += h + spacing;
+            string[] presetNames = manager.customPositions
+                .Select(p => p.positionName)
+                .ToArray();
 
-            if ((PositionMode)positionMode.enumValueIndex == PositionMode.Preset)
-            {
-                string[] presetNames = manager.customPositions
-                    .Select(p => p.positionName)
-                    .ToArray();
+            presetIndex.intValue = EditorGUI.Popup(
+                new Rect(position.x, y, width, EditorGUIUtility.singleLineHeight),
+                "Preset Position",
+                presetIndex.intValue,
+                presetNames
+            );
 
-                presetIndex.intValue = EditorGUI.Popup(
-                    new Rect(position.x, y, width, EditorGUIUtility.singleLineHeight),
-                    "Preset Position",
-                    presetIndex.intValue,
-                    presetNames
-                );
-
-                y += EditorGUIUtility.singleLineHeight + spacing;
-            }
-            else
-            {
-                h = EditorGUI.GetPropertyHeight(manualPos);
-                EditorGUI.PropertyField(new Rect(position.x, y, width, h), manualPos);
-                y += h + spacing;
-            }
+            y += EditorGUIUtility.singleLineHeight + spacing;
         }
+        else
+        {
+            h = EditorGUI.GetPropertyHeight(manualPos);
+            EditorGUI.PropertyField(new Rect(position.x, y, width, h), manualPos);
+            y += h + spacing;
+        }
+
 
         EditorGUI.EndProperty();
     }
@@ -123,22 +121,21 @@ public class DialogueShowCharacterNodeDrawer : PropertyDrawer
 
         height += line + spacing; // scale toggle
 
-        if (property.FindPropertyRelative("scaleCommand").boolValue)
-            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("scale")) + spacing;
+        height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("scale")) + spacing;
 
         height += line + spacing; // position toggle
 
-        if (property.FindPropertyRelative("positionCommand").boolValue)
-        {
-            height += line + spacing; // mode
 
-            SerializedProperty mode = property.FindPropertyRelative("positionMode");
+        height += line + spacing; // mode
 
-            if ((PositionMode)mode.enumValueIndex == PositionMode.Preset)
-                height += line + spacing;
-            else
-                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("manualPosition")) + spacing;
-        }
+        SerializedProperty mode = property.FindPropertyRelative("positionMode");
+
+        if ((PositionMode)mode.enumValueIndex == PositionMode.Preset)
+            height += line + spacing;
+        else
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("manualPosition")) + spacing;
+
+        height += line * 3f; // extra padding
 
         return height;
     }

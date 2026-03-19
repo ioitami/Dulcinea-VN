@@ -60,8 +60,23 @@ public class CharacterManager : MonoBehaviour
             }
         }
 
-        return characters[0]; // default to first character if not found
+        Debug.Log("No character found with name " + name);
+        return null;
     }
+
+    public Character GetCharacter(int characterID)
+    {
+        if (characters[characterID] == null)
+        {
+            Debug.Log("No character found with index " + characterID);
+            return null;
+        }
+        else
+        {
+            return characters[characterID];
+        }
+    }
+
     public void ShowCharacter(string name, string mood, string positionName = null)
     {
         Character character = GetCharacter(name);
@@ -92,16 +107,56 @@ public class CharacterManager : MonoBehaviour
         if (character == null) return;
 
         character.ingameContainerObj.SetActive(true);
-        
-        if (mood != null)
-        {
-            SetCharacterMood(name, mood);
-        }
 
-        if(position != null)
+        if (mood == null) return;
+            
+        SetCharacterMood(name, mood);
+
+        if (position == null) return;
+
+        MoveCharacter(name, position.Value);
+
+    }
+
+    public void ShowCharacter(int characterID, string mood, string positionName = null)
+    {
+        Character character = GetCharacter(characterID);
+
+        if (character == null) return;
+
+        character.ingameContainerObj.SetActive(true);
+        SetCharacterMood(name, mood);
+
+
+        if (positionName == null) return;
+
+        Vector3 pos = Vector3.zero;
+        foreach (CharacterPosPresets preset in customPositions)
         {
-            MoveCharacter(name, position.Value);
+            if (preset.positionName.ToLower() == positionName.ToLower())
+            {
+                pos = preset.position;
+            }
         }
+        MoveCharacter(name, pos);
+    }
+
+    public void ShowCharacter(int characterID, string mood = null, Vector3? position = null)
+    {
+        Character character = GetCharacter(characterID);
+
+        if (character == null) return;
+
+        character.ingameContainerObj.SetActive(true);
+
+        if (mood == null) return;
+
+        SetCharacterMood(name, mood);
+
+        if (position == null) return;
+
+        MoveCharacter(name, position.Value);
+
     }
 
     public void HideCharacter(string name)
@@ -113,6 +168,17 @@ public class CharacterManager : MonoBehaviour
         character.ingameContainerObj.SetActive(false);
 
     }
+
+    public void HideCharacter(int characterID)
+    {
+        Character character = GetCharacter(characterID);
+
+        if (character == null) return;
+
+        character.ingameContainerObj.SetActive(false);
+
+    }
+
 
     public void HideAllCharacters()
     {
@@ -144,6 +210,16 @@ public class CharacterManager : MonoBehaviour
             character.ingameContainerObj.GetComponentInChildren<SpriteRenderer>().sprite = character.currentMood.sprite;
         }
     }
+    public void SetCharacterMood(int characterID, int moodID)
+    {
+        Character character = GetCharacter(characterID);
+        character.currentMood = character.moods[moodID];
+
+        if (character != null)
+        {
+            character.ingameContainerObj.GetComponentInChildren<SpriteRenderer>().sprite = character.currentMood.sprite;
+        }
+    }
 
     public void MoveCharacter(string name, Vector3 position)
     {
@@ -155,26 +231,50 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
+    public void MoveCharacter(int characterID, Vector3 position)
+    {
+        Character character = GetCharacter(characterID);
+
+        if (character != null)
+        {
+            character.ingameContainerObj.transform.localPosition = position;
+        }
+    }
+
     public void PlayAnimationCharacter(string charName, string animName, System.Action onComplete = null)
     {
         Character character = GetCharacter(charName);
 
-        if (character != null)
-        {
+        if (character == null) return;
 
-            SpriteAnimationManager animationManager = GameSingleton.instance.spriteAnimationManager;
+        SpriteAnimationManager animationManager = GameSingleton.instance.spriteAnimationManager;
 
-            if (animationManager != null)
-            {
-                animationManager.PlayAnimation(animationName:animName, spriteTransform: character.ingameContainerObj.transform, onComplete: onComplete);
-            }
-        }
-        else
+        if (animationManager == null) 
         {
-            Debug.Log("No character found");
+            Debug.Log("NO ANIMATIONMANAGER DETECTED");
+            return;
         }
+
+        animationManager.PlayAnimation(animationName:animName, spriteTransform: character.ingameContainerObj.transform, onComplete: onComplete);
+
     }
+    public void PlayAnimationCharacter(int characterID, string animName, System.Action onComplete = null)
+    {
+        Character character = GetCharacter(characterID);
 
+        if (character == null) return;
+
+        SpriteAnimationManager animationManager = GameSingleton.instance.spriteAnimationManager;
+
+        if (animationManager == null)
+        {
+            Debug.Log("NO ANIMATIONMANAGER DETECTED");
+            return;
+        }
+
+        animationManager.PlayAnimation(animationName: animName, spriteTransform: character.ingameContainerObj.transform, onComplete: onComplete);
+
+    }
 
 }
 

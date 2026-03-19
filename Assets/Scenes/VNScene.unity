@@ -641,6 +641,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preferencesOptionsCameraParent: {fileID: 0}
+--- !u!1 &195582241
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 195582242}
+  m_Layer: 0
+  m_Name: Script1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &195582242
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195582241}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.012898, y: 4.8625855, z: -3.5940824}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1414716006}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &211762539
 GameObject:
   m_ObjectHideFlags: 0
@@ -2490,7 +2522,6 @@ GameObject:
   m_Component:
   - component: {fileID: 586249822}
   - component: {fileID: 586249823}
-  - component: {fileID: 586249824}
   m_Layer: 0
   m_Name: DialogueManager
   m_TagString: Untagged
@@ -2539,48 +2570,6 @@ MonoBehaviour:
   blinkSpeed: 0.5
   playerName: 
   needSecondWindow: 0
---- !u!114 &586249824
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 586249821}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: 
-  textBox: {fileID: 1388025002}
-  nodes:
-  - rid: 776523870116511846
-  - rid: -2
-  - rid: 776523870116511847
-  - rid: -2
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 776523870116511846
-      type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
-      data:
-        text: 
-        requirePlayerClickContinue: 0
-        overwriteTextSpeed: 0
-        textSpeed: 0.04
-    - rid: 776523870116511847
-      type: {class: DialogueShowCharacterNode, ns: , asm: Assembly-CSharp}
-      data:
-        characterIndex: 0
-        moodIndex: 0
-        scaleCommand: 0
-        scale: {x: 1, y: 1, z: 1}
-        positionCommand: 0
-        positionMode: 0
-        presetPositionIndex: 0
-        manualPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &595325731
 GameObject:
   m_ObjectHideFlags: 0
@@ -8176,6 +8165,94 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1413809931}
   m_CullTransparentMesh: 1
+--- !u!1 &1414716005
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1414716006}
+  - component: {fileID: 1414716007}
+  m_Layer: 0
+  m_Name: Node1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1414716006
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414716005}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 195582242}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1414716007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414716005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 
+  textBox: {fileID: 1388025002}
+  nodes:
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: 776523929964511345
+  - rid: -2
+  - rid: 776523929964511347
+  - rid: -2
+  - rid: 776523929964511348
+  - rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 776523929964511345
+      type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
+      data:
+        text: 
+        requirePlayerClickContinue: 0
+        overwriteTextSpeed: 0
+        textSpeed: 0.04
+    - rid: 776523929964511347
+      type: {class: DialoguePauseNode, ns: , asm: Assembly-CSharp}
+      data:
+        pauseDuration: 0.5
+    - rid: 776523929964511348
+      type: {class: DialogueShowCharacterNode, ns: , asm: Assembly-CSharp}
+      data:
+        characterIndex: 0
+        moodIndex: 0
+        scaleCommand: 0
+        scale: {x: 1, y: 1, z: 1}
+        positionCommand: 0
+        positionMode: 0
+        presetPositionIndex: 0
+        manualPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1418912841
 GameObject:
   m_ObjectHideFlags: 0
@@ -13735,3 +13812,4 @@ SceneRoots:
   - {fileID: 1442938524}
   - {fileID: 832575519}
   - {fileID: 1794083509}
+  - {fileID: 195582242}

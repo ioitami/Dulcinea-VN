@@ -70,6 +70,7 @@ public class DialogueBlockEditor : Editor
         }
 
         EditorGUILayout.Space();
+        EditorGUILayout.Space();
 
         if (GUILayout.Button("+ Add Node", GUILayout.Height(30)))
         {
@@ -93,7 +94,7 @@ public class DialogueBlockEditor : Editor
 
         foldouts[index] = EditorGUILayout.Foldout(
             foldouts[index],
-            $"{index}. {typeName}",
+            typeName,
             true,
             EditorStyles.foldoutHeader
         );
@@ -129,17 +130,23 @@ public class DialogueBlockEditor : Editor
         {
             EditorGUI.indentLevel++;
 
-            SerializedProperty iterator = node.Copy();
-            SerializedProperty end = iterator.GetEndProperty();
+            // Get correct height from the drawer
+            float height = EditorGUI.GetPropertyHeight(node, true);
 
-            iterator.NextVisible(true);
+            // Add padding buffer to prevent clipping (VERY important)
+            height += 10f;
 
-            while (!SerializedProperty.EqualContents(iterator, end))
-            {
-                EditorGUILayout.PropertyField(iterator, true);
-                if (!iterator.NextVisible(false))
-                    break;
-            }
+            Rect rect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(height));
+
+            // IMPORTANT: Temporarily disable foldout drawing
+            bool oldState = EditorGUIUtility.hierarchyMode;
+            EditorGUIUtility.hierarchyMode = true;
+
+            EditorGUI.BeginProperty(rect, GUIContent.none, node);
+            EditorGUI.PropertyField(rect, node, GUIContent.none, true);
+            EditorGUI.EndProperty();
+
+            EditorGUIUtility.hierarchyMode = oldState;
 
             EditorGUI.indentLevel--;
         }
@@ -155,7 +162,6 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Pause Node"), false, () => AddNode(typeof(DialoguePauseNode)));
         menu.AddItem(new GUIContent("Choice Node"), false, () => AddNode(typeof(DialogueChoiceNode)));
         menu.AddItem(new GUIContent("Script Node"), false, () => AddNode(typeof(DialogueScriptNode)));
-        menu.AddItem(new GUIContent("Change Font Node"), false, () => AddNode(typeof(DialogueChangeFontNode)));
         menu.AddItem(new GUIContent("Change Font Node"), false, () => AddNode(typeof(DialogueChangeFontNode)));
         menu.AddItem(new GUIContent("Show Character Node"), false, () => AddNode(typeof(DialogueShowCharacterNode)));
         menu.AddItem(new GUIContent("Hide Character Node"), false, () => AddNode(typeof(DialogueHideCharacterNode)));

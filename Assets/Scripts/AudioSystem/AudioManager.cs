@@ -142,6 +142,7 @@ public class AudioManager : MonoBehaviour
         currentBGMSource.Stop();
     }
 
+
     // ===========================
     // SFX
     // ===========================
@@ -159,6 +160,15 @@ public class AudioManager : MonoBehaviour
 
         activeSFX.Add(src);
         Destroy(src.gameObject, data.clip.length + 0.1f);
+    }
+
+    public void StopAllSFX()
+    {
+        foreach (AudioSource src in activeSFX)
+        {
+            if (src != null) Destroy(src.gameObject);
+        }
+        activeSFX.Clear();
     }
 
     // ===========================
@@ -179,6 +189,16 @@ public class AudioManager : MonoBehaviour
         activeVoices.Add(src);
         Destroy(src.gameObject, data.clip.length + 0.1f);
     }
+
+    public void StopAllVoices()
+    {
+        foreach (AudioSource src in activeVoices)
+        {
+            if (src != null) Destroy(src.gameObject);
+        }
+        activeVoices.Clear();
+    }
+
 
     // ===========================
     // Utility

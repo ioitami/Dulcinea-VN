@@ -7347,7 +7347,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -129.51001, y: 47}
+  m_AnchoredPosition: {x: -129.51025, y: 47}
   m_SizeDelta: {x: 160, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1315297858
@@ -8226,6 +8226,10 @@ MonoBehaviour:
   - rid: -2
   - rid: 776523929964511348
   - rid: -2
+  - rid: 776523968702054471
+  - rid: -2
+  - rid: 776524027515371586
+  - rid: -2
   references:
     version: 2
     RefIds:
@@ -8253,6 +8257,20 @@ MonoBehaviour:
         positionMode: 0
         presetPositionIndex: 0
         manualPosition: {x: 0, y: 0, z: 0}
+    - rid: 776523968702054471
+      type: {class: DialoguePlayAnimationNode, ns: , asm: Assembly-CSharp}
+      data:
+        characterIndex: 1
+        animationName: Wobble
+        command: 0
+        waitForCompletion: 0
+    - rid: 776524027515371586
+      type: {class: DialoguePlaySoundNode, ns: , asm: Assembly-CSharp}
+      data:
+        command: 0
+        category: 0
+        clipName: BGM1
+        fadeOutDuration: 0.5
 --- !u!1 &1418912841
 GameObject:
   m_ObjectHideFlags: 0
@@ -11813,7 +11831,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -129.51001, y: 47}
+  m_AnchoredPosition: {x: -129.51025, y: 47}
   m_SizeDelta: {x: 160, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1997018899

@@ -14,7 +14,7 @@ public class SaveGameButton : MonoBehaviour
 
     public void SaveGame(int saveFileNumber)
     {
-        GameSingleton.instance.gameStateManager?.SaveGame(saveFileNumber);
+        //GameSingleton.instance.gameStateManager?.SaveGame(saveFileNumber);
 
         StartCoroutine(DelayedSpritePreview(0.05f));
     }
@@ -23,8 +23,8 @@ public class SaveGameButton : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        saveSpritePreview.sprite = GameSingleton.instance.gameStateManager.GetLoadedScreenshotSprite();
-        GameSingleton.instance.sceneLoaderManager.uiController.saveLoadMenu.UpdateSaveLoadSlots();
+        //saveSpritePreview.sprite = GameSingleton.instance.gameStateManager.GetLoadedScreenshotSprite();
+        //GameSingleton.instance.sceneLoaderManager.uiController.saveLoadMenu.UpdateSaveLoadSlots();
     }
 
 }

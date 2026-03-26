@@ -22,12 +22,12 @@ public class SaveLoadOptionsMenu : MonoBehaviour
     {
         for (int i = 0; i < saveGameButtonSlots.Count; i++)
         {
-            saveGameButtonSlots[i].saveSpritePreview.sprite = GameSingleton.instance.gameStateManager.LoadScreenshotSprite(i + 1);
+            //saveGameButtonSlots[i].saveSpritePreview.sprite = GameSingleton.instance.gameStateManager.LoadScreenshotSprite(i + 1);
         }
 
         for (int i = 0; i < loadGameButtonSlots.Count; i++)
         {
-            loadGameButtonSlots[i].loadSpritePreview.sprite = GameSingleton.instance.gameStateManager.LoadScreenshotSprite(i + 1);
+            //loadGameButtonSlots[i].loadSpritePreview.sprite = GameSingleton.instance.gameStateManager.LoadScreenshotSprite(i + 1);
         }
     }
 }

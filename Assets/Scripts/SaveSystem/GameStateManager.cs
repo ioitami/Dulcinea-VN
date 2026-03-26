@@ -66,14 +66,12 @@ public class GameStateManager : MonoBehaviour
     private void Awake()
     {
         GameSingleton.instance.cameraManager.DisableAllCameras();
-        GameSingleton.instance.sceneLoaderManager.LoadMainMenu();
-        GameSingleton.instance.sceneLoaderManager.ToggleAVL(true);
+
     }
     // ==================================
     public void StartNewGame()
     {
-        GameSingleton.instance.dialogueManager.ResetStory();
-        GameSingleton.instance.dialogueManager.StartStory(instant:false);
+
 
         //GameSingleton.instance.gameStateManager.readLineSave.LoadReadLinesFile();
     }
@@ -151,36 +149,6 @@ public class GameStateManager : MonoBehaviour
     public void LoadGame(int saveFileNumber)
     {
         string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveFileNumber.ToString() + GlobalVariables.saveFileExtension;
-
-        if(File.Exists(savePath))
-        {
-            try
-            {
-                string json = File.ReadAllText(savePath);
-                currentSave = JsonUtility.FromJson<SaveData>(json);
-
-                // Load game data
-                GameSingleton.instance.sceneLoaderManager.LoadWindow1();
-                GameSingleton.instance.dialogueManager.LoadState(currentSave.InkStoryState);
-
-                for (int i = 0; i < currentSave.charOnScreen.Count; i++)
-                {
-                    GameSingleton.instance.characterManager.ShowCharacter(currentSave.charOnScreen[i], currentSave.charMood[i], currentSave.charPosition[i].ToVector3());
-                }
-
-                Debug.Log($"Game loaded from JSON: {savePath}");
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"Failed to load game: {e}");
-            }
-
-            //readLineSave.LoadReadLinesFile();
-        }
-        else
-        {
-            Debug.Log("No save file found");
-        }
     }
 
     private List<Camera> saveCamList;

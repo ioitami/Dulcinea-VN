@@ -60,7 +60,6 @@ public class DialoguePlaySoundNodeDrawer : PropertyDrawer
             y += line + spacing;
         }
 
-        // Fade out duration — only relevant for Stop BGM
         if (cmd == AudioCommand.Stop && cat == AudioCategory.BGM)
         {
             EditorGUI.PropertyField(new Rect(position.x, y, w, line), fadeOut, new GUIContent("Fade Out Duration"));

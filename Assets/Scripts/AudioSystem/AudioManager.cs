@@ -127,6 +127,11 @@ public class AudioManager : MonoBehaviour
         StartCoroutine(FadeOutBGM(fadeOut));
     }
 
+    public void StopAllBGM()
+    {
+        currentBGMSource.Stop();
+    }
+
     private IEnumerator FadeOutBGM(float duration)
     {
         float startVol = currentBGMSource.volume;

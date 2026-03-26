@@ -77,6 +77,26 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
+    public void ShowCharacter(string name, string mood)
+    {
+        Character character = GetCharacter(name);
+
+        if (character == null) return;
+
+        character.ingameContainerObj.SetActive(true);
+        SetCharacterMood(name, mood);
+    }
+
+    public void ShowCharacter(int characterID, string mood)
+    {
+        Character character = GetCharacter(characterID);
+
+        if (character == null) return;
+
+        character.ingameContainerObj.SetActive(true);
+        SetCharacterMood(name, mood);
+    }
+
     public void ShowCharacter(string name, string mood, string positionName = null)
     {
         Character character = GetCharacter(name);

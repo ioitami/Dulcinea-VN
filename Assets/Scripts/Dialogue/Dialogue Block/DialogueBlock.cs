@@ -17,6 +17,7 @@ public class DialogueBlock : MonoBehaviour
 [Serializable]
 public abstract class DialogueBlockNode
 {
+    public abstract void Execute(DialogueManager manager, Action onComplete);
 }
 
 
@@ -26,15 +27,39 @@ public class DialogueTextNode : DialogueBlockNode
     [TextArea(2, 5)]
     public string text;
 
+    public bool appendText = true;
     public bool requirePlayerClickContinue;
     public bool overwriteTextSpeed;
     public float textSpeed = 0.04f;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        float speed;
+        if (overwriteTextSpeed)
+            speed = textSpeed;
+        else
+            speed = manager.typingSpeed;
+
+
+        manager.StartTyping(text, speed, appendText, requirePlayerClickContinue, onComplete);
+    }
 }
 
 
 public class DialoguePauseNode : DialogueBlockNode
 {
     public float pauseDuration = 0.5f;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        manager.StartCoroutine(PauseRoutine(onComplete));
+    }
+
+    private System.Collections.IEnumerator PauseRoutine(Action onComplete)
+    {
+        yield return new UnityEngine.WaitForSeconds(pauseDuration);
+        onComplete?.Invoke();
+    }
 }
 
 
@@ -42,6 +67,12 @@ public class DialoguePauseNode : DialogueBlockNode
 public class DialogueChoiceNode : DialogueBlockNode
 {
     public string[] choices;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        // Placeholder — wire up choice UI here, call onComplete when a choice is picked
+        Debug.Log("[DialogueChoiceNode] Choice UI not yet implemented.");
+    }
 }
 
 
@@ -49,6 +80,12 @@ public class DialogueChoiceNode : DialogueBlockNode
 public class DialogueScriptNode : DialogueBlockNode
 {
     public UnityEvent scriptEvent;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        scriptEvent?.Invoke();
+        onComplete?.Invoke();
+    }
 }
 
 
@@ -56,6 +93,14 @@ public class DialogueScriptNode : DialogueBlockNode
 public class DialogueChangeFontNode : DialogueBlockNode
 {
     public TMP_FontAsset fontAsset;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        if (manager.currentBlock?.textBox != null && fontAsset != null)
+            manager.currentBlock.textBox.font = fontAsset;
+
+        onComplete?.Invoke();
+    }
 }
 
 
@@ -77,39 +122,37 @@ public class DialogueShowCharacterNode : DialogueBlockNode
     public int presetPositionIndex;
     public Vector3 manualPosition;
 
-    public void Execute(CharacterManager manager)
+    public override void Execute(DialogueManager manager, Action onComplete)
     {
-        if (manager == null) return;
+        CharacterManager characterManager = GameSingleton.instance.characterManager;
+        if (characterManager == null) { onComplete?.Invoke(); return; }
+        if (characterIndex < 0 || characterIndex >= characterManager.characters.Count) { onComplete?.Invoke(); return; }
 
-        if (characterIndex < 0 || characterIndex >= manager.characters.Count)
-            return;
-
-        Character character = manager.characters[characterIndex];
-
-        string charName = character.characterName;
-        string moodName = character.moods[moodIndex].moodName;
+        Character character = characterManager.characters[characterIndex];
+        string charName  = character.characterName;
+        string moodName  = character.moods[moodIndex].moodName;
 
         if (positionCommand)
         {
             if (positionMode == PositionMode.Preset)
             {
-                var preset = manager.customPositions[presetPositionIndex];
-                manager.ShowCharacter(charName, moodName, preset.positionName);
+                var preset = characterManager.customPositions[presetPositionIndex];
+                characterManager.ShowCharacter(charName, moodName, preset.positionName);
             }
             else
             {
-                manager.ShowCharacter(charName, moodName, manualPosition);
+                characterManager.ShowCharacter(charName, moodName, manualPosition);
             }
         }
         else
         {
-            manager.ShowCharacter(charName, moodName, charName = null);
+            characterManager.ShowCharacter(charName, moodName);
         }
 
         if (scaleCommand)
-        {
             character.ingameContainerObj.transform.localScale = scale;
-        }
+
+        onComplete?.Invoke();
     }
 }
 
@@ -125,14 +168,16 @@ public class DialogueHideCharacterNode : DialogueBlockNode
 {
     public int characterIndex;
 
-    public void Execute(CharacterManager manager)
+    public override void Execute(DialogueManager manager, Action onComplete)
     {
-        if (manager == null) return;
+        CharacterManager characterManager = GameSingleton.instance.characterManager;
 
-        if (characterIndex < 0 || characterIndex >= manager.characters.Count)
-            return;
+        if (characterManager == null) { onComplete?.Invoke(); return; }
 
-        manager.HideCharacter(manager.characters[characterIndex].characterName);
+        if (characterIndex < 0 || characterIndex >= characterManager.characters.Count) { onComplete?.Invoke(); return; }
+
+        characterManager.HideCharacter(characterManager.characters[characterIndex].characterName);
+        onComplete?.Invoke();
     }
 }
 
@@ -146,24 +191,23 @@ public class DialoguePlayAnimationNode : DialogueBlockNode
     public AnimationCommand command = AnimationCommand.Play;
     public bool waitForCompletion = true;
 
-    public void Execute(System.Action onComplete = null)
+    public override void Execute(DialogueManager manager, Action onComplete)
     {
         CharacterManager characterManager = GameSingleton.instance.characterManager;
-        SpriteAnimationManager animationManager = GameSingleton.instance.spriteAnimationManager;
+        SpriteAnimationManager animManager = GameSingleton.instance.spriteAnimationManager;
 
-        if (characterManager == null || animationManager == null) return;
-        if (characterIndex < 0 || characterIndex >= characterManager.characters.Count) return;
+        if (characterManager == null || animManager == null) { onComplete?.Invoke(); return; }
+        if (characterIndex < 0 || characterIndex >= characterManager.characters.Count) { onComplete?.Invoke(); return; }
 
         Character character = characterManager.characters[characterIndex];
 
         if (command == AnimationCommand.Skip)
         {
-            animationManager.SkipToEnd(animationName, character.ingameContainerObj.transform);
+            animManager.SkipToEnd(animationName, character.ingameContainerObj.transform);
             onComplete?.Invoke();
             return;
         }
 
-        // Play
         if (waitForCompletion)
             characterManager.PlayAnimationCharacter(characterIndex, animationName, onComplete);
         else
@@ -183,14 +227,12 @@ public class DialoguePlaySoundNode : DialogueBlockNode
     public AudioCommand command = AudioCommand.Play;
     public AudioCategory category = AudioCategory.SFX;
     public string clipName;
-
-    // Only used when command = Stop and category = BGM
     public float fadeOutDuration = 0.5f;
 
-    public void Execute()
+    public override void Execute(DialogueManager manager, Action onComplete)
     {
         AudioManager audio = GameSingleton.instance.audioManager;
-        if (audio == null) return;
+        if (audio == null) { onComplete?.Invoke(); return; }
 
         if (command == AudioCommand.Play)
         {
@@ -201,15 +243,17 @@ public class DialoguePlaySoundNode : DialogueBlockNode
                 case AudioCategory.Character: audio.PlayCharacter(clipName); break;
             }
         }
-        else // Stop
+        else if (command == AudioCommand.Stop)
         {
             switch (category)
             {
-                case AudioCategory.BGM: audio.StopBGMWithFade(fadeOutDuration); break;
+                case AudioCategory.BGM: audio.StopAllBGM(); break;
                 case AudioCategory.SFX: audio.StopAllSFX(); break;
                 case AudioCategory.Character: audio.StopAllVoices(); break;
             }
         }
+
+        onComplete?.Invoke();
     }
 }
 
@@ -218,4 +262,10 @@ public class DialoguePlaySoundNode : DialogueBlockNode
 public class DialogueRequirePlayerClickContinueNode : DialogueBlockNode
 {
     public bool enabled = true;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        manager.requireClickToContinue = enabled;
+        onComplete?.Invoke();
+    }
 }

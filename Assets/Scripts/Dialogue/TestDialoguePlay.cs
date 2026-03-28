@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class TestDialoguePlay : MonoBehaviour
 {
-    public DialogueBlock blockToPlay;
+    public DialogueGroup blockToPlay;
 
     public void PlayBlock()
     {
-        GameSingleton.instance.dialogueManager.PlayBlock(blockToPlay);
+        GameSingleton.instance.dialogueManager.PlayGroup(blockToPlay);
     }
 
     private void Start()

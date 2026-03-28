@@ -70,7 +70,7 @@ public class DialogueChoiceNode : DialogueBlockNode
 
     public override void Execute(DialogueManager manager, Action onComplete)
     {
-        // Placeholder ó wire up choice UI here, call onComplete when a choice is picked
+        // Placeholder ÅEwire up choice UI here, call onComplete when a choice is picked
         Debug.Log("[DialogueChoiceNode] Choice UI not yet implemented.");
     }
 }
@@ -265,7 +265,7 @@ public class DialogueRequirePlayerClickContinueNode : DialogueBlockNode
 
     public override void Execute(DialogueManager manager, Action onComplete)
     {
-        manager.requireClickToContinue = enabled;
+        manager.clickToContinueEnabled = enabled;
         onComplete?.Invoke();
     }
 }

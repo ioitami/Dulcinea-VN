@@ -651,6 +651,7 @@ GameObject:
   m_Component:
   - component: {fileID: 195582242}
   - component: {fileID: 195582243}
+  - component: {fileID: 195582244}
   m_Layer: 0
   m_Name: Script1
   m_TagString: Untagged
@@ -672,6 +673,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1414716006}
+  - {fileID: 1979431210}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &195582243
@@ -686,7 +688,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 518a45c75ffe93e498608b921bee3e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockToPlay: {fileID: 1414716007}
+  blockToPlay: {fileID: 195582244}
+--- !u!114 &195582244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195582241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c99a1d9cfc18da4d9eccaa1efc55b58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 123
+  blocks:
+  - {fileID: 1414716007}
+  - {fileID: 1979431209}
 --- !u!1 &211762539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1049,7 +1067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6377357, g: 0.6377357, b: 0.6377357, a: 1}
+  m_Color: {r: 0.103773594, g: 0.103773594, b: 0.103773594, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
@@ -2520,7 +2538,12 @@ MonoBehaviour:
   fastForwardDelay: 0.01
   blinkSpeed: 0.5
   currentBlock: {fileID: 0}
-  requireClickToContinue: 0
+  clickToContinueEnabled: 0
+  currentGroup: {fileID: 0}
+  currentBlockIndex: 0
+  currentNodeIndex: 0
+  isTyping: 0
+  isWaitingForClick: 0
 --- !u!1 &595325731
 GameObject:
   m_ObjectHideFlags: 0
@@ -7918,8 +7941,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294046193
+  m_fontColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -8160,7 +8183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 
+  ID: 1
   textBox: {fileID: 1388025002}
   nodes:
   - rid: -2
@@ -8180,9 +8203,10 @@ MonoBehaviour:
   - rid: -2
   - rid: -2
   - rid: -2
-  - rid: 2852853936826875967
   - rid: -2
+  - rid: 776524142446379091
   - rid: 2852853936826875968
+  - rid: -2
   - rid: -2
   references:
     version: 2
@@ -8193,31 +8217,31 @@ MonoBehaviour:
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
         text: '<size=150%>TextNew</size>... '
-        appendText: 1
-        requirePlayerClickContinue: 1
+        appendText: 0
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
     - rid: 776523929964511347
       type: {class: DialoguePauseNode, ns: , asm: Assembly-CSharp}
       data:
-        pauseDuration: 0.2
-    - rid: 2852853936826875967
+        pauseDuration: 0.4
+    - rid: 776524142446379091
       type: {class: DialogueShowCharacterNode, ns: , asm: Assembly-CSharp}
       data:
         characterIndex: 0
-        moodIndex: 1
+        moodIndex: 0
         scaleCommand: 0
         scale: {x: 1, y: 1, z: 1}
         positionCommand: 0
         positionMode: 0
-        presetPositionIndex: 3
+        presetPositionIndex: 0
         manualPosition: {x: 0, y: 0, z: 0}
     - rid: 2852853936826875968
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
-        text: < hmmmm >
+        text: '< hmmmm '
         appendText: 1
-        requirePlayerClickContinue: 0
+        requirePlayerClickContinue: 1
         overwriteTextSpeed: 0
         textSpeed: 0.04
 --- !u!1 &1418912841
@@ -11561,6 +11585,105 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1970856302}
   m_CullTransparentMesh: 1
+--- !u!1 &1979431208
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1979431210}
+  - component: {fileID: 1979431209}
+  m_Layer: 0
+  m_Name: Node2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1979431209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979431208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 2
+  textBox: {fileID: 1388025002}
+  nodes:
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: 776523929964511345
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: 776524142446379079
+  - rid: 776524142446379095
+  - rid: 2852853936826875968
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 776523929964511345
+      type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
+      data:
+        text: test123
+        appendText: 1
+        requirePlayerClickContinue: 1
+        overwriteTextSpeed: 0
+        textSpeed: 0.04
+    - rid: 776524142446379079
+      type: {class: DialogueHideCharacterNode, ns: , asm: Assembly-CSharp}
+      data:
+        characterIndex: 0
+    - rid: 776524142446379095
+      type: {class: DialoguePauseNode, ns: , asm: Assembly-CSharp}
+      data:
+        pauseDuration: 1
+    - rid: 2852853936826875968
+      type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
+      data:
+        text: tetetet
+        appendText: 1
+        requirePlayerClickContinue: 1
+        overwriteTextSpeed: 0
+        textSpeed: 0.04
+--- !u!4 &1979431210
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979431208}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 195582242}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1989552007
 GameObject:
   m_ObjectHideFlags: 0

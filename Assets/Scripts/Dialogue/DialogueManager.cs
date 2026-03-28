@@ -18,12 +18,23 @@ public class DialogueManager : MonoBehaviour
 
     // Accessed by nodes directly
     public DialogueBlock currentBlock;
-    public bool requireClickToContinue;
+    public bool clickToContinueEnabled;
+
 
     // Internal state
-    private int currentNodeIndex;
+    [SerializeField]
+    private DialogueGroup currentGroup;
+    [SerializeField]
+    private int currentBlockIndex; // DialogueBlocks within a DialogueGroup
+
+    private Action onBlockComplete;
+
+    [SerializeField]
+    private int currentNodeIndex; // DialogueNodes within a DialogueBlock
+    [SerializeField]
     private bool isTyping;
-    private bool waitingForClick;
+    [SerializeField]
+    private bool isWaitingForClick;
     private string lastTypedText;
     private Action pendingOnComplete;
 
@@ -37,24 +48,59 @@ public class DialogueManager : MonoBehaviour
     // Public API
     // ===========================
 
-    public void PlayBlock(DialogueBlock block)
+    public void PlayGroup(DialogueGroup group)
+    {
+        if (group == null) return;
+
+        currentGroup = group;
+        currentBlockIndex = 0;
+
+        PlayNextBlockInGroup();
+    }
+
+    private void PlayNextBlockInGroup()
+    {
+        if (currentGroup == null) return;
+
+        if (currentBlockIndex >= currentGroup.blocks.Count)
+        {
+            OnGroupFinished();
+            return;
+        }
+
+        DialogueBlock block = currentGroup.blocks[currentBlockIndex];
+        currentBlockIndex++;
+
+        if (block == null)
+        {
+            PlayNextBlockInGroup();
+            return;
+        }
+
+        PlayBlock(block, PlayNextBlockInGroup);
+    }
+
+
+
+    public void PlayBlock(DialogueBlock block, Action onComplete = null)
     {
         if (block == null) return;
 
         currentBlock = block;
         currentNodeIndex = 0;
         isTyping = false;
-        waitingForClick = false;
-        requireClickToContinue = false;
+        isWaitingForClick = false;
+        clickToContinueEnabled = false;
         isFastForwarding = false;
+        onBlockComplete = onComplete;
 
-        // Clear the textbox for the new block
         if (currentBlock.textBox != null)
             currentBlock.textBox.text = "";
 
         SetNextIconVisible(false);
         ProcessNextNode();
     }
+
 
     public void OnContinueClicked()
     {
@@ -72,9 +118,9 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        if (waitingForClick)
+        if (isWaitingForClick)
         {
-            waitingForClick = false;
+            isWaitingForClick = false;
             SetNextIconVisible(false);
 
             // Fire the onComplete that was suspended, which advances to the next node
@@ -122,7 +168,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         // Hard stop — do not advance until the player clicks
-        if (waitingForClick) return;
+        if (isWaitingForClick) return;
 
         if (currentNodeIndex >= currentBlock.nodes.Length)
         {
@@ -208,10 +254,10 @@ public class DialogueManager : MonoBehaviour
 
         // Determine requireClick from the node that was interrupted
         int lastIndex = currentNodeIndex - 1;
-        bool requireClick = requireClickToContinue;
+        bool requireClick = clickToContinueEnabled;
         if (lastIndex >= 0 && lastIndex < currentBlock.nodes.Length)
             if (currentBlock.nodes[lastIndex] is DialogueTextNode tn)
-                requireClick = tn.requirePlayerClickContinue || requireClickToContinue;
+                requireClick = tn.requirePlayerClickContinue || clickToContinueEnabled;
 
         // Re-create the onComplete that TypeRoutine would have called
         OnTextFinished(requireClick, ProcessNextNode);
@@ -219,9 +265,9 @@ public class DialogueManager : MonoBehaviour
 
     private void OnTextFinished(bool requireClick, Action onComplete)
     {
-        if (requireClick || requireClickToContinue)
+        if (requireClick || isWaitingForClick)
         {
-            waitingForClick = true;
+            isWaitingForClick = true;
             pendingOnComplete = onComplete;
             SetNextIconVisible(true);
         }
@@ -241,7 +287,7 @@ public class DialogueManager : MonoBehaviour
         {
             if (isTyping)
                 SkipTyping();
-            else if (waitingForClick)
+            else if (isWaitingForClick)
                 OnContinueClicked();
 
             yield return new WaitForSeconds(fastForwardDelay);
@@ -306,5 +352,15 @@ public class DialogueManager : MonoBehaviour
         SetNextIconVisible(false);
         currentBlock = null;
         Debug.Log("[DialogueManager] Block finished.");
+
+        Action callback = onBlockComplete;
+        onBlockComplete = null;
+        callback?.Invoke();
+    }
+
+    private void OnGroupFinished()
+    {
+        currentGroup = null;
+        Debug.Log("[DialogueManager] Group finished.");
     }
 }

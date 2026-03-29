@@ -16,6 +16,10 @@ public class DialogueManager : MonoBehaviour
     [Header("Next Icon Blink Settings")]
     public float blinkSpeed = 0.5f;
 
+    [Header("Player Settings")]
+    public bool GlobalAllowDialogueClick = true;
+
+    [Header("Dialogue Info")]
     // Accessed by nodes directly
     public DialogueBlock currentBlock;
     public bool clickToContinueEnabled;
@@ -47,6 +51,11 @@ public class DialogueManager : MonoBehaviour
     // ===========================
     // Public API
     // ===========================
+
+    public void SetGlobalAllowDialogueClick(bool allow)
+    {
+        GlobalAllowDialogueClick = allow;
+    }
 
     public void PlayGroup(DialogueGroup group)
     {
@@ -101,10 +110,40 @@ public class DialogueManager : MonoBehaviour
         ProcessNextNode();
     }
 
+    public void PlaySpecificBlockInGroup(DialogueGroup group, DialogueBlock block = null)
+    {
+        if (group == null)
+        {
+            Debug.Log("No DialogueGroup detected");
+            return;
+        }
+
+        if (block == null)
+        {
+            PlayGroup(group);
+            return;
+        }
+
+        int index = group.blocks.IndexOf(block);
+
+        if (index == -1)
+        {
+            Debug.LogWarning($"[DialogueManager] Block '{block.ID}' not found in group '{group.ID}'. Playing group from start.");
+            PlayGroup(group);
+            return;
+        }
+
+        currentGroup = group;
+        currentBlockIndex = index;
+
+        PlayNextBlockInGroup();
+    }
+
+
 
     public void OnContinueClicked()
     {
-        
+        if (!GlobalAllowDialogueClick) return;
 
         if (isFastForwarding)
         {
@@ -123,7 +162,6 @@ public class DialogueManager : MonoBehaviour
             isWaitingForClick = false;
             SetNextIconVisible(false);
 
-            // Fire the onComplete that was suspended, which advances to the next node
             Action callback = pendingOnComplete;
             pendingOnComplete = null;
             callback?.Invoke();
@@ -132,10 +170,13 @@ public class DialogueManager : MonoBehaviour
 
     public void StartFastForward()
     {
+        if (!GlobalAllowDialogueClick) return;
         if (isFastForwarding) return;
+
         isFastForwarding = true;
 
         if (fastForwardCoroutine != null) StopCoroutine(fastForwardCoroutine);
+
         fastForwardCoroutine = StartCoroutine(FastForwardRoutine());
     }
 

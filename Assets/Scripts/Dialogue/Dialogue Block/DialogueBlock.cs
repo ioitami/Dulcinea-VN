@@ -259,6 +259,26 @@ public class DialoguePlaySoundNode : DialogueBlockNode
 
 
 [Serializable]
+public class DialoguePlayGroupNode : DialogueBlockNode
+{
+    public DialogueGroup group;
+    public DialogueBlock block;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        if (group == null)
+        {
+            Debug.LogWarning("[DialoguePlayGroupNode] No group assigned.");
+            onComplete?.Invoke();
+            return;
+        }
+
+        manager.PlaySpecificBlockInGroup(group, block);
+    }
+}
+
+
+[Serializable]
 public class DialogueRequirePlayerClickContinueNode : DialogueBlockNode
 {
     public bool enabled = true;
@@ -266,6 +286,19 @@ public class DialogueRequirePlayerClickContinueNode : DialogueBlockNode
     public override void Execute(DialogueManager manager, Action onComplete)
     {
         manager.clickToContinueEnabled = enabled;
+        onComplete?.Invoke();
+    }
+}
+
+
+[Serializable]
+public class DialogueSetDialogueClickRightsNode : DialogueBlockNode
+{
+    public bool allow = true;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        manager.SetGlobalAllowDialogueClick(allow);
         onComplete?.Invoke();
     }
 }

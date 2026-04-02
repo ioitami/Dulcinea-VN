@@ -117,10 +117,15 @@ public class DialogueBlockEditor : Editor
 
         if (GUILayout.Button("X", GUILayout.Width(25)))
         {
+            // First call nulls the reference, second call removes the empty slot
             nodes.DeleteArrayElementAtIndex(index);
+            if (index < nodes.arraySize && nodes.GetArrayElementAtIndex(index).managedReferenceValue == null)
+                nodes.DeleteArrayElementAtIndex(index);
+
             EnsureFoldoutArray();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
+            serializedObject.ApplyModifiedProperties();
             return;
         }
 
@@ -179,27 +184,17 @@ public class DialogueBlockEditor : Editor
         serializedObject.Update();
 
         int index = nodes.arraySize;
-
         nodes.InsertArrayElementAtIndex(index);
 
         SerializedProperty newNode = nodes.GetArrayElementAtIndex(index);
         newNode.managedReferenceValue = Activator.CreateInstance(type);
 
-        EnsureFoldoutArray();
-
-        // Expand the newly created node
-        foldouts[index] = true;
-
-        SerializedProperty nodesProp = serializedObject.FindProperty("nodes");
-        nodesProp.arraySize++;
-        serializedObject.ApplyModifiedProperties();
-
         // Resize foldouts array
-        bool[] newFoldouts = new bool[nodesProp.arraySize];
+        bool[] newFoldouts = new bool[nodes.arraySize];
         if (foldouts != null)
             foldouts.CopyTo(newFoldouts, 0);
 
-        newFoldouts[newFoldouts.Length - 1] = true; // new node open by default
+        newFoldouts[newFoldouts.Length - 1] = true;
         foldouts = newFoldouts;
 
         serializedObject.ApplyModifiedProperties();

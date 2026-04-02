@@ -243,13 +243,13 @@ public class DialoguePlaySoundNode : DialogueBlockNode
                 case AudioCategory.Character: audio.PlayCharacter(clipName); break;
             }
         }
-        else if (command == AudioCommand.Stop)
+        else
         {
             switch (category)
             {
-                case AudioCategory.BGM: audio.StopAllBGM(); break;
-                case AudioCategory.SFX: audio.StopAllSFX(); break;
-                case AudioCategory.Character: audio.StopAllVoices(); break;
+                case AudioCategory.BGM: audio.StopAllBGM(fadeOutDuration); break;
+                case AudioCategory.SFX: audio.StopAllSFX(fadeOutDuration); break;
+                case AudioCategory.Character: audio.StopAllVoices(fadeOutDuration); break;
             }
         }
 

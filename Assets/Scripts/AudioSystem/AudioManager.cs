@@ -122,14 +122,10 @@ public class AudioManager : MonoBehaviour
         nextBGMSource = temp;
     }
 
-    public void StopBGMWithFade(float fadeOut = 0.5f)
+
+    public void StopAllBGM(float fadeOut = 0.5f)
     {
         StartCoroutine(FadeOutBGM(fadeOut));
-    }
-
-    public void StopAllBGM()
-    {
-        currentBGMSource.Stop();
     }
 
     private IEnumerator FadeOutBGM(float duration)
@@ -167,13 +163,9 @@ public class AudioManager : MonoBehaviour
         Destroy(src.gameObject, data.clip.length + 0.1f);
     }
 
-    public void StopAllSFX()
+    public void StopAllSFX(float fadeOut = 0.5f)
     {
-        foreach (AudioSource src in activeSFX)
-        {
-            if (src != null) Destroy(src.gameObject);
-        }
-        activeSFX.Clear();
+        StartCoroutine(FadeOutAndDestroySources(activeSFX, fadeOut));
     }
 
     // ===========================
@@ -195,13 +187,9 @@ public class AudioManager : MonoBehaviour
         Destroy(src.gameObject, data.clip.length + 0.1f);
     }
 
-    public void StopAllVoices()
+    public void StopAllVoices(float fadeOut = 0.5f)
     {
-        foreach (AudioSource src in activeVoices)
-        {
-            if (src != null) Destroy(src.gameObject);
-        }
-        activeVoices.Clear();
+        StartCoroutine(FadeOutAndDestroySources(activeVoices, fadeOut));
     }
 
 
@@ -229,4 +217,42 @@ public class AudioManager : MonoBehaviour
     {
         return linear <= 0.0001f ? -80f : 20f * Mathf.Log10(linear);
     }
+
+    private IEnumerator FadeOutAndDestroySources(List<AudioSource> sources, float duration)
+    {
+        List<AudioSource> snapshot = new List<AudioSource>(sources);
+        sources.Clear();
+
+        float time = 0f;
+        List<float> startVolumes = new List<float>();
+
+        foreach (AudioSource src in snapshot)
+        {
+            if (src != null)
+                startVolumes.Add(src.volume);
+            else
+                startVolumes.Add(0f);
+        }
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+
+            for (int i = 0; i < snapshot.Count; i++)
+            {
+                if (snapshot[i] != null)
+                    snapshot[i].volume = Mathf.Lerp(startVolumes[i], 0f, t);
+            }
+
+            yield return null;
+        }
+
+        foreach (AudioSource src in snapshot)
+        {
+            if (src != null)
+                Destroy(src.gameObject);
+        }
+    }
+
 }

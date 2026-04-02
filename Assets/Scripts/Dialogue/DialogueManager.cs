@@ -27,7 +27,7 @@ public class DialogueManager : MonoBehaviour
 
     // Internal state
     [SerializeField]
-    private DialogueGroup currentGroup;
+    public DialogueGroup currentGroup;
     [SerializeField]
     private int currentBlockIndex; // DialogueBlocks within a DialogueGroup
 

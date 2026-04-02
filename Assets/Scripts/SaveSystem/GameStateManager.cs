@@ -1,240 +1,204 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using TMPro;
-using Ink.Parsed;
-using Unity.XR.OpenVR;
 using System.Collections;
-using Unity.VisualScripting;
-//using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Generic;
+using System.IO;
+using UnityEditor.Overlays;
+using UnityEngine;
+
 
 public class GameStateManager : MonoBehaviour
 {
-    public SaveData currentSave;
-    //public ReadLineTracker readLineSave;
-    public string screenshotBase64_saved;
+    [Header("Screenshot Settings")]
+    public int screenshotWidth = 320;
+    public int screenshotHeight = 180;
 
-    [Serializable]
-    public class SaveData
-    {
-        public int saveID;
-        public string chapterName;
-        [HideInInspector]
-        public string saveTimeStamp;
-        [HideInInspector]
-        public string screenshotBase64;
+    private const string SaveFolder = "Saves";
+    private const string SavePrefix = "save_";
+    private const string SaveExtension = ".json";
 
-        public List<string> charOnScreen;
-        public List<string> charMood;
-        public List<SerializableVector3> charPosition;
+    private string SaveDirectory => Path.Combine(Application.persistentDataPath, SaveFolder);
 
-        [HideInInspector]
-        public string InkStoryState;
-
-        // Other flags and whatever else to save game state
-    }
-
-    [System.Serializable]
-    public class SerializableVector3
-    {
-        public float x, y, z;
-
-        public SerializableVector3(Vector3 v)
-        {
-            x = v.x;
-            y = v.y;
-            z = v.z;
-        }
-
-        public Vector3 ToVector3()
-        {
-            return new Vector3(x, y, z);
-        }
-    }
-
-
-
-    // =========================================================================================
-    // GAME STATE MANAGER STUFF BELOW HERE
-    // =========================================================================================
-
-    // GAME STATE STARTS HERE ON EXE OPEN
     private void Awake()
     {
-        GameSingleton.instance.cameraManager.DisableAllCameras();
-
-    }
-    // ==================================
-    public void StartNewGame()
-    {
-
-
-        //GameSingleton.instance.gameStateManager.readLineSave.LoadReadLinesFile();
+        if (!Directory.Exists(SaveDirectory))
+            Directory.CreateDirectory(SaveDirectory);
     }
 
-    public void SaveGame(int saveID)
+    // ===========================
+    // Public API
+    // ===========================
+
+    public void Save(int saveID, Action<SaveData> onComplete = null)
     {
-        //currentSave.saveID = saveID;
-        //currentSave.charOnScreen.Clear();
-        //currentSave.charMood.Clear();
-        //currentSave.charPosition.Clear();
-        //currentSave.saveID = saveID;
-        //currentSave.chapterName = 0.ToString(); // CHANGE THIS LATER
-        //currentSave.saveTimeStamp = System.DateTime.Now.ToString();
-
-        //foreach (Character c in GameSingleton.instance.characterManager.characters)
-        //{
-
-        //    if (c.ingameContainerObj.activeSelf == true)
-        //    {
-        //        currentSave.charOnScreen.Add(c.ingameContainerObj.name.Replace("_Container", ""));
-
-        //        if (string.IsNullOrEmpty(c.currentMood.moodName) == false)
-        //        {
-        //            currentSave.charMood.Add(c.currentMood.moodName);
-        //        }
-        //        else
-        //        {
-        //            currentSave.charMood.Add(c.moods[0].moodName);
-        //        }
-
-        //        // If any animations are playing, skip them to the end before saving position
-        //        if (GameSingleton.instance.spriteAnimationManager.IsAnyAnimationPlaying())
-        //        {
-        //            GameSingleton.instance.spriteAnimationManager.SkipAllToEnd();
-        //        }
-
-        //        currentSave.charPosition.Add(new SerializableVector3(c.ingameContainerObj.transform.localPosition));
-
-        //    }
-        //}
-
-        //currentSave.InkStoryState = GameSingleton.instance.dialogueManager.GetStoryState();
-
-        //string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
-
-        //try
-        //{
-        //    FinalizeSave(saveID);
-        //}
-        //catch (System.Exception e)
-        //{
-        //    Debug.LogError($"Failed to save game: {e}");
-        //}
-
-        //readLineSave.LoadReadLinesFile();
-        //readLineSave.SaveReadLinesFile();
-
-        //// Save should include sprites, positions, animations, background sprite, variables, flags.
-
+        StartCoroutine(SaveRoutine(saveID, onComplete));
     }
 
-    private void FinalizeSave(int saveID)
+    public SaveData Load(int saveID)
     {
-        StartCoroutine(CaptureScreenshotAsBase64((base64) =>
+        string path = GetSavePath(saveID);
+
+        if (!File.Exists(path))
         {
-            currentSave.screenshotBase64 = base64;
+            Debug.LogWarning($"[GameStateManager] No save found with ID {saveID}.");
+            return null;
+        }
 
-            string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
-            string json = JsonUtility.ToJson(currentSave, true);
-            File.WriteAllText(savePath, json);
-            Debug.Log($"Game saved as JSON to {savePath}");
-        }));
+        string json = File.ReadAllText(path);
+        SaveData data = JsonUtility.FromJson<SaveData>(json);
+        Debug.Log($"[GameStateManager] Loaded save {saveID}.");
+        return data;
     }
 
-    public void LoadGame(int saveFileNumber)
+    public void DeleteSave(int saveID)
     {
-        string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveFileNumber.ToString() + GlobalVariables.saveFileExtension;
+        string path = GetSavePath(saveID);
+
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning($"[GameStateManager] No save found with ID {saveID} to delete.");
+            return;
+        }
+
+        File.Delete(path);
+        Debug.Log($"[GameStateManager] Deleted save {saveID}.");
     }
 
-    private List<Camera> saveCamList;
-    public Camera targetScreenshotCamera;
-    public IEnumerator CaptureScreenshotAsBase64(System.Action<string> onComplete)
+    public bool SaveExists(int saveID)
+    {
+        return File.Exists(GetSavePath(saveID));
+    }
+
+    public List<SaveData> LoadAllSaves()
+    {
+        List<SaveData> saves = new List<SaveData>();
+
+        string[] files = Directory.GetFiles(SaveDirectory, SavePrefix + "*" + SaveExtension);
+
+        foreach (string file in files)
+        {
+            string json = File.ReadAllText(file);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+            if (data != null)
+                saves.Add(data);
+        }
+
+        saves.Sort((a, b) => a.saveID.CompareTo(b.saveID));
+        return saves;
+    }
+
+    // ===========================
+    // Save Routine
+    // ===========================
+
+    private IEnumerator SaveRoutine(int saveID, Action<SaveData> onComplete)
     {
         yield return new WaitForEndOfFrame();
 
-        int width = Screen.width;
-        int height = Screen.height;
+        SaveData data = new SaveData();
 
-        // Create a new RenderTexture with the desired dimensions
-        RenderTexture renderTexture = new RenderTexture(width, height, 16);
-        // Set the target camera to render into this new texture
-        targetScreenshotCamera.targetTexture = renderTexture;
+        data.saveID = saveID;
+        data.saveTimeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        data.screenshotBase64 = CaptureScreenshot();
 
-        // This is only needed if the camera is otherwise disabled or not rendering automatically
-        // If the camera is active and rendering, skip this manual Render() call.
-        targetScreenshotCamera.Render();
+        CollectDialogueData(data);
+        CollectCharacterData(data);
+        WriteToFile(data);
 
-        // Set the active RenderTexture to the one we just rendered into
-        RenderTexture.active = renderTexture;
+        Debug.Log($"[GameStateManager] Saved slot {saveID} — chapter: {data.chapterName}.");
+        onComplete?.Invoke(data);
+    }
 
-        // Create a new Texture2D to store the pixel data
-        Texture2D screenShot = new Texture2D(width, height, TextureFormat.RGBA32, false);
+    // ===========================
+    // Data Collection
+    // ===========================
 
-        // Read the pixels from the active RenderTexture into the Texture2D
-        screenShot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-        // Apply the changes to the Texture2D
-        screenShot.Apply();
+    private void CollectDialogueData(SaveData data)
+    {
+        DialogueManager dialogueManager = GameSingleton.instance.dialogueManager;
 
-        // Clean up: restore the camera's original target texture and the active render texture
-        targetScreenshotCamera.targetTexture = null;
+        if (dialogueManager == null)
+        {
+            data.chapterName = "Unknown";
+            data.dialogueGroupID = "";
+            data.dialogueBlockID = "";
+            return;
+        }
+
+        data.chapterName = dialogueManager.currentBlock != null ? dialogueManager.currentBlock.ID : "Unknown";
+        data.dialogueGroupID = dialogueManager.currentGroup != null ? dialogueManager.currentGroup.ID : "";
+        data.dialogueBlockID = dialogueManager.currentBlock != null ? dialogueManager.currentBlock.ID : "";
+    }
+
+
+    private void CollectCharacterData(SaveData data)
+    {
+        data.charactersOnScreen = new List<string>();
+        data.charactersMood = new List<string>();
+        data.charactersPosition = new List<SerializableVector3>();
+
+        CharacterManager characterManager = GameSingleton.instance.characterManager;
+
+        if (characterManager == null) return;
+
+        foreach (Character character in characterManager.characters)
+        {
+            if (character.ingameContainerObj == null) continue;
+            if (!character.ingameContainerObj.activeSelf) continue;
+
+            data.charactersOnScreen.Add(character.characterName);
+            data.charactersMood.Add(character.currentMood != null ? character.currentMood.moodName : "");
+            data.charactersPosition.Add(new SerializableVector3(
+                character.ingameContainerObj.transform.localPosition
+            ));
+        }
+    }
+
+
+
+    private string CaptureScreenshot()
+    {
+        Camera mainCam = Camera.main;
+
+        if (mainCam == null)
+        {
+            Debug.LogWarning("[GameStateManager] No main camera found for screenshot.");
+            return "";
+        }
+
+        RenderTexture rt = new RenderTexture(screenshotWidth, screenshotHeight, 24);
+        RenderTexture previousTarget = mainCam.targetTexture;
+
+        mainCam.targetTexture = rt;
+        mainCam.Render();
+        mainCam.targetTexture = previousTarget;
+
+        RenderTexture.active = rt;
+        Texture2D screenshot = new Texture2D(screenshotWidth, screenshotHeight, TextureFormat.RGB24, false);
+        screenshot.ReadPixels(new Rect(0, 0, screenshotWidth, screenshotHeight), 0, 0);
+        screenshot.Apply();
         RenderTexture.active = null;
 
-        // Release the temporary RenderTexture from memory
-        renderTexture.Release();
-        Destroy(renderTexture);
+        byte[] bytes = screenshot.EncodeToJPG(60);
+        string base64 = Convert.ToBase64String(bytes);
 
+        Destroy(rt);
+        Destroy(screenshot);
 
-        byte[] bytes = screenShot.EncodeToJPG(50);
-        UnityEngine.Object.Destroy(screenShot);
-
-        string base64 = System.Convert.ToBase64String(bytes);
-
-        onComplete?.Invoke(base64);
-
+        return base64;
     }
 
+    // ===========================
+    // File IO
+    // ===========================
 
-    public Sprite GetLoadedScreenshotSprite()
+    private void WriteToFile(SaveData data)
     {
-        if (string.IsNullOrEmpty(currentSave.screenshotBase64)) return null;
-
-
-        byte[] imageData = System.Convert.FromBase64String(currentSave.screenshotBase64);
-        Texture2D tex = new Texture2D(2, 2);
-        tex.LoadImage(imageData);
-        return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(GetSavePath(data.saveID), json);
     }
 
-    public Sprite LoadScreenshotSprite(int saveID)
+    private string GetSavePath(int saveID)
     {
-        string savePath = Application.persistentDataPath + GlobalVariables.saveFileBaseName + saveID.ToString() + GlobalVariables.saveFileExtension;
-
-        if (File.Exists(savePath))
-        {
-            string json = File.ReadAllText(savePath);
-            string screenShotData = JsonUtility.FromJson<SaveData>(json).screenshotBase64;
-
-            byte[] imageData = System.Convert.FromBase64String(screenShotData);
-            Texture2D tex = new Texture2D(2, 2);
-            tex.LoadImage(imageData);
-
-            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-        }
-        else
-        {
-            // TODO: IF NO SAVE FILE FOUND, RETURN A DEFAULT IMAGE
-            return null;
-        }
-    }
-
-
-    private void OnApplicationQuit()
-    {
-        //readLineSave.SaveReadLinesFile();
+        return Path.Combine(SaveDirectory, SavePrefix + saveID + SaveExtension);
     }
 }

@@ -16,6 +16,7 @@ public class GameSingleton : MonoBehaviour
     public CharacterManager characterManager                { get; private set; }
     public SpriteAnimationManager spriteAnimationManager    { get; private set; }
     public DialogueManager dialogueManager                  { get; private set; }
+    public GameStateManager gameStateManager                { get; private set; }
 
 
     void Awake()
@@ -41,6 +42,7 @@ public class GameSingleton : MonoBehaviour
         characterManager        = GetComponentInChildren<CharacterManager>();
         spriteAnimationManager  = GetComponentInChildren<SpriteAnimationManager>();
         dialogueManager         = GetComponentInChildren<DialogueManager>();
+        gameStateManager        = GetComponentInChildren<GameStateManager>();
 
     }
 

@@ -683,7 +683,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 195582241}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 518a45c75ffe93e498608b921bee3e4b, type: 3}
   m_Name: 
@@ -853,7 +853,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 2
+  ID: 4
+  saveDescription: 
   textBox: {fileID: 1388025002}
   nodes:
   - rid: -2
@@ -887,11 +888,11 @@ MonoBehaviour:
     - rid: 776523929964511345
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
-        text: fgdfggfg  ghfye bloco2 node 2
-        appendText: 1
-        requirePlayerClickContinue: 0
-        overwriteTextSpeed: 0
-        textSpeed: 0.04
+        text: This is Script2, Node 2 and this text is looong
+        appendText: 0
+        requirePlayerClickContinue: 1
+        overwriteTextSpeed: 1
+        textSpeed: 0.1
     - rid: 776524142446379079
       type: {class: DialogueHideCharacterNode, ns: , asm: Assembly-CSharp}
       data:
@@ -1974,9 +1975,9 @@ RectTransform:
   - {fileID: 1437561785}
   m_Father: {fileID: 287403222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 570, y: -115}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &425186739
@@ -2385,7 +2386,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5733306449823486952}
   - component: {fileID: 5733306449823486948}
-  - component: {fileID: 5733306449823486951}
   - component: {fileID: 5733306449823486950}
   m_Layer: 6
   m_Name: MainMenuCamera
@@ -2551,7 +2551,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc90e1ec1da6fb4ca943ee40cf7d346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 1
+  ID: 3
+  saveDescription: 
   textBox: {fileID: 1388025002}
   nodes:
   - rid: -2
@@ -2585,7 +2586,7 @@ MonoBehaviour:
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
         text: '<size=150%>TextNew 222</size> ...  '
-        appendText: 0
+        appendText: 1
         requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
@@ -3625,6 +3626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 
+  saveDescription: 
   textBox: {fileID: 0}
   nodes: []
   references:
@@ -6425,7 +6427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1185690207
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6865,9 +6867,9 @@ RectTransform:
   - {fileID: 831530011}
   m_Father: {fileID: 287403222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 1350, y: -115}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1233157736
@@ -7861,7 +7863,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
+  m_sendNavigationEvents: 0
   m_DragThreshold: 10
 --- !u!1 &1377147754
 GameObject:
@@ -8398,6 +8400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 1
+  saveDescription: 
   textBox: {fileID: 1388025002}
   nodes:
   - rid: -2
@@ -8932,6 +8935,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2107118083}
+  - {fileID: 2070489121}
   - {fileID: 339441873}
   - {fileID: 2051292517}
   - {fileID: 1375751888}
@@ -11478,7 +11482,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1917982774}
   - component: {fileID: 1917982777}
-  - component: {fileID: 1917982776}
   - component: {fileID: 1917982775}
   m_Layer: 6
   m_Name: Window1Camera
@@ -11550,14 +11553,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &1917982776
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1917982773}
-  m_Enabled: 1
 --- !u!20 &1917982777
 Camera:
   m_ObjectHideFlags: 0
@@ -11805,7 +11800,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2070489122}
         m_TargetAssemblyTypeName: SceneLoaderManager, Assembly-CSharp
         m_MethodName: LoadWindow1
         m_Mode: 1
@@ -11817,13 +11812,13 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameStateManager, Assembly-CSharp
-        m_MethodName: StartNewGame
-        m_Mode: 1
+      - m_Target: {fileID: 586249823}
+        m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
+        m_MethodName: PlayGroup
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 195582244}
+          m_ObjectArgumentAssemblyTypeName: DialogueGroup, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -11897,6 +11892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 2
+  saveDescription: 
   textBox: {fileID: 1388025002}
   nodes:
   - rid: -2
@@ -11934,7 +11930,7 @@ MonoBehaviour:
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
         text: test123
-        appendText: 1
+        appendText: 0
         requirePlayerClickContinue: 1
         overwriteTextSpeed: 0
         textSpeed: 0.04
@@ -11956,7 +11952,7 @@ MonoBehaviour:
       data:
         text: tetetet
         appendText: 1
-        requirePlayerClickContinue: 0
+        requirePlayerClickContinue: 1
         overwriteTextSpeed: 0
         textSpeed: 0.04
 --- !u!4 &1979431210
@@ -12205,10 +12201,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SceneLoaderManager, Assembly-CSharp
-        m_MethodName: LoadSaveMenu
-        m_Mode: 1
+      - m_Target: {fileID: 2107118084}
+        m_TargetAssemblyTypeName: CameraManager, Assembly-CSharp
+        m_MethodName: EnableOverlayCanvas
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -12696,25 +12692,13 @@ MonoBehaviour:
       m_Calls: []
   cPressDown:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 586249823}
-        m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: StartFastForward
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   leftClickPressDown:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 586249823}
         m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: OnContinueClicked
+        m_MethodName: DialogueContinueClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12738,7 +12722,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: e0f914f940c2e8147ba5d928a567e107, type: 3}
   m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 1375751889}
+  m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -13046,6 +13030,51 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &2070489120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2070489121}
+  - component: {fileID: 2070489122}
+  m_Layer: 0
+  m_Name: SceneLoaderManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2070489121
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070489120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442938524}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2070489122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070489120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9262697331d7b1b4294a3bbc13190c2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiController: {fileID: 1794083510}
 --- !u!1 &2078782093
 GameObject:
   m_ObjectHideFlags: 0
@@ -13758,14 +13787,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &5733306449823486951
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 471464622}
-  m_Enabled: 0
 --- !u!4 &5733306449823486952
 Transform:
   m_ObjectHideFlags: 0

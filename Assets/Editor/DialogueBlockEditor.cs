@@ -8,6 +8,7 @@ public class DialogueBlockEditor : Editor
     SerializedProperty nodes;
     SerializedProperty id;
     SerializedProperty textBox;
+    SerializedProperty saveDescription;
 
     bool[] foldouts;
 
@@ -16,6 +17,7 @@ public class DialogueBlockEditor : Editor
         nodes = serializedObject.FindProperty("nodes");
         id = serializedObject.FindProperty("ID");
         textBox = serializedObject.FindProperty("textBox");
+        saveDescription = serializedObject.FindProperty("saveDescription");
 
         SerializedProperty nodesProp = serializedObject.FindProperty("nodes"); // your nodes array
         foldouts = new bool[nodesProp.arraySize];
@@ -53,6 +55,7 @@ public class DialogueBlockEditor : Editor
 
         EditorGUILayout.PropertyField(id);
         EditorGUILayout.PropertyField(textBox);
+        EditorGUILayout.PropertyField(saveDescription);
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Dialogue Nodes", EditorStyles.boldLabel);

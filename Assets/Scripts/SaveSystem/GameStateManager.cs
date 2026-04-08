@@ -119,14 +119,34 @@ public class GameStateManager : MonoBehaviour
         if (dialogueManager == null)
         {
             data.chapterName = "Unknown";
+            data.description = "";
             data.dialogueGroupID = "";
             data.dialogueBlockID = "";
             return;
         }
 
-        data.chapterName = dialogueManager.currentBlock != null ? dialogueManager.currentBlock.ID : "Unknown";
-        data.dialogueGroupID = dialogueManager.currentGroup != null ? dialogueManager.currentGroup.ID : "";
-        data.dialogueBlockID = dialogueManager.currentBlock != null ? dialogueManager.currentBlock.ID : "";
+        if (dialogueManager.currentBlock != null)
+            data.chapterName = dialogueManager.currentBlock.ID;
+        else
+            data.chapterName = "Unknown";
+
+
+        if (dialogueManager.currentBlock != null)
+            data.description = dialogueManager.currentBlock.saveDescription;
+        else
+            data.description = "";
+
+
+        if (dialogueManager.currentGroup != null)
+            data.dialogueGroupID = dialogueManager.currentGroup.ID;
+        else
+            data.dialogueGroupID = "";
+
+
+        if (dialogueManager.currentBlock != null)
+            data.dialogueBlockID = dialogueManager.currentBlock.ID;
+        else
+            data.dialogueBlockID = "";
     }
 
 

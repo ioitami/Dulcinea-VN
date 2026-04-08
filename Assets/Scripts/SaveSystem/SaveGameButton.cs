@@ -9,12 +9,12 @@ public class SaveGameButton : MonoBehaviour
     public int saveSlotNumber;
     public Image saveSpritePreview;
     public TextMeshProUGUI saveID_Text;
-    //public TextMeshProUGUI chapterName_Text;
-    //public TextMeshProUGUI saveTimeStamp_Text;
+    public TextMeshProUGUI chapterName_Text;
+    public TextMeshProUGUI saveTimeStamp_Text;
 
     public void SaveGame(int saveFileNumber)
     {
-        //GameSingleton.instance.gameStateManager?.SaveGame(saveFileNumber);
+        GameSingleton.instance.gameStateManager?.Save(saveFileNumber);
 
         StartCoroutine(DelayedSpritePreview(0.05f));
     }

@@ -26,29 +26,26 @@ public class CameraManager : MonoBehaviour
 
     public List<Transform> savedOverlayCameraList;
 
-    public void EnableCamera(bool isMain, int id)
+
+    public void EnableMainCamera(int id)
     {
-        if(isMain == true)
-        {
-            ResetActiveCameraList(isMain); // only one main cam should be active at a time
-            mainCameraList[id].gameObject.SetActive(true);
-        }
-        else
-        {
-            overlayCameraList[id].gameObject.SetActive(true);
-        }
+        DisableAllMainCameras(); // only one main cam should be active at a time
+        mainCameraList[id].gameObject.SetActive(true);
     }
 
-    public void DisableCamera(bool isMain, int id)
+    public void EnableOverlayCamera(int id)
     {
-        if (isMain == true)
-        {
-            mainCameraList[id].gameObject.SetActive(false);
-        }
-        else
-        {
-            overlayCameraList[id].gameObject.SetActive(false);
-        }
+        overlayCameraList[id].gameObject.SetActive(true);
+    }
+
+    public void DisableMainCamera(int id)
+    {
+        mainCameraList[id].gameObject.SetActive(false);
+    }
+
+    public void DisableOverlayCamera(int id)
+    {
+        overlayCameraList[id].gameObject.SetActive(false);
     }
 
     public void DisableAllCameras()
@@ -59,6 +56,14 @@ public class CameraManager : MonoBehaviour
         }
 
         foreach (Transform t in overlayCameraList)
+        {
+            t.gameObject.SetActive(false);
+        }
+    }
+
+    public void DisableAllMainCameras()
+    {
+        foreach (Transform t in mainCameraList)
         {
             t.gameObject.SetActive(false);
         }
@@ -86,25 +91,6 @@ public class CameraManager : MonoBehaviour
         savedOverlayCameraList.Clear();
     }
 
-
-
-    public void ResetActiveCameraList(bool isMain)
-    {
-        if (isMain == true) 
-        {
-            foreach (Transform t in mainCameraList)
-            {
-                t.gameObject.SetActive(false);
-            }
-        }
-        else
-        {
-            foreach (Transform t in overlayCameraList)
-            {
-                t.gameObject.SetActive(false);
-            }
-        }
-    }
 
     public void DisableAllOverlayCanvas()
     {

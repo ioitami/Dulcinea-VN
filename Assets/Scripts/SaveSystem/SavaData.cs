@@ -6,6 +6,7 @@ public class SaveData
 {
     public int saveID;
     public string chapterName;
+    public string description;
     public string saveTimeStamp;
     public string screenshotBase64;
     public string dialogueGroupID;

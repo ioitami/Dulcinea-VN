@@ -141,8 +141,10 @@ public class DialogueManager : MonoBehaviour
 
 
 
-    public void OnContinueClicked()
+    public void DialogueContinueClicked()
     {
+        Debug.Log("OnContinueClicked run");
+
         if (!GlobalAllowDialogueClick) return;
 
         if (isFastForwarding)
@@ -170,6 +172,7 @@ public class DialogueManager : MonoBehaviour
 
     public void StartFastForward()
     {
+        Debug.Log("Starting FastForward");
         if (!GlobalAllowDialogueClick) return;
         if (isFastForwarding) return;
 
@@ -296,6 +299,7 @@ public class DialogueManager : MonoBehaviour
         // Determine requireClick from the node that was interrupted
         int lastIndex = currentNodeIndex - 1;
         bool requireClick = clickToContinueEnabled;
+
         if (lastIndex >= 0 && lastIndex < currentBlock.nodes.Length)
             if (currentBlock.nodes[lastIndex] is DialogueTextNode tn)
                 requireClick = tn.requirePlayerClickContinue || clickToContinueEnabled;
@@ -324,12 +328,13 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator FastForwardRoutine()
     {
+        Debug.Log("FastForwarding...");
         while (isFastForwarding)
         {
             if (isTyping)
                 SkipTyping();
             else if (isWaitingForClick)
-                OnContinueClicked();
+                DialogueContinueClicked();
 
             yield return new WaitForSeconds(fastForwardDelay);
         }

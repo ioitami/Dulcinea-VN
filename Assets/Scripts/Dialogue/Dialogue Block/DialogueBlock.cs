@@ -7,6 +7,7 @@ using UnityEngine.TextCore.Text;
 public class DialogueBlock : MonoBehaviour
 {
     public string ID;
+    public string saveDescription;
     public TextMeshProUGUI textBox;
 
     [SerializeReference]

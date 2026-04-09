@@ -46,7 +46,9 @@ public class DialogueManager : MonoBehaviour
     private Coroutine blinkCoroutine;
     private Coroutine fastForwardCoroutine;
 
-    public bool isFastForwarding { get; private set; }
+
+    [SerializeField]
+    public bool isFastForwarding = false;
 
     // ===========================
     // Public API
@@ -100,7 +102,6 @@ public class DialogueManager : MonoBehaviour
         isTyping = false;
         isWaitingForClick = false;
         clickToContinueEnabled = false;
-        isFastForwarding = false;
         onBlockComplete = onComplete;
 
         if (currentBlock.textBox != null)
@@ -143,15 +144,7 @@ public class DialogueManager : MonoBehaviour
 
     public void DialogueContinueClicked()
     {
-        Debug.Log("OnContinueClicked run");
-
         if (!GlobalAllowDialogueClick) return;
-
-        if (isFastForwarding)
-        {
-            StopFastForward();
-            return;
-        }
 
         if (isTyping)
         {
@@ -172,19 +165,27 @@ public class DialogueManager : MonoBehaviour
 
     public void StartFastForward()
     {
-        Debug.Log("Starting FastForward");
         if (!GlobalAllowDialogueClick) return;
         if (isFastForwarding) return;
 
+        Debug.Log("Starting FastForward");
         isFastForwarding = true;
+        isWaitingForClick = false;
 
-        if (fastForwardCoroutine != null) StopCoroutine(fastForwardCoroutine);
 
-        fastForwardCoroutine = StartCoroutine(FastForwardRoutine());
+        if (isTyping)
+        {
+            SkipTyping();
+        }
+        else
+        {
+            ProcessNextNode();
+        }
     }
 
     public void StopFastForward()
     {
+        Debug.Log("Stopping FastForward");
         isFastForwarding = false;
 
         if (fastForwardCoroutine != null)
@@ -211,8 +212,11 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // Hard stop — do not advance until the player clicks
-        if (isWaitingForClick) return;
+        // Hard stop — do not advance if waiting for click is true and fast forwarding is disabled
+        if (isFastForwarding == false && isWaitingForClick == true)
+        {
+            return;
+        }
 
         if (currentNodeIndex >= currentBlock.nodes.Length)
         {
@@ -229,7 +233,21 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        node.Execute(this, ProcessNextNode);
+        if (isFastForwarding)
+            node.Execute(this, DelayedProcessNextNode);
+        else
+            node.Execute(this, ProcessNextNode);
+    }
+
+    private void DelayedProcessNextNode()
+    {
+        StartCoroutine(DelayedProcessNextNodeRoutine());
+    }
+
+    private IEnumerator DelayedProcessNextNodeRoutine()
+    {
+        yield return new WaitForSeconds(fastForwardDelay);
+        ProcessNextNode();
     }
 
     // ===========================
@@ -242,6 +260,16 @@ public class DialogueManager : MonoBehaviour
             lastTypedText = currentBlock.textBox.text + text;
         else
             lastTypedText = text;
+
+
+        if (isFastForwarding)
+        {
+            Debug.Log("Group: " + currentGroup.name + ", DialogueBlock index: " + currentBlockIndex + ", DialogueNode index: " + currentNodeIndex);
+            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+            isWaitingForClick = false;
+            SkipTyping();
+            return;
+        }
 
 
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
@@ -310,6 +338,12 @@ public class DialogueManager : MonoBehaviour
 
     private void OnTextFinished(bool requireClick, Action onComplete)
     {
+        if(isFastForwarding)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
         if (requireClick || isWaitingForClick)
         {
             isWaitingForClick = true;
@@ -329,12 +363,10 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator FastForwardRoutine()
     {
         Debug.Log("FastForwarding...");
+
         while (isFastForwarding)
         {
-            if (isTyping)
-                SkipTyping();
-            else if (isWaitingForClick)
-                DialogueContinueClicked();
+            Debug.Log("FastForwarding tick...");
 
             yield return new WaitForSeconds(fastForwardDelay);
         }
@@ -399,6 +431,7 @@ public class DialogueManager : MonoBehaviour
         currentBlock = null;
         Debug.Log("[DialogueManager] Block finished.");
 
+
         Action callback = onBlockComplete;
         onBlockComplete = null;
         callback?.Invoke();
@@ -409,4 +442,5 @@ public class DialogueManager : MonoBehaviour
         currentGroup = null;
         Debug.Log("[DialogueManager] Group finished.");
     }
+
 }

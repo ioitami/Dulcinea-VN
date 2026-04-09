@@ -53,6 +53,7 @@ public class DialoguePauseNode : DialogueBlockNode
 
     public override void Execute(DialogueManager manager, Action onComplete)
     {
+
         manager.StartCoroutine(PauseRoutine(onComplete));
     }
 
@@ -71,6 +72,12 @@ public class DialogueChoiceNode : DialogueBlockNode
 
     public override void Execute(DialogueManager manager, Action onComplete)
     {
+        if (manager.isFastForwarding)
+        {
+            manager.StopFastForward();
+        }
+
+
         // Placeholder ÅEwire up choice UI here, call onComplete when a choice is picked
         Debug.Log("[DialogueChoiceNode] Choice UI not yet implemented.");
     }
@@ -202,7 +209,8 @@ public class DialoguePlayAnimationNode : DialogueBlockNode
 
         Character character = characterManager.characters[characterIndex];
 
-        if (command == AnimationCommand.Skip)
+
+        if (command == AnimationCommand.Skip || manager.isFastForwarding)
         {
             animManager.SkipToEnd(animationName, character.ingameContainerObj.transform);
             onComplete?.Invoke();

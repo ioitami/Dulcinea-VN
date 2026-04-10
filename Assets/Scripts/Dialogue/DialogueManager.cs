@@ -187,6 +187,7 @@ public class DialogueManager : MonoBehaviour
     {
         Debug.Log("Stopping FastForward");
         isFastForwarding = false;
+        
 
         if (fastForwardCoroutine != null)
         {

@@ -2531,6 +2531,7 @@ MonoBehaviour:
   nodes:
   - rid: 7314505712279486525
   - rid: 7314505712279486526
+  - rid: 7314505731947626560
   - rid: 7314505712279486527
   references:
     version: 2
@@ -2546,7 +2547,7 @@ MonoBehaviour:
     - rid: 7314505712279486526
       type: {class: DialoguePauseNode, ns: , asm: Assembly-CSharp}
       data:
-        pauseDuration: 0.5
+        pauseDuration: 1
     - rid: 7314505712279486527
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -2555,6 +2556,10 @@ MonoBehaviour:
         requirePlayerClickContinue: 1
         overwriteTextSpeed: 0
         textSpeed: 0.04
+    - rid: 7314505731947626560
+      type: {class: DialogueHideCharacterNode, ns: , asm: Assembly-CSharp}
+      data:
+        characterIndex: 0
 --- !u!4 &528105940
 Transform:
   m_ObjectHideFlags: 0
@@ -2691,7 +2696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextIcon: {fileID: 1930329758}
   typingSpeed: 0.04
-  fastForwardDelay: 1
+  fastForwardDelay: 0.1
   blinkSpeed: 0.8
   GlobalAllowDialogueClick: 1
   currentBlock: {fileID: 0}
@@ -8347,6 +8352,7 @@ MonoBehaviour:
   textBox: {fileID: 1388025002}
   nodes:
   - rid: 7314505712279486525
+  - rid: 7314505731947626559
   - rid: 7314505712279486527
   references:
     version: 2
@@ -8367,6 +8373,17 @@ MonoBehaviour:
         requirePlayerClickContinue: 1
         overwriteTextSpeed: 0
         textSpeed: 0.04
+    - rid: 7314505731947626559
+      type: {class: DialogueShowCharacterNode, ns: , asm: Assembly-CSharp}
+      data:
+        characterIndex: 0
+        moodIndex: 1
+        scaleCommand: 0
+        scale: {x: 1, y: 1, z: 1}
+        positionCommand: 0
+        positionMode: 0
+        presetPositionIndex: 3
+        manualPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1418912841
 GameObject:
   m_ObjectHideFlags: 0

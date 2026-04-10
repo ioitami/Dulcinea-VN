@@ -179,7 +179,7 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            ProcessNextNode();
+            OnNodeCompletedFastForward();
         }
     }
 
@@ -212,7 +212,7 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // Hard stop — do not advance if waiting for click is true and fast forwarding is disabled
+        // Do not advance if waiting for click is true and fast forwarding is disabled
         if (isFastForwarding == false && isWaitingForClick == true)
         {
             return;
@@ -234,20 +234,30 @@ public class DialogueManager : MonoBehaviour
         }
 
         if (isFastForwarding)
-            node.Execute(this, DelayedProcessNextNode);
+            node.Execute(this, OnNodeCompletedFastForward);
         else
             node.Execute(this, ProcessNextNode);
     }
 
-    private void DelayedProcessNextNode()
+    private void OnNodeCompletedFastForward()
     {
-        StartCoroutine(DelayedProcessNextNodeRoutine());
+        if (!isFastForwarding)
+        {
+            ProcessNextNode();
+            return;
+        }
+
+        if (fastForwardCoroutine != null) StopCoroutine(fastForwardCoroutine);
+
+        fastForwardCoroutine = StartCoroutine(FastForwardDelayRoutine());
     }
 
-    private IEnumerator DelayedProcessNextNodeRoutine()
+    private IEnumerator FastForwardDelayRoutine()
     {
         yield return new WaitForSeconds(fastForwardDelay);
-        ProcessNextNode();
+
+        if (isFastForwarding)
+            ProcessNextNode();
     }
 
     // ===========================
@@ -256,24 +266,19 @@ public class DialogueManager : MonoBehaviour
 
     public void StartTyping(string text, float speed, bool append, bool requireClick, Action onComplete)
     {
+        Debug.Log("Currently Typing in Text Node... Group: " + currentGroup.name + ", DialogueBlock index: " + currentBlockIndex + ", DialogueNode index: " + currentNodeIndex);
+
         if (append && currentBlock.textBox != null)
             lastTypedText = currentBlock.textBox.text + text;
         else
             lastTypedText = text;
 
 
-        if (isFastForwarding)
-        {
-            Debug.Log("Group: " + currentGroup.name + ", DialogueBlock index: " + currentBlockIndex + ", DialogueNode index: " + currentNodeIndex);
-            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
-            isWaitingForClick = false;
-            SkipTyping();
-            return;
-        }
-
-
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
         typingCoroutine = StartCoroutine(TypeRoutine(text, speed, append, requireClick, onComplete));
+
+        if (isFastForwarding)
+            SkipTyping();
     }
 
     private IEnumerator TypeRoutine(string text, float speed, bool append, bool requireClick, Action onComplete)
@@ -340,11 +345,13 @@ public class DialogueManager : MonoBehaviour
     {
         if(isFastForwarding)
         {
-            onComplete?.Invoke();
+            // Don't wait for click
+            isWaitingForClick = false;
+            OnNodeCompletedFastForward();
             return;
         }
 
-        if (requireClick || isWaitingForClick)
+        if (requireClick || clickToContinueEnabled)
         {
             isWaitingForClick = true;
             pendingOnComplete = onComplete;

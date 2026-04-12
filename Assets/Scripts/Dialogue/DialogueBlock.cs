@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
+using UnityEngine.UI;
 
 public class DialogueBlock : MonoBehaviour
 {
@@ -68,19 +70,84 @@ public class DialoguePauseNode : DialogueBlockNode
 [Serializable]
 public class DialogueChoiceNode : DialogueBlockNode
 {
-    public string[] choices;
+    public GameObject choicePrefab;
+    public Transform choiceContainerParent;
+    public List<DialogueChoice> choices = new List<DialogueChoice>();
 
     public override void Execute(DialogueManager manager, Action onComplete)
     {
+        if (choicePrefab == null)
+        {
+            Debug.LogWarning("[DialogueChoiceNode] No choice prefab assigned.");
+            onComplete?.Invoke();
+            return;
+        }
+
+        if (choiceContainerParent == null)
+        {
+            Debug.LogWarning("[DialogueChoiceNode] No choice container parent assigned.");
+            onComplete?.Invoke();
+            return;
+        }
+
+        foreach (DialogueChoice choice in choices)
+        {
+            GameObject choiceObj = GameObject.Instantiate(choicePrefab, choiceContainerParent);
+
+            // Set button text on the child text component
+            TextMeshProUGUI label = choiceObj.GetComponentInChildren<TextMeshProUGUI>();
+            if (label != null)
+                label.text = choice.text;
+
+            // Wire up the button onclick
+            Button button = choiceObj.GetComponent<Button>();
+            if (button != null)
+            {
+                // Capture local reference for the lambda
+                DialogueChoice capturedChoice = choice;
+
+                button.onClick.AddListener(() =>
+                {
+                    capturedChoice.onSelected?.Invoke();
+                    CleanupChoices();
+
+                    if (capturedChoice.linkedGroup != null)
+                    {
+                        manager.PlaySpecificBlockInGroup(capturedChoice.linkedGroup, capturedChoice.linkedBlock);
+                    }
+                    else
+                    {
+                        onComplete?.Invoke();
+                    }
+
+                });
+            }
+        }
+
+
         if (manager.isFastForwarding)
         {
             manager.StopFastForward();
         }
 
-
-        // Placeholder ÅEwire up choice UI here, call onComplete when a choice is picked
-        Debug.Log("[DialogueChoiceNode] Choice UI not yet implemented.");
     }
+
+    private void CleanupChoices()
+    {
+        if (choiceContainerParent == null) return;
+
+        foreach (Transform child in choiceContainerParent)
+            GameObject.Destroy(child.gameObject);
+    }
+}
+
+[Serializable]
+public class DialogueChoice
+{
+    public string text;
+    public DialogueGroup linkedGroup;
+    public DialogueBlock linkedBlock;
+    public UnityEvent onSelected;
 }
 
 

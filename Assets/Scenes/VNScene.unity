@@ -6973,6 +6973,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1237805812}
   - component: {fileID: 1237805811}
+  - component: {fileID: 1237805813}
   m_Layer: 5
   m_Name: ChoiceContainer
   m_TagString: Untagged
@@ -6998,7 +6999,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: -50
+  m_Spacing: 75
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -7023,8 +7024,22 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 600}
+  m_SizeDelta: {x: -1910, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1237805813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1237805810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &1240225010
 GameObject:
   m_ObjectHideFlags: 0
@@ -8354,9 +8369,28 @@ MonoBehaviour:
   - rid: 7314505712279486525
   - rid: 7314505731947626559
   - rid: 7314505712279486527
+  - rid: 1554742707323142212
   references:
     version: 2
     RefIds:
+    - rid: 1554742707323142212
+      type: {class: DialogueChoiceNode, ns: , asm: Assembly-CSharp}
+      data:
+        choicePrefab: {fileID: 8663513004436076869, guid: 9ff0dd23fc875b64491542795c185849, type: 3}
+        choiceContainerParent: {fileID: 1237805812}
+        choices:
+        - text: This is Choice 1
+          linkedGroup: {fileID: 195582244}
+          linkedBlock: {fileID: 1979431211}
+          onSelected:
+            m_PersistentCalls:
+              m_Calls: []
+        - text: This is Choice 2
+          linkedGroup: {fileID: 1558606597}
+          linkedBlock: {fileID: 247370599}
+          onSelected:
+            m_PersistentCalls:
+              m_Calls: []
     - rid: 7314505712279486525
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -8370,7 +8404,7 @@ MonoBehaviour:
       data:
         text: This is Group 1 Block 1 Node 2 (2)
         appendText: 1
-        requirePlayerClickContinue: 1
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
     - rid: 7314505731947626559

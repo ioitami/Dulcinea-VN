@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.TextCore.Text;
 
 [System.Serializable]
@@ -16,6 +17,10 @@ public class Character : MonoBehaviour
 
     [Header("Moods")]
     public List<CharacterMood> moods = new List<CharacterMood>();
+
+    [Header("Dialogue UI")]
+    public Sprite dialogueBoxImage;
+    public Sprite dialogueBoxCharIconImage;
 
     [HideInInspector] public GameObject container;
     [HideInInspector] public SpriteRenderer spriteRenderer;

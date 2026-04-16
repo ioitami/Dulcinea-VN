@@ -12,6 +12,10 @@ public class DialogueBlock : MonoBehaviour
     public string saveDescription;
     public TextMeshProUGUI textBox;
 
+    [Header("Dialogue UI")]
+    public Image dialogueBoxImage;
+    public Image dialogueBoxCharIconImage;
+
     [SerializeReference]
     public DialogueBlockNode[] nodes;
 }
@@ -35,6 +39,9 @@ public class DialogueTextNode : DialogueBlockNode
     public bool overwriteTextSpeed;
     public float textSpeed = 0.04f;
 
+    public int characterIndex = -1; // -1 = None
+
+
     public override void Execute(DialogueManager manager, Action onComplete)
     {
         float speed;
@@ -44,7 +51,72 @@ public class DialogueTextNode : DialogueBlockNode
             speed = manager.typingSpeed;
 
 
+        // Add change textbox background UI and character icon (used instead of name) here based on the characterindex
+        ApplyCharacterUI(manager);
+
+
         manager.StartTyping(text, speed, appendText, requirePlayerClickContinue, onComplete);
+    }
+
+    private void ApplyCharacterUI(DialogueManager manager)
+    {
+        if (characterIndex == -1) return;
+
+        CharacterManager characterManager = GameSingleton.instance.characterManager;
+        if (characterManager == null) return;
+        if (characterIndex < 0 || characterIndex >= characterManager.characters.Count) return;
+
+        Character character = characterManager.characters[characterIndex];
+        DialogueBlock block = manager.currentBlock;
+
+        if (block == null) return;
+
+        Debug.Log("Applying dialogue box UI");
+
+        if (block.dialogueBoxImage != null && character.dialogueBoxImage != null)
+            block.dialogueBoxImage.sprite = character.dialogueBoxImage;
+
+        if (block.dialogueBoxCharIconImage != null && character.dialogueBoxCharIconImage != null)
+            block.dialogueBoxCharIconImage.sprite = character.dialogueBoxCharIconImage;
+    }
+}
+
+
+[Serializable]
+public class DialogueChangeTextBoxUINode : DialogueBlockNode
+{
+    public Image targetDialogueBoxImage;
+    public Image targetDialogueBoxCharIconImage;
+    public Sprite sourceDialogueBoxImage;
+    public Sprite sourceDialogueBoxCharIconImage;
+
+    public bool changeDialogueBoxColor;
+    public Color dialogueBoxColor = Color.white;
+
+    public bool changeCharIconColor;
+    public Color charIconColor = Color.white;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        if (targetDialogueBoxImage != null)
+        {
+            if (sourceDialogueBoxImage != null)
+                targetDialogueBoxImage.sprite = sourceDialogueBoxImage;
+
+            if (changeDialogueBoxColor)
+                targetDialogueBoxImage.color = dialogueBoxColor;
+        }
+
+        if (targetDialogueBoxCharIconImage != null)
+        {
+            if (sourceDialogueBoxCharIconImage != null)
+                targetDialogueBoxCharIconImage.sprite = sourceDialogueBoxCharIconImage;
+
+            if (changeCharIconColor)
+                targetDialogueBoxCharIconImage.color = charIconColor;
+        }
+
+        onComplete?.Invoke();
     }
 }
 

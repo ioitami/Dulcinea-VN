@@ -8,6 +8,10 @@ public class DialogueBlockEditor : Editor
     SerializedProperty nodes;
     SerializedProperty id;
     SerializedProperty textBox;
+
+    SerializedProperty dialogueBoxImage;
+    SerializedProperty dialogueBoxCharIconImage;
+
     SerializedProperty saveDescription;
 
     bool[] foldouts;
@@ -17,6 +21,9 @@ public class DialogueBlockEditor : Editor
         nodes = serializedObject.FindProperty("nodes");
         id = serializedObject.FindProperty("ID");
         textBox = serializedObject.FindProperty("textBox");
+        dialogueBoxImage = serializedObject.FindProperty("dialogueBoxImage");
+        dialogueBoxCharIconImage = serializedObject.FindProperty("dialogueBoxCharIconImage");
+
         saveDescription = serializedObject.FindProperty("saveDescription");
 
         SerializedProperty nodesProp = serializedObject.FindProperty("nodes"); // your nodes array
@@ -55,6 +62,10 @@ public class DialogueBlockEditor : Editor
 
         EditorGUILayout.PropertyField(id);
         EditorGUILayout.PropertyField(textBox);
+        EditorGUILayout.PropertyField(dialogueBoxImage);
+        EditorGUILayout.PropertyField(dialogueBoxCharIconImage);
+
+        EditorGUILayout.Space();
         EditorGUILayout.PropertyField(saveDescription);
 
         EditorGUILayout.Space();
@@ -167,6 +178,7 @@ public class DialogueBlockEditor : Editor
         GenericMenu menu = new GenericMenu();
 
         menu.AddItem(new GUIContent("Text Node"), false, () => AddNode(typeof(DialogueTextNode)));
+        menu.AddItem(new GUIContent("Change Text Box UI Node"), false, () => AddNode(typeof(DialogueChangeTextBoxUINode)));
         menu.AddItem(new GUIContent("Pause Node"), false, () => AddNode(typeof(DialoguePauseNode)));
         menu.AddItem(new GUIContent("Choice Node"), false, () => AddNode(typeof(DialogueChoiceNode)));
         menu.AddItem(new GUIContent("Script Node"), false, () => AddNode(typeof(DialogueScriptNode)));

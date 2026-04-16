@@ -1,9 +1,9 @@
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using System.Linq;
 
-[CustomPropertyDrawer(typeof(DialogueShowCharacterNode))]
-public class DialogueShowCharacterNodeDrawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(DialogueTextNode))]
+public class DialogueTextNodeDrawer : PropertyDrawer
 {
     const float spacing = 2f;
 
@@ -11,134 +11,90 @@ public class DialogueShowCharacterNodeDrawer : PropertyDrawer
     {
         CharacterManager manager = Object.FindFirstObjectByType<CharacterManager>();
 
-        if (manager == null)
-        {
-            EditorGUI.LabelField(position, "CharacterManager not found in scene");
-            return;
-        }
-
         EditorGUI.BeginProperty(position, label, property);
 
         float y = position.y;
-        float width = position.width;
+        float w = position.width;
+        float line = EditorGUIUtility.singleLineHeight;
 
-        SerializedProperty charIndex = property.FindPropertyRelative("characterIndex");
-        SerializedProperty moodIndex = property.FindPropertyRelative("moodIndex");
+        SerializedProperty text = property.FindPropertyRelative("text");
+        SerializedProperty appendText = property.FindPropertyRelative("appendText");
+        SerializedProperty requireClick = property.FindPropertyRelative("requirePlayerClickContinue");
+        SerializedProperty overwriteSpeed = property.FindPropertyRelative("overwriteTextSpeed");
+        SerializedProperty textSpeed = property.FindPropertyRelative("textSpeed");
+        SerializedProperty characterIndex = property.FindPropertyRelative("characterIndex");
 
-        SerializedProperty scaleCommand = property.FindPropertyRelative("scaleCommand");
-        SerializedProperty scale = property.FindPropertyRelative("scale");
-
-        SerializedProperty positionCommand = property.FindPropertyRelative("positionCommand");
-        SerializedProperty positionMode = property.FindPropertyRelative("positionMode");
-        SerializedProperty presetIndex = property.FindPropertyRelative("presetPositionIndex");
-        SerializedProperty manualPos = property.FindPropertyRelative("manualPosition");
-
-        // Character dropdown
-        string[] charNames = manager.characters.Select(c => c.characterName).ToArray();
-
-        charIndex.intValue = EditorGUI.Popup(
-            new Rect(position.x, y, width, EditorGUIUtility.singleLineHeight),
-            "Character",
-            charIndex.intValue,
-            charNames
-        );
-
-        y += EditorGUIUtility.singleLineHeight + spacing;
-
-        // Mood dropdown
-        if (charIndex.intValue >= 0 && charIndex.intValue < manager.characters.Count)
+        // Character dropdown with None option
+        if (manager == null)
         {
-            string[] moods = manager.characters[charIndex.intValue].moods
-                .Select(m => m.moodName)
-                .ToArray();
-
-            moodIndex.intValue = EditorGUI.Popup(
-                new Rect(position.x, y, width, EditorGUIUtility.singleLineHeight),
-                "Mood",
-                moodIndex.intValue,
-                moods
-            );
-        }
-
-        y += EditorGUIUtility.singleLineHeight + spacing;
-
-        // Scale toggle
-        float h = EditorGUI.GetPropertyHeight(scaleCommand);
-        EditorGUI.PropertyField(new Rect(position.x, y, width, h), scaleCommand);
-        y += h + spacing;
-
-
-        h = EditorGUI.GetPropertyHeight(scale);
-        EditorGUI.PropertyField(new Rect(position.x, y, width, h), scale);
-        y += h + spacing;
-
-
-        // Position toggle
-        h = EditorGUI.GetPropertyHeight(positionCommand);
-        EditorGUI.PropertyField(new Rect(position.x, y, width, h), positionCommand);
-        y += h + spacing;
-
-
-        h = EditorGUI.GetPropertyHeight(positionMode);
-        EditorGUI.PropertyField(new Rect(position.x, y, width, h), positionMode);
-        y += h + spacing;
-
-        if ((PositionMode)positionMode.enumValueIndex == PositionMode.Preset)
-        {
-            string[] presetNames = manager.customPositions
-                .Select(p => p.positionName)
-                .ToArray();
-
-            presetIndex.intValue = EditorGUI.Popup(
-                new Rect(position.x, y, width, EditorGUIUtility.singleLineHeight),
-                "Preset Position",
-                presetIndex.intValue,
-                presetNames
-            );
-
-            y += EditorGUIUtility.singleLineHeight + spacing;
+            EditorGUI.LabelField(new Rect(position.x, y, w, line), "Character", "CharacterManager not found in scene");
         }
         else
         {
-            h = EditorGUI.GetPropertyHeight(manualPos);
-            EditorGUI.PropertyField(new Rect(position.x, y, width, h), manualPos);
-            y += h + spacing;
+            // Build names list with None as first entry
+            string[] characterNames = manager.characters.Select(c => c.characterName).ToArray();
+            string[] options = new string[characterNames.Length + 1];
+            options[0] = "None";
+            for (int i = 0; i < characterNames.Length; i++)
+                options[i + 1] = characterNames[i];
+
+            // characterIndex -1 maps to dropdown index 0 (None)
+            // characterIndex 0 maps to dropdown index 1, etc.
+            int dropdownIndex = characterIndex.intValue + 1;
+            if (dropdownIndex < 0 || dropdownIndex >= options.Length)
+                dropdownIndex = 0;
+
+            int selected = EditorGUI.Popup(
+                new Rect(position.x, y, w, line),
+                "Character", dropdownIndex, options
+            );
+
+            characterIndex.intValue = selected - 1;
         }
 
+        y += line + spacing;
+
+        // Text area
+        float textHeight = EditorGUI.GetPropertyHeight(text);
+        EditorGUI.PropertyField(new Rect(position.x, y, w, textHeight), text, new GUIContent("Text"));
+        y += textHeight + spacing;
+
+        // Append text toggle
+        EditorGUI.PropertyField(new Rect(position.x, y, w, line), appendText);
+        y += line + spacing;
+
+        // Require click toggle
+        EditorGUI.PropertyField(new Rect(position.x, y, w, line), requireClick);
+        y += line + spacing;
+
+        // Overwrite speed toggle
+        EditorGUI.PropertyField(new Rect(position.x, y, w, line), overwriteSpeed);
+        y += line + spacing;
+
+        // Text speed — only show if overwrite is enabled
+        if (overwriteSpeed.boolValue)
+        {
+            EditorGUI.PropertyField(new Rect(position.x, y, w, line), textSpeed);
+            y += line + spacing;
+        }
 
         EditorGUI.EndProperty();
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        float height = 0;
-        float spacing = 2f;
-
         float line = EditorGUIUtility.singleLineHeight;
+        float height = 0f;
 
-        height += line + spacing; // character
-        height += line + spacing; // mood
+        height += line + spacing; // character dropdown
+        height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("text")) + spacing;
+        height += line + spacing; // appendText
+        height += line + spacing; // requireClick
+        height += line + spacing; // overwriteSpeed
 
-        height += line + spacing; // scale toggle
-
-        height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("scale")) + spacing;
-
-        height += line + spacing; // position toggle
-
-
-        height += line + spacing; // mode
-
-        SerializedProperty mode = property.FindPropertyRelative("positionMode");
-
-        if ((PositionMode)mode.enumValueIndex == PositionMode.Preset)
-            height += line + spacing;
-        else
-            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("manualPosition")) + spacing;
-
-        height += line * 3f; // extra padding
+        if (property.FindPropertyRelative("overwriteTextSpeed").boolValue)
+            height += line + spacing; // textSpeed
 
         return height;
     }
-
-
 }

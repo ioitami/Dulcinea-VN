@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,10 +54,16 @@ public class DialogueManager : MonoBehaviour
     // ===========================
     // Public API
     // ===========================
-
+    public bool savedGlobalAllowDialogueClickBool;
     public void SetGlobalAllowDialogueClick(bool allow)
     {
+        savedGlobalAllowDialogueClickBool = GlobalAllowDialogueClick;
         GlobalAllowDialogueClick = allow;
+    }
+
+    public void RememberGlobalAllowDialogueClickBool()
+    {
+        GlobalAllowDialogueClick = savedGlobalAllowDialogueClickBool;
     }
 
     public void PlayGroup(DialogueGroup group)

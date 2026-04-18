@@ -16,7 +16,7 @@ public enum OverlayCameraID
     AVL                     = 2,
     NVL                     = 3,
     CharacterScreen         = 4,
-    ConversationLogHistory  = 5
+    DialogueLogHistory      = 5
 }
 
 public class CameraManager : MonoBehaviour

@@ -106,7 +106,7 @@ public class SceneLoaderManager : MonoBehaviour
         // UI Transition Animation here
 
         // =====
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.PreferencesOptionsMenu);
+        GameSingleton.instance.cameraManager.DisableOverlayCamera((int)OverlayCameraID.PreferencesOptionsMenu);
         GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)OverlayCameraID.PreferencesOptionsMenu);
     }
 
@@ -116,8 +116,31 @@ public class SceneLoaderManager : MonoBehaviour
 
         // =====
 
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.SaveLoadOptionsMenu);
+        GameSingleton.instance.cameraManager.DisableOverlayCamera((int)OverlayCameraID.SaveLoadOptionsMenu);
         GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)OverlayCameraID.SaveLoadOptionsMenu);
+    }
+
+    public void LoadDialogueLogHistory()
+    {
+        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.DialogueLogHistory);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.DialogueLogHistory);
+
+        GameSingleton.instance.dialogueManager.StopFastForward();
+        GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
+        // UI Transition Animation here
+
+        // =====
+    }
+
+    public void CloseDialogueLogHistory()
+    {
+        GameSingleton.instance.cameraManager.DisableOverlayCamera((int)OverlayCameraID.DialogueLogHistory);
+        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)OverlayCameraID.DialogueLogHistory);
+
+        GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
+        // UI Transition Animation here
+
+        // =====
     }
 
     public void ToggleAVL(bool toggle)

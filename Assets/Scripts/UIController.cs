@@ -13,4 +13,8 @@ public class UIController : MonoBehaviour
 
     [Header("Window1")]
     public Window1 window1;
+
+    [Header("ConvoLog")]
+    public DialogueLogHistory dialogueLogHistory;
+    
 }

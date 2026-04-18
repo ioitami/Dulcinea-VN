@@ -52,13 +52,18 @@ public class DialogueTextNode : DialogueBlockNode
 
 
         // Add change textbox background UI and character icon (used instead of name) here based on the characterindex
-        ApplyCharacterUI(manager);
-
+        ApplyCharacterTextUI(manager);
+        UpdateDialogueLogHistory(manager);
 
         manager.StartTyping(text, speed, appendText, requirePlayerClickContinue, onComplete);
     }
 
-    private void ApplyCharacterUI(DialogueManager manager)
+    private void UpdateDialogueLogHistory(DialogueManager manager)
+    {
+
+    }
+
+    private void ApplyCharacterTextUI(DialogueManager manager)
     {
         if (characterIndex == -1) return;
 

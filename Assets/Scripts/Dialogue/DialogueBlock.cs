@@ -60,7 +60,19 @@ public class DialogueTextNode : DialogueBlockNode
 
     private void UpdateDialogueLogHistory(DialogueManager manager)
     {
+        DialogueLogHistory logHistory = GameSingleton.instance.sceneLoaderManager.uiController.dialogueLogHistory;
+        if (logHistory == null) return;
 
+        string characterName = "";
+
+        if (characterIndex != -1)
+        {
+            CharacterManager characterManager = GameSingleton.instance.characterManager;
+            if (characterManager != null && characterIndex < characterManager.characters.Count)
+                characterName = characterManager.characters[characterIndex].characterName;
+        }
+
+        logHistory.LogDialogueText(manager.currentBlock, text, characterName);
     }
 
     private void ApplyCharacterTextUI(DialogueManager manager)

@@ -54,16 +54,17 @@ public class DialogueManager : MonoBehaviour
     // ===========================
     // Public API
     // ===========================
-    public bool savedGlobalAllowDialogueClickBool;
+    private bool previousGlobalAllowDialogueClick = true;
+
     public void SetGlobalAllowDialogueClick(bool allow)
     {
-        savedGlobalAllowDialogueClickBool = GlobalAllowDialogueClick;
+        previousGlobalAllowDialogueClick = GlobalAllowDialogueClick;
         GlobalAllowDialogueClick = allow;
     }
 
     public void RememberGlobalAllowDialogueClickBool()
     {
-        GlobalAllowDialogueClick = savedGlobalAllowDialogueClickBool;
+        GlobalAllowDialogueClick = previousGlobalAllowDialogueClick;
     }
 
     public void PlayGroup(DialogueGroup group)

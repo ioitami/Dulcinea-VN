@@ -4,6 +4,8 @@ using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -154,6 +156,10 @@ public class DialogueManager : MonoBehaviour
     {
         if (!GlobalAllowDialogueClick) return;
 
+        //int pointerId = (int)Mouse.current.deviceId;
+
+        //if (EventSystem.current.IsPointerOverGameObject(pointerId)) return;
+            
         if (isTyping)
         {
             SkipTyping();

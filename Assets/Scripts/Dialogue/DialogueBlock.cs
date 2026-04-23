@@ -200,6 +200,13 @@ public class DialogueChoiceNode : DialogueBlockNode
                     capturedChoice.onSelected?.Invoke();
                     CleanupChoices();
 
+                    // Register current block as visited before jumping to new node
+                    if (manager.currentBlock != null)
+                    {
+                        GameSingleton.instance.gameStateManager.RegisterVisitedBlock(manager.currentBlock.ID);
+                    }
+
+
                     if (capturedChoice.linkedGroup != null)
                     {
                         manager.PlaySpecificBlockInGroup(capturedChoice.linkedGroup, capturedChoice.linkedBlock);
@@ -436,6 +443,11 @@ public class DialoguePlayGroupNode : DialogueBlockNode
             Debug.LogWarning("[DialoguePlayGroupNode] No group assigned.");
             onComplete?.Invoke();
             return;
+        }
+
+        if (manager.currentBlock != null)
+        {
+            GameSingleton.instance.gameStateManager.RegisterVisitedBlock(manager.currentBlock.ID);
         }
 
         manager.PlaySpecificBlockInGroup(group, block);

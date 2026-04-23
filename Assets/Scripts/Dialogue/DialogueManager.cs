@@ -98,6 +98,13 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+        // Stop fast forwarding if the next block has not been visited
+        if (isFastForwarding && !GameSingleton.instance.gameStateManager.HasVisitedBlock(block.ID))
+        {
+            StopFastForward();
+            Debug.Log($"[DialogueManager] Fast forward stopped — block '{block.ID}' not yet visited.");
+        }
+
         PlayBlock(block, PlayNextBlockInGroup);
     }
 
@@ -181,6 +188,12 @@ public class DialogueManager : MonoBehaviour
     {
         if (!GlobalAllowDialogueClick) return;
         if (isFastForwarding) return;
+
+        if (currentBlock != null && !GameSingleton.instance.gameStateManager.HasVisitedBlock(currentBlock.ID))
+        {
+            Debug.Log("[DialogueManager] Block not yet visited, fast forward blocked.");
+            return;
+        }
 
         Debug.Log("Starting FastForward");
         isFastForwarding = true;
@@ -450,6 +463,12 @@ public class DialogueManager : MonoBehaviour
     private void OnBlockFinished()
     {
         SetNextIconVisible(false);
+
+        if (currentBlock != null)
+        {
+            GameSingleton.instance.gameStateManager.RegisterVisitedBlock(currentBlock.ID);
+        }
+
         currentBlock = null;
         Debug.Log("[DialogueManager] Block finished.");
 

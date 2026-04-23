@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using UnityEditor.Overlays;
 using UnityEngine;
@@ -16,12 +17,27 @@ public class GameStateManager : MonoBehaviour
     private const string SavePrefix = "save_";
     private const string SaveExtension = ".json";
 
+    [Header("Visited Blocks")]
+    private const string VisitedBlocksFile = "visited_blocks.json";
+    private string VisitedBlocksPath => Path.Combine(Application.streamingAssetsPath, VisitedBlocksFile);
+    
+    public HashSet<string> visitedBlockIDs = new HashSet<string>();
+
+
+
     private string SaveDirectory => Path.Combine(Application.persistentDataPath, SaveFolder);
 
     private void Awake()
     {
+
         if (!Directory.Exists(SaveDirectory))
             Directory.CreateDirectory(SaveDirectory);
+
+        // Ensure StreamingAssets directory exists
+        if (!Directory.Exists(Application.streamingAssetsPath))
+            Directory.CreateDirectory(Application.streamingAssetsPath);
+
+        LoadVisitedBlocks();
     }
 
     // ===========================
@@ -84,6 +100,52 @@ public class GameStateManager : MonoBehaviour
 
         saves.Sort((a, b) => a.saveID.CompareTo(b.saveID));
         return saves;
+    }
+
+    public void RegisterVisitedBlock(string blockID)
+    {
+        if (string.IsNullOrEmpty(blockID)) return;
+        if (visitedBlockIDs.Contains(blockID)) return;
+
+        visitedBlockIDs.Add(blockID);
+        SaveVisitedBlocks();
+    }
+
+    public bool HasVisitedBlock(string blockID)
+    {
+        if (string.IsNullOrEmpty(blockID)) return false;
+        return visitedBlockIDs.Contains(blockID);
+    }
+
+    public void ClearVisitedBlocks()
+    {
+        visitedBlockIDs.Clear();
+        SaveVisitedBlocks();
+    }
+
+    private void SaveVisitedBlocks()
+    {
+        VisitedBlocksData data = new VisitedBlocksData();
+        data.blockIDs = new List<string>(visitedBlockIDs);
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(VisitedBlocksPath, json);
+    }
+
+    private void LoadVisitedBlocks()
+    {
+        if (!File.Exists(VisitedBlocksPath))
+        {
+            visitedBlockIDs = new HashSet<string>();
+            return;
+        }
+
+        string json = File.ReadAllText(VisitedBlocksPath);
+        VisitedBlocksData data = JsonUtility.FromJson<VisitedBlocksData>(json);
+
+        if (data != null && data.blockIDs != null)
+            visitedBlockIDs = new HashSet<string>(data.blockIDs);
+        else
+            visitedBlockIDs = new HashSet<string>();
     }
 
     // ===========================

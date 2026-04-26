@@ -49,11 +49,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7325fbfdfc3077b43a194938d68480d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saveSlotNumber: 1
-  saveSpritePreview: {fileID: 8172199997060114997}
+  saveSlotNumber: 2
+  thumbnailImage: {fileID: 8172199997060114997}
+  emptySaveSprite: {fileID: 21300000, guid: 1ed4d7beb74350149b16b85cce02be5e, type: 3}
   saveID_Text: {fileID: 2576977723525372082}
-  chapterName_Text: {fileID: 0}
-  saveTimeStamp_Text: {fileID: 0}
+  chapterName_Text: {fileID: 2576977723525372082}
+  saveTimeStamp_Text: {fileID: 2576977723525372082}
 --- !u!1 &6178526433342186664
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,12 +180,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5221841646016651136}
         m_TargetAssemblyTypeName: SaveGameButton, Assembly-CSharp
-        m_MethodName: SaveGame
-        m_Mode: 3
+        m_MethodName: OnSaveClicked
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

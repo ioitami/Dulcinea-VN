@@ -13,17 +13,15 @@ public class GameStateManager : MonoBehaviour
     public int screenshotWidth = 320;
     public int screenshotHeight = 180;
 
-    private const string SaveFolder = "Saves";
-    private const string SavePrefix = "save_";
-    private const string SaveExtension = ".json";
+    private string SaveFolder = GlobalVariables.saveFileFolderName;
+    private string SavePrefix = GlobalVariables.saveFileBaseName;
+    private string SaveExtension = GlobalVariables.saveFileExtension;
 
     [Header("Visited Blocks")]
     private const string VisitedBlocksFile = "visited_blocks.json";
     private string VisitedBlocksPath => Path.Combine(Application.streamingAssetsPath, VisitedBlocksFile);
     
     public HashSet<string> visitedBlockIDs = new HashSet<string>();
-
-
 
     private string SaveDirectory => Path.Combine(Application.persistentDataPath, SaveFolder);
 
@@ -55,7 +53,7 @@ public class GameStateManager : MonoBehaviour
 
         if (!File.Exists(path))
         {
-            Debug.LogWarning($"[GameStateManager] No save found with ID {saveID}.");
+            Debug.Log($"[GameStateManager] No save found with ID {saveID}.");
             return null;
         }
 
@@ -154,6 +152,34 @@ public class GameStateManager : MonoBehaviour
 
     private IEnumerator SaveRoutine(int saveID, Action<SaveData> onComplete)
     {
+        // NOTE: HAS TO BE UPDATED IF MORE OVERLAY CAMERAS ARE ADDED
+
+        GameObject saveLoadCamera = GetOverlayCamera((int)OverlayCameraID.SaveLoadOptionsMenu);
+        GameObject preferencesCamera = GetOverlayCamera((int)OverlayCameraID.PreferencesOptionsMenu);
+        GameObject dialogueLogCamera = GetOverlayCamera((int)OverlayCameraID.DialogueLogHistory);
+
+        bool saveLoadWasActive = saveLoadCamera != null && saveLoadCamera.gameObject.activeSelf;
+        bool preferencesWasActive = preferencesCamera != null && preferencesCamera.gameObject.activeSelf;
+        bool dialogueLogWasActive = dialogueLogCamera != null && dialogueLogCamera.gameObject.activeSelf;
+
+        // Disable UI overlay cameras before capturing
+        if (saveLoadWasActive)
+        {
+            saveLoadCamera.gameObject.SetActive(false);
+        }
+
+        if (preferencesWasActive)
+        {
+            preferencesCamera.gameObject.SetActive(false);
+        }
+
+        if (dialogueLogWasActive)
+        {
+            dialogueLogCamera.gameObject.SetActive(false);
+        }
+
+        // Wait two frames — one for the disable to take effect, one for the frame to render
+        yield return null;
         yield return new WaitForEndOfFrame();
 
         SaveData data = new SaveData();
@@ -162,12 +188,33 @@ public class GameStateManager : MonoBehaviour
         data.saveTimeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         data.screenshotBase64 = CaptureScreenshot();
 
+        // Re-enable cameras after capturing
+        if (saveLoadWasActive)
+        {
+            saveLoadCamera.gameObject.SetActive(true);
+        }
+
+        if (preferencesWasActive)
+        {
+            preferencesCamera.gameObject.SetActive(true);
+        }
+
+        if (dialogueLogWasActive)
+        {
+            dialogueLogCamera.gameObject.SetActive(true);
+        }
+
         CollectDialogueData(data);
         CollectCharacterData(data);
         WriteToFile(data);
 
         Debug.Log($"[GameStateManager] Saved slot {saveID} — chapter: {data.chapterName}.");
         onComplete?.Invoke(data);
+    }
+
+    private GameObject GetOverlayCamera(int overlayCameraID)
+    {
+        return GameSingleton.instance.cameraManager.overlayCameraList[overlayCameraID].gameObject;
     }
 
     // ===========================
@@ -239,34 +286,64 @@ public class GameStateManager : MonoBehaviour
 
     private string CaptureScreenshot()
     {
-        Camera mainCam = Camera.main;
-
-        if (mainCam == null)
+        try
         {
-            Debug.LogWarning("[GameStateManager] No main camera found for screenshot.");
+            Texture2D screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+            screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+            screenshot.Apply();
+
+            Texture2D thumbnail = ScaleTexture(screenshot, screenshotWidth, screenshotHeight);
+            Destroy(screenshot);
+
+            byte[] bytes = thumbnail.EncodeToJPG(60);
+            string base64 = Convert.ToBase64String(bytes);
+
+            Destroy(thumbnail);
+
+            return base64;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[GameStateManager] Screenshot failed: {e.Message}\n{e.StackTrace}");
             return "";
         }
+    }
 
-        RenderTexture rt = new RenderTexture(screenshotWidth, screenshotHeight, 24);
-        RenderTexture previousTarget = mainCam.targetTexture;
+    public Sprite GetSaveScreenshotSprite(int saveID)
+    {
+        SaveData data = Load(saveID);
 
-        mainCam.targetTexture = rt;
-        mainCam.Render();
-        mainCam.targetTexture = previousTarget;
+        if (data == null) return null;
+        if (string.IsNullOrEmpty(data.screenshotBase64)) return null;
 
+        byte[] bytes = Convert.FromBase64String(data.screenshotBase64);
+        Texture2D texture = new Texture2D(screenshotWidth, screenshotHeight, TextureFormat.RGB24, false);
+        texture.LoadImage(bytes);
+
+        Sprite sprite = Sprite.Create(
+            texture,
+            new Rect(0, 0, texture.width, texture.height),
+            new Vector2(0.5f, 0.5f)
+        );
+
+        return sprite;
+    }
+
+    private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
+    {
+        RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight, 0);
         RenderTexture.active = rt;
-        Texture2D screenshot = new Texture2D(screenshotWidth, screenshotHeight, TextureFormat.RGB24, false);
-        screenshot.ReadPixels(new Rect(0, 0, screenshotWidth, screenshotHeight), 0, 0);
-        screenshot.Apply();
+
+        Graphics.Blit(source, rt);
+
+        Texture2D result = new Texture2D(targetWidth, targetHeight, TextureFormat.RGB24, false);
+        result.ReadPixels(new Rect(0, 0, targetWidth, targetHeight), 0, 0);
+        result.Apply();
+
         RenderTexture.active = null;
+        RenderTexture.ReleaseTemporary(rt);
 
-        byte[] bytes = screenshot.EncodeToJPG(60);
-        string base64 = Convert.ToBase64String(bytes);
-
-        Destroy(rt);
-        Destroy(screenshot);
-
-        return base64;
+        return result;
     }
 
     // ===========================
@@ -275,8 +352,23 @@ public class GameStateManager : MonoBehaviour
 
     private void WriteToFile(SaveData data)
     {
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(GetSavePath(data.saveID), json);
+        try
+        {
+            string path = GetSavePath(data.saveID);
+            string json = JsonUtility.ToJson(data, true);
+
+            Debug.Log($"[GameStateManager] Attempting to write to: {path}");
+            Debug.Log($"[GameStateManager] Directory exists: {Directory.Exists(SaveDirectory)}");
+            Debug.Log($"[GameStateManager] JSON length: {json.Length}");
+
+            File.WriteAllText(path, json);
+
+            Debug.Log($"[GameStateManager] File exists after write: {File.Exists(path)}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[GameStateManager] Failed to write save file: {e.Message}\n{e.StackTrace}");
+        }
     }
 
     private string GetSavePath(int saveID)

@@ -1,6 +1,7 @@
 public static class GlobalVariables
 {
-    public static string saveFileBaseName = "/Dulci_";
+    public static string saveFileFolderName = "Bookmarks";
+    public static string saveFileBaseName = "Dulci_";
     public static string saveFileExtension = ".bookmark";
     public static string saveFileMetaExtension = ".meta";
 

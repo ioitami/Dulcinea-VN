@@ -7,24 +7,49 @@ using UnityEngine.UI;
 public class SaveGameButton : MonoBehaviour
 {
     public int saveSlotNumber;
-    public Image saveSpritePreview;
+    public Image thumbnailImage;
+    public Sprite emptySaveSprite;
     public TextMeshProUGUI saveID_Text;
     public TextMeshProUGUI chapterName_Text;
     public TextMeshProUGUI saveTimeStamp_Text;
 
-    public void SaveGame(int saveFileNumber)
+    private void OnEnable()
     {
-        GameSingleton.instance.gameStateManager?.Save(saveFileNumber);
-
-        StartCoroutine(DelayedSpritePreview(0.05f));
+        RefreshButton();
     }
 
-    IEnumerator DelayedSpritePreview(float delay)
+    private void RefreshButton()
     {
-        yield return new WaitForSeconds(delay);
+        SaveData data = GameSingleton.instance.gameStateManager.Load(saveSlotNumber);
 
-        //saveSpritePreview.sprite = GameSingleton.instance.gameStateManager.GetLoadedScreenshotSprite();
-        //GameSingleton.instance.sceneLoaderManager.uiController.saveLoadMenu.UpdateSaveLoadSlots();
+        if (data == null)
+        {
+            thumbnailImage.sprite = emptySaveSprite;
+            saveID_Text.text = "";
+            chapterName_Text.text = "";
+            saveTimeStamp_Text.text = "";
+            return;
+        }
+
+        Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveSlotNumber);
+
+        if (screenshot != null)
+            thumbnailImage.sprite = screenshot;
+        else
+            thumbnailImage.sprite = emptySaveSprite;
+
+        saveID_Text.text = "Save " + data.saveID.ToString();
+        chapterName_Text.text = data.chapterName;
+        saveTimeStamp_Text.text = data.saveTimeStamp;
     }
 
+    public void OnSaveClicked()
+    {
+        GameSingleton.instance.gameStateManager.Save(saveSlotNumber, OnSaveComplete);
+    }
+
+    private void OnSaveComplete(SaveData data)
+    {
+        RefreshButton();
+    }
 }

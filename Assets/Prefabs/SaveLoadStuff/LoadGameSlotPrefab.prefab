@@ -126,7 +126,7 @@ MonoBehaviour:
       - m_Target: {fileID: 8601450703552411668}
         m_TargetAssemblyTypeName: LoadGameButton, Assembly-CSharp
         m_MethodName: LoadGame
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -159,10 +159,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb8a833f33208714eb0523f6e9bdd423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialDelay: 0
+  initialDelay: 0.2
   moveOffset: {x: 0, y: -35, z: 0}
   minDuration: 0.25
-  maxDuration: 0.7
+  maxDuration: 0.6
   ease:
     serializedVersion: 2
     m_Curve:
@@ -236,9 +236,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9dd8739634f224cb1818c93238d7af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadSlotNumber: 0
+  loadSlotNumber: 1
   loadSpritePreview: {fileID: 2670924635227689202}
   saveID_Text: {fileID: 1136099581909231737}
+  emptySaveSprite: {fileID: 21300000, guid: 165926f518c22894499ba610b4bff9ce, type: 3}
 --- !u!1 &8092301643605141323
 GameObject:
   m_ObjectHideFlags: 0

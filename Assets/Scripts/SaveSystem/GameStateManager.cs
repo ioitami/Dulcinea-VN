@@ -59,7 +59,6 @@ public class GameStateManager : MonoBehaviour
 
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
-        Debug.Log($"[GameStateManager] Loaded save {saveID}.");
         return data;
     }
 

@@ -73,6 +73,9 @@ public class SceneLoaderManager : MonoBehaviour
         uiController.saveLoadMenu.saveMenu.gameObject.SetActive(false);
         uiController.saveLoadMenu.loadMenu.gameObject.SetActive(true);
 
+        GameSingleton.instance.dialogueManager.StopFastForward();
+        GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
+
         // UI Transition Animation here
 
         // =====

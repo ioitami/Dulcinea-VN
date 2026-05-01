@@ -3371,7 +3371,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2070489122}
         m_TargetAssemblyTypeName: SceneLoaderManager, Assembly-CSharp
         m_MethodName: LoadLoadMenu
         m_Mode: 1
@@ -4741,7 +4741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 0.5471698, g: 0.5471698, b: 0.5471698, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10189,7 +10189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -10307,6 +10307,10 @@ PrefabInstance:
       propertyPath: loadSlotNumber
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8601450703552411668, guid: f52b461957d4b284e91ae7396130f432, type: 3}
+      propertyPath: emptySaveSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9db0e778677712840b1d3cd6903cdc9b, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -11618,7 +11622,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -11736,6 +11740,10 @@ PrefabInstance:
       propertyPath: loadSlotNumber
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8601450703552411668, guid: f52b461957d4b284e91ae7396130f432, type: 3}
+      propertyPath: emptySaveSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c4c548a339b4d41a590928c0c98934a7, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15844,44 +15852,12 @@ PrefabInstance:
       value: LoadGameSlotPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 8005202304442812961}
     - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: LoadGame
-      objectReference: {fileID: 0}
-    - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: LoadGameButton, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2664370469146939161, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 5707949993107446590, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: maxDuration
-      value: 0.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5707949993107446590, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: initialDelay
-      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 6291137321327492620, guid: f52b461957d4b284e91ae7396130f432, type: 3}
       propertyPath: m_Pivot.x
@@ -15962,10 +15938,6 @@ PrefabInstance:
     - target: {fileID: 6291137321327492620, guid: f52b461957d4b284e91ae7396130f432, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8601450703552411668, guid: f52b461957d4b284e91ae7396130f432, type: 3}
-      propertyPath: loadSlotNumber
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

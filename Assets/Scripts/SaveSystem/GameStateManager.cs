@@ -149,59 +149,46 @@ public class GameStateManager : MonoBehaviour
     // Save Routine
     // ===========================
 
+    private string pendingScreenshotBase64 = "";
+
+    public void CaptureScreenshotForSave()
+    {
+        StartCoroutine(CaptureScreenshotRoutine());
+    }
+
+    public IEnumerator CaptureScreenshotRoutine()
+    {
+        yield return new WaitForEndOfFrame();
+
+        try
+        {
+            Texture2D screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+            screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+            screenshot.Apply();
+
+            Texture2D thumbnail = ScaleTexture(screenshot, screenshotWidth, screenshotHeight);
+            Destroy(screenshot);
+
+            byte[] bytes = thumbnail.EncodeToJPG(60);
+            pendingScreenshotBase64 = Convert.ToBase64String(bytes);
+
+            Destroy(thumbnail);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[GameStateManager] Screenshot capture failed: {e.Message}");
+            pendingScreenshotBase64 = "";
+        }
+    }
+
     private IEnumerator SaveRoutine(int saveID, Action<SaveData> onComplete)
     {
-        // NOTE: HAS TO BE UPDATED IF MORE OVERLAY CAMERAS ARE ADDED
-
-        GameObject saveLoadCamera = GetOverlayCamera((int)OverlayCameraID.SaveLoadOptionsMenu);
-        GameObject preferencesCamera = GetOverlayCamera((int)OverlayCameraID.PreferencesOptionsMenu);
-        GameObject dialogueLogCamera = GetOverlayCamera((int)OverlayCameraID.DialogueLogHistory);
-
-        bool saveLoadWasActive = saveLoadCamera != null && saveLoadCamera.gameObject.activeSelf;
-        bool preferencesWasActive = preferencesCamera != null && preferencesCamera.gameObject.activeSelf;
-        bool dialogueLogWasActive = dialogueLogCamera != null && dialogueLogCamera.gameObject.activeSelf;
-
-        // Disable UI overlay cameras before capturing
-        if (saveLoadWasActive)
-        {
-            saveLoadCamera.gameObject.SetActive(false);
-        }
-
-        if (preferencesWasActive)
-        {
-            preferencesCamera.gameObject.SetActive(false);
-        }
-
-        if (dialogueLogWasActive)
-        {
-            dialogueLogCamera.gameObject.SetActive(false);
-        }
-
-        // Wait two frames — one for the disable to take effect, one for the frame to render
-        yield return null;
         yield return new WaitForEndOfFrame();
 
         SaveData data = new SaveData();
-
         data.saveID = saveID;
         data.saveTimeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        data.screenshotBase64 = CaptureScreenshot();
-
-        // Re-enable cameras after capturing
-        if (saveLoadWasActive)
-        {
-            saveLoadCamera.gameObject.SetActive(true);
-        }
-
-        if (preferencesWasActive)
-        {
-            preferencesCamera.gameObject.SetActive(true);
-        }
-
-        if (dialogueLogWasActive)
-        {
-            dialogueLogCamera.gameObject.SetActive(true);
-        }
+        data.screenshotBase64 = pendingScreenshotBase64;
 
         CollectDialogueData(data);
         CollectCharacterData(data);
@@ -280,7 +267,6 @@ public class GameStateManager : MonoBehaviour
             ));
         }
     }
-
 
 
     private string CaptureScreenshot()

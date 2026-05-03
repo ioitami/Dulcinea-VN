@@ -1,4 +1,5 @@
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -83,6 +84,16 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void LoadSaveMenu()
     {
+        StartCoroutine(LoadSaveMenuRoutine());
+    }
+
+    private IEnumerator LoadSaveMenuRoutine()
+    {
+        // Capture screenshot first before opening save menu
+        yield return StartCoroutine(
+            GameSingleton.instance.gameStateManager.CaptureScreenshotRoutine()
+        );
+
         GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.SaveLoadOptionsMenu);
         GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.SaveLoadOptionsMenu);
         uiController.saveLoadMenu.saveMenu.gameObject.SetActive(true);

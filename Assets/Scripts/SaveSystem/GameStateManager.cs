@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using UnityEditor.Overlays;
 using UnityEngine;
 
 
@@ -47,7 +45,7 @@ public class GameStateManager : MonoBehaviour
         StartCoroutine(SaveRoutine(saveID, onComplete));
     }
 
-    public SaveData Load(int saveID)
+    public SaveData LoadSaveID(int saveID)
     {
         string path = GetSavePath(saveID);
 
@@ -60,6 +58,25 @@ public class GameStateManager : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
         return data;
+    }
+
+    public void LoadGame(int saveSlotNumber)
+    {
+        SaveData data = LoadSaveID(saveSlotNumber);
+
+        if (data == null)
+        {
+            Debug.LogWarning($"[GameStateManager] No save data found for slot {saveSlotNumber}.");
+            return;
+        }
+
+        GameSingleton.instance.dialogueManager.requiresServer = data.requiresServer;
+
+        GameSingleton.instance.sceneLoaderManager.LoadWindow1();
+        GameSingleton.instance.sceneLoaderManager.CloseSaveLoadOptionsMenu();
+
+        RestoreCharacters(data);
+        FindAndPlayDialogue(data);
     }
 
     public void DeleteSave(int saveID)
@@ -217,6 +234,7 @@ public class GameStateManager : MonoBehaviour
             data.description = "";
             data.dialogueGroupID = "";
             data.dialogueBlockID = "";
+            data.requiresServer = false;
             return;
         }
 
@@ -242,6 +260,8 @@ public class GameStateManager : MonoBehaviour
             data.dialogueBlockID = dialogueManager.currentBlock.ID;
         else
             data.dialogueBlockID = "";
+
+        data.requiresServer = dialogueManager.requiresServer;
     }
 
 
@@ -296,7 +316,7 @@ public class GameStateManager : MonoBehaviour
 
     public Sprite GetSaveScreenshotSprite(int saveID)
     {
-        SaveData data = Load(saveID);
+        SaveData data = LoadSaveID(saveID);
 
         if (data == null) return null;
         if (string.IsNullOrEmpty(data.screenshotBase64)) return null;
@@ -329,6 +349,63 @@ public class GameStateManager : MonoBehaviour
         RenderTexture.ReleaseTemporary(rt);
 
         return result;
+    }
+
+    private void RestoreCharacters(SaveData data)
+    {
+        CharacterManager characterManager = GameSingleton.instance.characterManager;
+        if (characterManager == null) return;
+
+        characterManager.HideAllCharacters();
+
+        for (int i = 0; i < data.charactersOnScreen.Count; i++)
+        {
+            string charName = data.charactersOnScreen[i];
+            string moodName = data.charactersMood[i];
+            Vector3 position = data.charactersPosition[i].ToVector3();
+
+            characterManager.ShowCharacter(charName, moodName, position);
+        }
+    }
+
+    private void FindAndPlayDialogue(SaveData data)
+    {
+        DialogueGroup[] allGroups = GameObject.FindObjectsByType<DialogueGroup>(FindObjectsSortMode.None);
+
+        DialogueGroup targetGroup = null;
+        DialogueBlock targetBlock = null;
+
+        foreach (DialogueGroup group in allGroups)
+        {
+            if (group.ID.Trim() == data.dialogueGroupID.Trim())
+            {
+                targetGroup = group;
+
+                foreach (DialogueBlock block in group.blocks)
+                {
+                    if (block.ID.Trim() == data.dialogueBlockID.Trim())
+                    {
+                        targetBlock = block;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        if (targetGroup == null)
+        {
+            Debug.LogWarning($"[GameStateManager] DialogueGroup '{data.dialogueGroupID}' not found.");
+            return;
+        }
+
+        if (targetBlock == null)
+        {
+            Debug.LogWarning($"[GameStateManager] DialogueBlock '{data.dialogueBlockID}' not found.");
+            return;
+        }
+
+        GameSingleton.instance.dialogueManager.PlaySpecificBlockInGroup(targetGroup, targetBlock);
     }
 
     // ===========================

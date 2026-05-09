@@ -49,6 +49,10 @@ public class DialogueManager : MonoBehaviour
     private Coroutine blinkCoroutine;
     private Coroutine fastForwardCoroutine;
 
+    [Header("Server Info")]
+    public bool requiresServer = false;
+    public bool isMainServer = true;
+
 
     [SerializeField]
     public bool isFastForwarding = false;

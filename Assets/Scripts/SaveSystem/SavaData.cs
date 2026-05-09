@@ -11,6 +11,7 @@ public class SaveData
     public string screenshotBase64;
     public string dialogueGroupID;
     public string dialogueBlockID;
+    public bool requiresServer;
     public List<string> charactersOnScreen;
     public List<string> charactersMood;
     public List<SerializableVector3> charactersPosition;

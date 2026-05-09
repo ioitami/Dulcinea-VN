@@ -20,7 +20,7 @@ public class SaveGameButton : MonoBehaviour
 
     private void RefreshButton()
     {
-        SaveData data = GameSingleton.instance.gameStateManager.Load(saveSlotNumber);
+        SaveData data = GameSingleton.instance.gameStateManager.LoadSaveID(saveSlotNumber);
 
         if (data == null)
         {

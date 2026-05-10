@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using TMPro;
 using UnityEngine;
 
 public class ServerManager : MonoBehaviour
@@ -15,28 +15,24 @@ public class ServerManager : MonoBehaviour
     private bool isRunning = false;
     private Thread serverThread;
     private Thread clientThread;
-
-    public TextMeshProUGUI servertestText;
+    private List<TcpClient> connectedClients = new List<TcpClient>();
 
     private void Start()
     {
         if (IsServerAlreadyRunning())
-        {
             SetAsClient();
-        }
         else
-        {
             SetAsServer();
-        }
     }
 
     private void OnApplicationQuit()
     {
         isRunning = false;
 
-        // Only stop the server if this instance is the main server
         if (GameSingleton.instance.dialogueManager.isMainServer)
         {
+            DisconnectAllClients();
+
             if (server != null)
             {
                 server.Stop();
@@ -52,7 +48,6 @@ public class ServerManager : MonoBehaviour
             Debug.Log("[ServerManager] Main server stopped.");
         }
 
-        // Always clean up client connection
         if (client != null)
         {
             client.Close();
@@ -64,8 +59,6 @@ public class ServerManager : MonoBehaviour
             clientThread.Abort();
             clientThread = null;
         }
-
-        Debug.Log("[ServerManager] Client disconnected.");
     }
 
     // ===========================
@@ -79,7 +72,6 @@ public class ServerManager : MonoBehaviour
             TcpClient testClient = new TcpClient();
             testClient.Connect(IPAddress.Loopback, port);
             testClient.Close();
-
             Debug.Log("[ServerManager] Existing server detected.");
             return true;
         }
@@ -110,8 +102,6 @@ public class ServerManager : MonoBehaviour
             serverThread.Start();
 
             Debug.Log($"[ServerManager] Server started on port {port}.");
-
-            servertestText.text = "Main Window";
         }
         catch (Exception e)
         {
@@ -129,7 +119,37 @@ public class ServerManager : MonoBehaviour
                 {
                     TcpClient incomingClient = server.AcceptTcpClient();
                     Debug.Log("[ServerManager] Client connected.");
-                    incomingClient.Close();
+
+                    lock (connectedClients)
+                    {
+                        connectedClients.Add(incomingClient);
+                    }
+                }
+
+                lock (connectedClients)
+                {
+                    connectedClients.RemoveAll(c =>
+                    {
+                        if (c == null) return true;
+
+                        try
+                        {
+                            if (c.Client.Poll(0, SelectMode.SelectRead))
+                            {
+                                byte[] buffer = new byte[1];
+                                if (c.Client.Receive(buffer, SocketFlags.Peek) == 0)
+                                {
+                                    c.Close();
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                        catch
+                        {
+                            return true;
+                        }
+                    });
                 }
 
                 Thread.Sleep(100);
@@ -150,7 +170,7 @@ public class ServerManager : MonoBehaviour
     {
         Debug.Log("[ServerManager] Setting as client.");
         GameSingleton.instance.dialogueManager.isMainServer = false;
-        servertestText.text = "Window 2";
+        isRunning = true;
 
         clientThread = new Thread(ConnectToServer);
         clientThread.IsBackground = true;
@@ -163,12 +183,148 @@ public class ServerManager : MonoBehaviour
         {
             client = new TcpClient();
             client.Connect(IPAddress.Loopback, port);
-
             Debug.Log($"[ServerManager] Connected to server on port {port}.");
+            ReceiveLoop();
         }
         catch (Exception e)
         {
-            Debug.LogError($"[ServerManager] Failed to connect to server: {e.Message}");
+            UnityMainThreadDispatcher.instance.Enqueue(() =>
+            {
+                Debug.LogError($"[ServerManager] Failed to connect to server: {e.Message}");
+            });
         }
+    }
+
+    private void ReceiveLoop()
+    {
+        try
+        {
+            NetworkStream stream = client.GetStream();
+            byte[] buffer = new byte[4096];
+
+            while (isRunning && client.Connected)
+            {
+                try
+                {
+                    if (stream.DataAvailable)
+                    {
+                        int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                        string command = System.Text.Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                        Debug.Log($"[ServerManager] Command received: {command}");
+
+                        UnityMainThreadDispatcher.instance.Enqueue(() =>
+                        {
+                            if (GameSingleton.instance.serverCommands == null)
+                            {
+                                Debug.LogError("[ServerManager] serverCommands is null on client.");
+                                return;
+                            }
+
+                            GameSingleton.instance.serverCommands.ParseAndExecute(command);
+                        });
+                    }
+                }
+                catch (Exception innerException)
+                {
+                    UnityMainThreadDispatcher.instance.Enqueue(() =>
+                    {
+                        Debug.LogError($"[ServerManager] Receive error: {innerException.Message}");
+                    });
+                }
+
+                Thread.Sleep(50);
+            }
+        }
+        catch (Exception e)
+        {
+            UnityMainThreadDispatcher.instance.Enqueue(() =>
+            {
+                Debug.LogError($"[ServerManager] Receive loop crashed: {e.Message}");
+            });
+        }
+    }
+
+    // ===========================
+    // Commands
+    // ===========================
+
+    public void SendCommandToNVL(string command)
+    {
+        if (!GameSingleton.instance.dialogueManager.isMainServer)
+        {
+            Debug.LogWarning("[ServerManager] SendCommandToNVL called but this is not the main server.");
+            return;
+        }
+
+        if (connectedClients.Count == 0)
+        {
+            Debug.LogWarning("[ServerManager] No clients connected.");
+            return;
+        }
+
+        Debug.Log($"[ServerManager] Sending command: {command}");
+
+        lock (connectedClients)
+        {
+            List<TcpClient> disconnectedClients = new List<TcpClient>();
+
+            foreach (TcpClient connectedClient in connectedClients)
+            {
+                if (connectedClient == null || !connectedClient.Connected)
+                {
+                    disconnectedClients.Add(connectedClient);
+                    continue;
+                }
+
+                try
+                {
+                    NetworkStream stream = connectedClient.GetStream();
+
+                    if (!stream.CanWrite)
+                    {
+                        disconnectedClients.Add(connectedClient);
+                        continue;
+                    }
+
+                    byte[] data = System.Text.Encoding.UTF8.GetBytes(command);
+                    stream.Write(data, 0, data.Length);
+                    stream.Flush();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[ServerManager] Failed to send command: {e.Message}");
+                    disconnectedClients.Add(connectedClient);
+                }
+            }
+
+            foreach (TcpClient disconnected in disconnectedClients)
+            {
+                connectedClients.Remove(disconnected);
+                Debug.LogWarning("[ServerManager] Removed disconnected client.");
+            }
+        }
+    }
+
+    public void DisconnectAllClients()
+    {
+        if (!GameSingleton.instance.dialogueManager.isMainServer)
+        {
+            Debug.LogWarning("[ServerManager] DisconnectAllClients called but this is not the main server.");
+            return;
+        }
+
+        lock (connectedClients)
+        {
+            foreach (TcpClient connectedClient in connectedClients)
+            {
+                if (connectedClient != null && connectedClient.Connected)
+                    connectedClient.Close();
+            }
+
+            connectedClients.Clear();
+        }
+
+        Debug.Log("[ServerManager] All clients disconnected.");
     }
 }

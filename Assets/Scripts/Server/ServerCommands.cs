@@ -3,21 +3,27 @@ using UnityEngine;
 
 public class ServerCommands : MonoBehaviour
 {
-    public TextMeshProUGUI NVLText;
 
     // ===========================
-    // Command List
+    // Server Status Commands
     // ===========================
 
-    public void NVLTest1()
+    public void SetRequiresServer(string requiresServer)
     {
-        NVLText.text += "test1here";
+        bool value = bool.Parse(requiresServer);
+        Debug.Log($"[ServerCommands] SetRequiresServer: {value}");
+
+        if (!value)
+        {
+            Debug.Log("[ServerCommands] requiresServer is false. Closing client window.");
+            Application.Quit();
+            return;
+        }
     }
 
-    public void NVLTest2(string text)
-    {
-        NVLText.text = text;
-    }
+    // ===========================
+    // Dialogue Commands
+    // ===========================
 
     public void PlayGroup(string groupID)
     {
@@ -60,7 +66,23 @@ public class ServerCommands : MonoBehaviour
             }
         }
 
+        if (targetGroup == null)
+        {
+            Debug.LogWarning($"[ServerCommands] Group '{groupID}' not found.");
+            return;
+        }
+
         GameSingleton.instance.dialogueManager.PlaySpecificBlockInGroup(targetGroup, targetBlock);
+    }
+
+    public void DialogueContinueClicked()
+    {
+        GameSingleton.instance.dialogueManager.DialogueContinueClicked();
+    }
+
+    public void StartFastForward()
+    {
+        GameSingleton.instance.dialogueManager.StartFastForward();
     }
 
     public void StopFastForward()
@@ -72,6 +94,52 @@ public class ServerCommands : MonoBehaviour
     {
         bool value = bool.Parse(allow);
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(value);
+    }
+
+    public void RegisterVisitedBlock(string blockID)
+    {
+        GameSingleton.instance.gameStateManager.RegisterVisitedBlock(blockID);
+    }
+
+    // ===========================
+    // Character Commands
+    // ===========================
+
+    public void ShowCharacter(string charName, string moodName, string posX, string posY, string posZ)
+    {
+        Vector3 position = new Vector3(
+            float.Parse(posX),
+            float.Parse(posY),
+            float.Parse(posZ)
+        );
+
+        GameSingleton.instance.characterManager.ShowCharacter(charName, moodName, position);
+    }
+
+    public void HideCharacter(string charName)
+    {
+        GameSingleton.instance.characterManager.HideCharacter(charName);
+    }
+
+    public void HideAllCharacters()
+    {
+        GameSingleton.instance.characterManager.HideAllCharacters();
+    }
+
+    public void SetCharacterMood(string charName, string moodName)
+    {
+        GameSingleton.instance.characterManager.SetCharacterMood(charName, moodName);
+    }
+
+    public void MoveCharacter(string charName, string posX, string posY, string posZ)
+    {
+        Vector3 position = new Vector3(
+            float.Parse(posX),
+            float.Parse(posY),
+            float.Parse(posZ)
+        );
+
+        GameSingleton.instance.characterManager.MoveCharacter(charName, position);
     }
 
     // ===========================
@@ -117,13 +185,9 @@ public class ServerCommands : MonoBehaviour
     {
         switch (functionName)
         {
-            case "NVLTest1":
-                NVLTest1();
-                break;
-
-            case "NVLTest2":
+            case "SetRequiresServer":
                 if (parameters.Length == 1)
-                    NVLTest2(parameters[0]);
+                    SetRequiresServer(parameters[0]);
                 break;
 
             case "PlayGroup":
@@ -136,6 +200,14 @@ public class ServerCommands : MonoBehaviour
                     PlaySpecificBlockInGroup(parameters[0], parameters[1]);
                 break;
 
+            case "DialogueContinueClicked":
+                DialogueContinueClicked();
+                break;
+
+            case "StartFastForward":
+                StartFastForward();
+                break;
+
             case "StopFastForward":
                 StopFastForward();
                 break;
@@ -144,6 +216,36 @@ public class ServerCommands : MonoBehaviour
                 if (parameters.Length == 1)
                     SetGlobalAllowDialogueClick(parameters[0]);
                 break;
+
+            case "RegisterVisitedBlock":
+                if (parameters.Length == 1)
+                    RegisterVisitedBlock(parameters[0]);
+                break;
+
+            case "ShowCharacter":
+                if (parameters.Length == 5)
+                    ShowCharacter(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
+                break;
+
+            case "HideCharacter":
+                if (parameters.Length == 1)
+                    HideCharacter(parameters[0]);
+                break;
+
+            case "HideAllCharacters":
+                HideAllCharacters();
+                break;
+
+            case "SetCharacterMood":
+                if (parameters.Length == 2)
+                    SetCharacterMood(parameters[0], parameters[1]);
+                break;
+
+            case "MoveCharacter":
+                if (parameters.Length == 4)
+                    MoveCharacter(parameters[0], parameters[1], parameters[2], parameters[3]);
+                break;
+
 
             default:
                 Debug.LogWarning($"[ServerCommands] Unknown command: '{functionName}'");

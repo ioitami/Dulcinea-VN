@@ -109,6 +109,14 @@ public class DialogueManager : MonoBehaviour
             Debug.Log($"[DialogueManager] Fast forward stopped — block '{block.ID}' not yet visited.");
         }
 
+        // Mirror block change to client
+        if (currentGroup != null)
+        {
+            GameSingleton.instance.serverManager.MirrorCommandToClient(
+                $"<PlaySpecificBlockInGroup({currentGroup.ID},{block.ID})>"
+            );
+        }
+
         PlayBlock(block, PlayNextBlockInGroup);
     }
 
@@ -167,13 +175,10 @@ public class DialogueManager : MonoBehaviour
     {
         if (!GlobalAllowDialogueClick) return;
 
-        //int pointerId = (int)Mouse.current.deviceId;
-
-        //if (EventSystem.current.IsPointerOverGameObject(pointerId)) return;
-            
         if (isTyping)
         {
             SkipTyping();
+            GameSingleton.instance.serverManager.MirrorCommandToClient("<DialogueContinueClicked>");
             return;
         }
 
@@ -185,6 +190,8 @@ public class DialogueManager : MonoBehaviour
             Action callback = pendingOnComplete;
             pendingOnComplete = null;
             callback?.Invoke();
+
+            GameSingleton.instance.serverManager.MirrorCommandToClient("<DialogueContinueClicked>");
         }
     }
 
@@ -202,6 +209,8 @@ public class DialogueManager : MonoBehaviour
         Debug.Log("Starting FastForward");
         isFastForwarding = true;
         isWaitingForClick = false;
+
+        GameSingleton.instance.serverManager.MirrorCommandToClient("<StartFastForward>");
 
 
         if (isTyping)
@@ -225,6 +234,8 @@ public class DialogueManager : MonoBehaviour
             StopCoroutine(fastForwardCoroutine);
             fastForwardCoroutine = null;
         }
+
+        GameSingleton.instance.serverManager.MirrorCommandToClient("<StopFastForward>");
     }
 
     public void ChangeTypingSpeed(float speed)
@@ -470,6 +481,11 @@ public class DialogueManager : MonoBehaviour
 
         if (currentBlock != null)
         {
+            // Mirror visited block registration to client
+            GameSingleton.instance.serverManager.MirrorCommandToClient(
+                $"<RegisterVisitedBlock({currentBlock.ID})>"
+            );
+
             GameSingleton.instance.gameStateManager.RegisterVisitedBlock(currentBlock.ID);
         }
 

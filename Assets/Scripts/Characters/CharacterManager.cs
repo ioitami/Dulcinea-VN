@@ -123,19 +123,29 @@ public class CharacterManager : MonoBehaviour
     public void ShowCharacter(string name, string mood = null, Vector3? position = null)
     {
         Character character = GetCharacter(name);
-
         if (character == null) return;
 
         character.ingameContainerObj.SetActive(true);
 
-        if (mood == null) return;
-            
-        SetCharacterMood(name, mood);
+        if (mood != null)
+            SetCharacterMood(name, mood);
 
-        if (position == null) return;
+        if (position != null)
+            MoveCharacter(name, position.Value);
 
-        MoveCharacter(name, position.Value);
-
+        // Mirror to client
+        if (position != null)
+        {
+            GameSingleton.instance.serverManager.MirrorCommandToClient(
+                $"<ShowCharacter({name},{mood ?? ""},{position.Value.x},{position.Value.y},{position.Value.z})>"
+            );
+        }
+        else
+        {
+            GameSingleton.instance.serverManager.MirrorCommandToClient(
+                $"<ShowCharacter({name},{mood ?? ""},0,0,0)>"
+            );
+        }
     }
 
     public void ShowCharacter(int characterID, string mood, string positionName = null)
@@ -182,20 +192,27 @@ public class CharacterManager : MonoBehaviour
     public void HideCharacter(string name)
     {
         Character character = GetCharacter(name);
-
         if (character == null) return;
 
         character.ingameContainerObj.SetActive(false);
 
+        GameSingleton.instance.serverManager.MirrorCommandToClient(
+            $"<HideCharacter({name})>"
+        );
     }
 
     public void HideCharacter(int characterID)
     {
         Character character = GetCharacter(characterID);
+        String charname = character.name;
 
         if (character == null) return;
 
         character.ingameContainerObj.SetActive(false);
+
+        GameSingleton.instance.serverManager.MirrorCommandToClient(
+            $"<HideCharacter({charname})>"
+        );
 
     }
 
@@ -206,6 +223,8 @@ public class CharacterManager : MonoBehaviour
         {
             character.ingameContainerObj.SetActive(false);
         }
+
+        GameSingleton.instance.serverManager.MirrorCommandToClient("<HideAllCharacters>");
     }
 
     public void SetCharacterMood(string name, string mood)
@@ -249,6 +268,10 @@ public class CharacterManager : MonoBehaviour
         {
             character.ingameContainerObj.transform.localPosition = position;
         }
+
+        GameSingleton.instance.serverManager.MirrorCommandToClient(
+            $"<MoveCharacter({name},{position.x},{position.y},{position.z})>"
+        );
     }
 
     public void MoveCharacter(int characterID, Vector3 position)

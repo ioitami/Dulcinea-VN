@@ -2274,7 +2274,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba5b6280595ad474197bb19a2362e6b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NVLText: {fileID: 1236130554}
 --- !u!114 &425186743
 MonoBehaviour:
   m_ObjectHideFlags: 0

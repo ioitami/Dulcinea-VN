@@ -124,6 +124,10 @@ public class ServerManager : MonoBehaviour
                     {
                         connectedClients.Add(incomingClient);
                     }
+
+                    // Send requiresServer status to newly connected client
+                    bool requiresServer = GameSingleton.instance.dialogueManager.requiresServer;
+                    SendCommandToClient(incomingClient, $"<SetRequiresServer({requiresServer})>");
                 }
 
                 lock (connectedClients)
@@ -162,6 +166,29 @@ public class ServerManager : MonoBehaviour
         }
     }
 
+    private void SendCommandToClient(TcpClient targetClient, string command)
+    {
+        try
+        {
+            NetworkStream stream = targetClient.GetStream();
+            byte[] data = System.Text.Encoding.UTF8.GetBytes(command);
+            stream.Write(data, 0, data.Length);
+            stream.Flush();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[ServerManager] Failed to send to specific client: {e.Message}");
+        }
+    }
+
+    public void MirrorCommandToClient(string command)
+    {
+        if (!GameSingleton.instance.dialogueManager.isMainServer) return;
+        if (!GameSingleton.instance.dialogueManager.requiresServer) return;
+
+        SendCommandToNVL(command);
+    }
+
     // ===========================
     // Client
     // ===========================
@@ -184,6 +211,13 @@ public class ServerManager : MonoBehaviour
             client = new TcpClient();
             client.Connect(IPAddress.Loopback, port);
             Debug.Log($"[ServerManager] Connected to server on port {port}.");
+
+            // Request requiresServer status immediately on connect
+            NetworkStream stream = client.GetStream();
+            byte[] request = System.Text.Encoding.UTF8.GetBytes("<GetRequiresServer>");
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+
             ReceiveLoop();
         }
         catch (Exception e)

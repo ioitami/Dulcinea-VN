@@ -37,7 +37,7 @@ public class InputHandler : MonoBehaviour
     {
         if (context.started)
         {
-            Debug.Log("Left click detected");
+            //Debug.Log("Left click detected");
             leftClickPressDown.Invoke();
         }
     }

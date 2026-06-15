@@ -480,29 +480,3 @@ public class DialogueSetDialogueClickRightsNode : DialogueBlockNode
     }
 }
 
-[Serializable]
-public class DialogueChangeRequireServerBoolNode : DialogueBlockNode
-{
-    public bool requiresServer = true;
-
-    public override void Execute(DialogueManager manager, Action onComplete)
-    {
-        manager.requiresServer = requiresServer;
-
-        if (requiresServer == false)
-        {
-            ServerManager serverManager = GameSingleton.instance.serverManager;
-
-            if (serverManager == null)
-            {
-                onComplete?.Invoke();
-                return;
-            }
-
-            if (manager.isMainServer)
-                serverManager.DisconnectAllClients();
-        }
-
-        onComplete?.Invoke();
-    }
-}

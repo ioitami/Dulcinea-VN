@@ -32,6 +32,9 @@ public class SceneLoaderManager : MonoBehaviour
 
         GameSingleton.instance.cameraManager.EnableMainCamera((int)MainCameraID.MainMenu);
 
+        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.MainMenuUI);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.MainMenuUI);
+
         LoadBaseCharacterLayerScreen();
 
         // Display Dulci here? Or maybe full BG art

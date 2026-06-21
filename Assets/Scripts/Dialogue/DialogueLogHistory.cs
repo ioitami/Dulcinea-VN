@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class DialogueLogHistory : MonoBehaviour
 {
-    public Transform dialogueLogHistoryCameraParent;
     public Canvas dialogueLogHistoryCanvas;
     public Transform dialogueLogHistoryContent;
 

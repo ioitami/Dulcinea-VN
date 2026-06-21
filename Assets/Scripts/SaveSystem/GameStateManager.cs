@@ -215,10 +215,7 @@ public class GameStateManager : MonoBehaviour
         onComplete?.Invoke(data);
     }
 
-    private GameObject GetOverlayCamera(int overlayCameraID)
-    {
-        return GameSingleton.instance.cameraManager.overlayCameraList[overlayCameraID].gameObject;
-    }
+
 
     // ===========================
     // Data Collection

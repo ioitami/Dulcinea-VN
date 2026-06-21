@@ -4,50 +4,52 @@ using UnityEngine;
 
 public enum MainCameraID
 {
-    MainMenu    = 0,
-    Window1     = 1, 
-    Window2     = 2,
+    Window1     = 0, 
+    Window2     = 1,
 }
 
-public enum OverlayCameraID
+public enum MainCameraLocations
 {
-    SaveLoadOptionsMenu     = 0,
-    PreferencesOptionsMenu  = 1,
-    AVL                     = 2,
-    NVL                     = 3,
-    CharacterScreen         = 4,
-    DialogueLogHistory      = 5,
-    MainMenuUI              = 6
+    MainMenu = 0,
+    Window1 = 1,
+    Window2 = 2
+}
+
+public enum ScreenID
+{
+    MainMenu                = 0,
+    AVL                     = 1,
+    NVL                     = 2,
+    SaveLoadOptionsMenu     = 3,
+    PreferencesOptionsMenu  = 4,
+    CharacterScreen         = 5,
+    DialogueLogHistory      = 6
 }
 
 public class CameraManager : MonoBehaviour
 {
     public List<Transform> mainCameraList;
-    public List<Transform> overlayCameraList;
-    public List<Canvas> overlayCanvasList;
+    public List<Transform> mainCameraLocations;
+    public List<Canvas> screenList;
+    public List<Transform> screenLocations;
 
-    public List<Transform> savedOverlayCameraList;
 
+    public void MoveCameraToLocation(int cameraID, int mainCamLocation)
+    {
+        Transform cam = mainCameraList[cameraID].transform;
+
+        cam.position = mainCameraLocations[mainCamLocation].position;
+    }
 
     public void EnableMainCamera(int id)
     {
-        DisableAllMainCameras(); // only one main cam should be active at a time
+        DisableAllCameras(); // only one main cam should be active at a time
         mainCameraList[id].gameObject.SetActive(true);
-    }
-
-    public void EnableOverlayCamera(int id)
-    {
-        overlayCameraList[id].gameObject.SetActive(true);
     }
 
     public void DisableMainCamera(int id)
     {
         mainCameraList[id].gameObject.SetActive(false);
-    }
-
-    public void DisableOverlayCamera(int id)
-    {
-        overlayCameraList[id].gameObject.SetActive(false);
     }
 
     public void DisableAllCameras()
@@ -56,47 +58,19 @@ public class CameraManager : MonoBehaviour
         {
             t.gameObject.SetActive(false);
         }
-
-        foreach (Transform t in overlayCameraList)
-        {
-            t.gameObject.SetActive(false);
-        }
     }
 
-    public void DisableAllMainCameras()
+    public void EnableAllOverlayCanvas()
     {
-        foreach (Transform t in mainCameraList)
+        foreach (Canvas c in screenList)
         {
-            t.gameObject.SetActive(false);
+            c.gameObject.SetActive(true);
         }
     }
-
-    public void DisableAllOverlayCameras()
-    {
-        foreach (Transform t in overlayCameraList)
-        {
-            if (t.gameObject.activeSelf == true)
-            {
-                savedOverlayCameraList.Add(t.gameObject.transform);
-                t.gameObject.SetActive(false);
-            }
-        }
-    }
-
-    public void EnablePreviouslyDisabledOverlayCameras()
-    {
-        foreach (Transform t in savedOverlayCameraList)
-        {
-            t.gameObject.SetActive(true);
-        }
-
-        savedOverlayCameraList.Clear();
-    }
-
 
     public void DisableAllOverlayCanvas()
     {
-        foreach (Canvas c in overlayCanvasList)
+        foreach (Canvas c in screenList)
         {
             c.gameObject.SetActive(false);
         }
@@ -104,14 +78,19 @@ public class CameraManager : MonoBehaviour
 
     public void EnableOverlayCanvas(int id)
     {
-        overlayCanvasList[id].gameObject.SetActive(true);
+        screenList[id].gameObject.SetActive(true);
     }
     public void DisableOverlayCanvas(int id)
     {
-        overlayCanvasList[id].gameObject.SetActive(false);
+        screenList[id].gameObject.SetActive(false);
     }
 
+    public void MoveCanvasToScreenLocation(int screenToMove, int screenLocation)
+    {
+        Transform objToMove = screenList[screenToMove].transform;
 
+        objToMove.position = screenLocations[screenLocation].position;
+    }
 }
 
 

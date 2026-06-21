@@ -30,10 +30,9 @@ public class SceneLoaderManager : MonoBehaviour
 
         GameSingleton.instance.cameraManager.DisableAllOverlayCanvas();
 
-        GameSingleton.instance.cameraManager.EnableMainCamera((int)MainCameraID.MainMenu);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.MainMenu);
+        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.MainMenu);
 
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.MainMenuUI);
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.MainMenuUI);
 
         LoadBaseCharacterLayerScreen();
 
@@ -45,35 +44,33 @@ public class SceneLoaderManager : MonoBehaviour
         GameSingleton.instance.cameraManager.DisableAllOverlayCanvas();
 
         GameSingleton.instance.cameraManager.EnableMainCamera((int)MainCameraID.Window1);
+        ToggleAVL(true);
+        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.Window1);
 
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.AVL);
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.AVL);
 
         LoadBaseCharacterLayerScreen();
     }
 
 
 
-    // OVERLAY CAMERA CONTROLS
+    // OVERLAY CANVAS CONTROLS
 
     public void LoadBaseCharacterLayerScreen()
     {
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.CharacterScreen);
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.CharacterScreen);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.CharacterScreen);
 
         GameSingleton.instance.characterManager.HideAllCharacters();
     }
 
     public void LoadCurrentCharacterLayerScreen()
     {
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.CharacterScreen);
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.CharacterScreen);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.CharacterScreen);
     }
 
     public void LoadLoadMenu()
     {
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.SaveLoadOptionsMenu);
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.SaveLoadOptionsMenu);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.SaveLoadOptionsMenu);
+
         uiController.saveLoadMenu.saveMenu.gameObject.SetActive(false);
         uiController.saveLoadMenu.loadMenu.gameObject.SetActive(true);
 
@@ -97,8 +94,8 @@ public class SceneLoaderManager : MonoBehaviour
             GameSingleton.instance.gameStateManager.CaptureScreenshotRoutine()
         );
 
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.SaveLoadOptionsMenu);
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.SaveLoadOptionsMenu);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.SaveLoadOptionsMenu);
+
         uiController.saveLoadMenu.saveMenu.gameObject.SetActive(true);
         uiController.saveLoadMenu.loadMenu.gameObject.SetActive(false);
 
@@ -113,8 +110,8 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void LoadPreferencesOptionsMenu()
     {
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.PreferencesOptionsMenu);
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.PreferencesOptionsMenu);
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.PreferencesOptionsMenu);
+
 
         // UI Transition Animation here
 
@@ -126,8 +123,8 @@ public class SceneLoaderManager : MonoBehaviour
         // UI Transition Animation here
 
         // =====
-        GameSingleton.instance.cameraManager.DisableOverlayCamera((int)OverlayCameraID.PreferencesOptionsMenu);
-        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)OverlayCameraID.PreferencesOptionsMenu);
+
+        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.PreferencesOptionsMenu);
     }
 
     public void CloseSaveLoadOptionsMenu()
@@ -136,16 +133,16 @@ public class SceneLoaderManager : MonoBehaviour
 
         // =====
 
-        GameSingleton.instance.cameraManager.DisableOverlayCamera((int)OverlayCameraID.SaveLoadOptionsMenu);
-        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)OverlayCameraID.SaveLoadOptionsMenu);
+
+        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.SaveLoadOptionsMenu);
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
     }
 
     public void LoadDialogueLogHistory()
     {
-        GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.DialogueLogHistory);
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)OverlayCameraID.DialogueLogHistory);
+
+        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.DialogueLogHistory);
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -156,8 +153,7 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void CloseDialogueLogHistory()
     {
-        GameSingleton.instance.cameraManager.DisableOverlayCamera((int)OverlayCameraID.DialogueLogHistory);
-        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)OverlayCameraID.DialogueLogHistory);
+        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.DialogueLogHistory);
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
         // UI Transition Animation here
@@ -169,11 +165,11 @@ public class SceneLoaderManager : MonoBehaviour
     {
         if (toggle == true)
         {
-            GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.AVL);
+            GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.AVL);
         }
         else
         {
-            GameSingleton.instance.cameraManager.EnableOverlayCamera((int)OverlayCameraID.AVL);
+            GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.AVL);
         }
 
     }

@@ -1,4 +1,4 @@
-using Mirror;
+﻿using Mirror;
 using UnityEngine;
 
 public class NVLNetworkManager : NetworkManager
@@ -20,15 +20,18 @@ public class NVLNetworkManager : NetworkManager
         }
 
         instance = this;
+
+        // Disable both cameras on startup
+        // They will be enabled when host or client starts
+        if (serverCamera != null) serverCamera.gameObject.SetActive(false);
+        if (clientCamera != null) clientCamera.gameObject.SetActive(false);
     }
 
     public override void OnStartHost()
     {
         base.OnStartHost();
-
         Debug.Log("[NVLNetworkManager] Started as host.");
 
-        // Host sees server camera
         if (serverCamera != null) serverCamera.gameObject.SetActive(true);
         if (clientCamera != null) clientCamera.gameObject.SetActive(false);
 
@@ -38,23 +41,23 @@ public class NVLNetworkManager : NetworkManager
     public override void OnStartClient()
     {
         base.OnStartClient();
-
         Debug.Log("[NVLNetworkManager] Started as client.");
     }
 
     public override void OnClientConnect()
     {
         base.OnClientConnect();
-
         Debug.Log("[NVLNetworkManager] Client connected.");
 
-        // If this is a pure client (not the host), show client camera
+        // Pure client — not the host
         if (!NetworkServer.active)
         {
             if (serverCamera != null) serverCamera.gameObject.SetActive(false);
             if (clientCamera != null) clientCamera.gameObject.SetActive(true);
 
             GameSingleton.instance.dialogueManager.isMainServer = false;
+
+            Debug.Log("[NVLNetworkManager] Client camera activated.");
         }
     }
 
@@ -62,11 +65,18 @@ public class NVLNetworkManager : NetworkManager
     {
         base.OnStopClient();
         Debug.Log("[NVLNetworkManager] Client disconnected.");
+
+        if (!NetworkServer.active)
+        {
+            if (clientCamera != null) clientCamera.gameObject.SetActive(false);
+        }
     }
 
     public override void OnStopHost()
     {
         base.OnStopHost();
         Debug.Log("[NVLNetworkManager] Host stopped.");
+
+        if (serverCamera != null) serverCamera.gameObject.SetActive(false);
     }
 }

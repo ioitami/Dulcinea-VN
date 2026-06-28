@@ -23,17 +23,60 @@ public class GameStateManager : MonoBehaviour
 
     private string SaveDirectory => Path.Combine(Application.persistentDataPath, SaveFolder);
 
-    private void Awake()
+
+    private void Start()
     {
+        if (!Directory.Exists(Application.streamingAssetsPath))
+            Directory.CreateDirectory(Application.streamingAssetsPath);
 
         if (!Directory.Exists(SaveDirectory))
             Directory.CreateDirectory(SaveDirectory);
 
-        // Ensure StreamingAssets directory exists
-        if (!Directory.Exists(Application.streamingAssetsPath))
-            Directory.CreateDirectory(Application.streamingAssetsPath);
-
         LoadVisitedBlocks();
+        StartNetworking();
+    }
+
+    private void StartNetworking()
+    {
+        NVLNetworkManager networkManager = NVLNetworkManager.instance;
+
+        if (networkManager == null)
+        {
+            Debug.LogError("[GameStateManager] NVLNetworkManager not found.");
+            return;
+        }
+
+        // Try connecting to an existing host first
+        networkManager.networkAddress = "localhost";
+
+        if (IsHostAlreadyRunning())
+        {
+            Debug.Log("[GameStateManager] Joining existing host as client.");
+            networkManager.StartClient();
+        }
+        else
+        {
+            Debug.Log("[GameStateManager] No host found, starting as host.");
+            networkManager.StartHost();
+        }
+    }
+
+    private bool IsHostAlreadyRunning()
+    {
+        try
+        {
+            System.Net.Sockets.TcpClient testClient = new System.Net.Sockets.TcpClient();
+            testClient.Connect("localhost", NVLNetworkManager.instance.transport
+                .GetComponent<Mirror.TelepathyTransport>() != null
+                ? 7777
+                : 7777);
+            testClient.Close();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     // ===========================

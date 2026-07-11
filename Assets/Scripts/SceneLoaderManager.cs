@@ -45,6 +45,7 @@ public class SceneLoaderManager : MonoBehaviour
 
         GameSingleton.instance.cameraManager.EnableMainCamera((int)MainCameraID.Window1);
         ToggleAVL(true);
+        ToggleNVL(true);
         GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.Window1);
 
 
@@ -174,6 +175,17 @@ public class SceneLoaderManager : MonoBehaviour
 
     }
 
+    public void ToggleNVL(bool toggle)
+    {
+        if (toggle == true)
+        {
+            GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.NVL);
+        }
+        else
+        {
+            GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.NVL);
+        }
 
+    }
 
 }

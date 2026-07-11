@@ -52,6 +52,7 @@ public class NVLNetworkManager : NetworkManager
         // Pure client — not the host
         if (!NetworkServer.active)
         {
+
             if (serverCamera != null) serverCamera.gameObject.SetActive(false);
             if (clientCamera != null) clientCamera.gameObject.SetActive(true);
 

@@ -8,9 +8,13 @@ public class NVLSyncActiveChildren : NetworkBehaviour
 
     private List<GameObject> trackedChildren = new List<GameObject>();
 
-    private void Awake()
+    // Collects tracked children on demand rather than in Awake(), since
+    // other components (e.g. CharacterManager) may still be reparenting
+    // objects under this transform in their own Awake().
+    public void RefreshTrackedChildren()
     {
-        // Collect all children recursively
+        trackedChildren.Clear();
+
         foreach (Transform child in GetComponentsInChildren<Transform>(true))
         {
             if (child.gameObject == gameObject) continue;
@@ -22,6 +26,8 @@ public class NVLSyncActiveChildren : NetworkBehaviour
     {
         base.OnStartServer();
 
+        RefreshTrackedChildren();
+
         childActiveStates.Clear();
         foreach (GameObject child in trackedChildren)
             childActiveStates.Add(child.activeSelf);
@@ -30,6 +36,9 @@ public class NVLSyncActiveChildren : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+
+        if (trackedChildren.Count == 0)
+            RefreshTrackedChildren();
 
         childActiveStates.Callback += OnChildStatesChanged;
         ApplyAllStates();

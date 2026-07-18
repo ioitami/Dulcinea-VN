@@ -179,56 +179,101 @@ public class DialogueChoiceNode : DialogueBlockNode
             return;
         }
 
-        foreach (DialogueChoice choice in choices)
+        if (choices == null || choices.Count == 0)
         {
-            GameObject choiceObj = GameObject.Instantiate(choicePrefab, choiceContainerParent);
-
-            // Set button text on the child text component
-            TextMeshProUGUI label = choiceObj.GetComponentInChildren<TextMeshProUGUI>();
-            if (label != null)
-                label.text = choice.text;
-
-            // Wire up the button onclick
-            Button button = choiceObj.GetComponent<Button>();
-            if (button != null)
-            {
-                // Capture local reference for the lambda
-                DialogueChoice capturedChoice = choice;
-
-                button.onClick.AddListener(() =>
-                {
-                    capturedChoice.onSelected?.Invoke();
-                    CleanupChoices();
-
-                    // Register current block as visited before jumping to new node
-                    if (manager.currentBlock != null)
-                    {
-                        GameSingleton.instance.gameStateManager.RegisterVisitedBlock(manager.currentBlock.ID);
-                    }
-
-
-                    if (capturedChoice.linkedGroup != null)
-                    {
-                        manager.PlaySpecificBlockInGroup(capturedChoice.linkedGroup, capturedChoice.linkedBlock);
-                    }
-                    else
-                    {
-                        onComplete?.Invoke();
-                    }
-
-                });
-            }
+            onComplete?.Invoke();
+            return;
         }
 
+        // Only runs here on the authoritative (host/offline) instance —
+        // DialogueManager gates node execution to that context already.
+        manager.RegisterActiveChoice(this, onComplete);
 
         if (manager.isFastForwarding)
         {
             manager.StopFastForward();
         }
 
+        // Broadcast to every window (including this one, if networked) so
+        // they all instantiate identical choice UI from their own local
+        // scene data. Falls back to a direct local display when no
+        // networking is running at all (editor/offline testing).
+        if (NVLNetworkPlayer.hostInstance != null)
+        {
+            int nodeIndex = manager.CurrentNodeIndex - 1;
+            NVLNetworkPlayer.hostInstance.RpcShowChoiceUI(manager.currentBlock.ID, nodeIndex);
+        }
+        else
+        {
+            DisplayChoicesLocally(manager);
+        }
     }
 
-    private void CleanupChoices()
+    // Display-only: instantiates the choice buttons and wires clicks to
+    // route through the network (or directly, offline) rather than
+    // resolving the outcome inline — the outcome is only ever resolved on
+    // the authoritative instance via ResolveChoice.
+    public void DisplayChoicesLocally(DialogueManager manager)
+    {
+        CleanupChoicesLocally();
+
+        for (int i = 0; i < choices.Count; i++)
+        {
+            int capturedIndex = i;
+            DialogueChoice choice = choices[i];
+
+            GameObject choiceObj = GameObject.Instantiate(choicePrefab, choiceContainerParent);
+
+            TextMeshProUGUI label = choiceObj.GetComponentInChildren<TextMeshProUGUI>();
+            if (label != null)
+                label.text = choice.text;
+
+            Button button = choiceObj.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(() =>
+                {
+                    if (NVLNetworkPlayer.localPlayer != null)
+                        NVLNetworkPlayer.localPlayer.CmdSelectChoice(capturedIndex);
+                    else
+                        manager.ResolveActiveChoiceByIndex(capturedIndex);
+                });
+            }
+        }
+    }
+
+    // Authoritative resolution — only ever invoked on the host/offline
+    // instance, either directly (offline) or via CmdSelectChoice (networked).
+    public void ResolveChoice(int index, DialogueManager manager, Action onComplete)
+    {
+        if (choices == null || index < 0 || index >= choices.Count) return;
+
+        DialogueChoice chosen = choices[index];
+
+        chosen.onSelected?.Invoke();
+
+        if (NVLNetworkPlayer.hostInstance != null)
+            NVLNetworkPlayer.hostInstance.RpcHideChoiceUI();
+        else
+            manager.HideChoiceUILocally();
+
+        // Register current block as visited before jumping to new node
+        if (manager.currentBlock != null)
+        {
+            GameSingleton.instance.gameStateManager.RegisterVisitedBlock(manager.currentBlock.ID);
+        }
+
+        if (chosen.linkedGroup != null)
+        {
+            manager.PlaySpecificBlockInGroup(chosen.linkedGroup, chosen.linkedBlock);
+        }
+        else
+        {
+            onComplete?.Invoke();
+        }
+    }
+
+    public void CleanupChoicesLocally()
     {
         if (choiceContainerParent == null) return;
 
@@ -477,6 +522,57 @@ public class DialogueSetDialogueClickRightsNode : DialogueBlockNode
     {
         manager.SetGlobalAllowDialogueClick(allow);
         onComplete?.Invoke();
+    }
+}
+
+
+// Marks whether the story from this point onward needs both windows open.
+// NVLNetworkManager reads this to decide when to show the "waiting for
+// second window" / "please close the second window" prompts.
+[Serializable]
+public class DialogueRequireServerNode : DialogueBlockNode
+{
+    public bool requiresServer = true;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        manager.SetRequiresServer(requiresServer);
+        onComplete?.Invoke();
+    }
+}
+
+
+// A narrative checkpoint where the story branches based on which window
+// the player physically closes. Pauses playback (does not call
+// onComplete) until either window closes; NVLNetworkManager resolves the
+// outcome — jumping the surviving/host window to the matching block.
+[Serializable]
+public class DialogueWindowCloseChoiceNode : DialogueBlockNode
+{
+    [Header("If window 1 (host) is closed")]
+    public DialogueGroup groupIfHostCloses;
+    public DialogueBlock blockIfHostCloses;
+
+    [Header("If window 2 (client) is closed")]
+    public DialogueGroup groupIfClientCloses;
+    public DialogueBlock blockIfClientCloses;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        if (groupIfHostCloses == null || groupIfClientCloses == null)
+        {
+            Debug.LogWarning("[DialogueWindowCloseChoiceNode] Both outcomes must be assigned.");
+            onComplete?.Invoke();
+            return;
+        }
+
+        manager.BeginWindowCloseChoice(
+            groupIfHostCloses.ID, blockIfHostCloses != null ? blockIfHostCloses.ID : "",
+            groupIfClientCloses.ID, blockIfClientCloses != null ? blockIfClientCloses.ID : "");
+
+        // Intentionally does not call onComplete — playback stays paused
+        // here until NVLNetworkManager resolves the outcome itself via
+        // PlaySpecificBlockInGroup once a window actually closes.
     }
 }
 

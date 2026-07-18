@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.ComponentModel;
+using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,6 +46,14 @@ public class DialogueManager : MonoBehaviour
     private string lastTypedText;
     private Action pendingOnComplete;
 
+    public int CurrentNodeIndex => currentNodeIndex;
+
+    // ===========================
+    // Networked choice tracking
+    // ===========================
+    private DialogueChoiceNode activeChoiceNode;
+    private Action activeChoiceOnComplete;
+
     private Coroutine typingCoroutine;
     private Coroutine blinkCoroutine;
     private Coroutine fastForwardCoroutine;
@@ -73,8 +82,102 @@ public class DialogueManager : MonoBehaviour
         GlobalAllowDialogueClick = previousGlobalAllowDialogueClick;
     }
 
+    // ===========================
+    // Networking authority
+    // ===========================
+
+    // True when this instance is allowed to actually drive dialogue state:
+    // either it's the host/server, or there's no networking active at all
+    // (offline/editor testing). A pure (non-host) client is never allowed
+    // to drive state directly — it must go through Request*() below.
+    public bool CanDriveDialogueLocally()
+    {
+        return NetworkServer.active || !NetworkClient.active;
+    }
+
+    public void RequestContinue()
+    {
+        if (CanDriveDialogueLocally())
+            DialogueContinueClicked();
+        else
+            NVLNetworkPlayer.localPlayer?.CmdRequestContinue();
+    }
+
+    public void RequestStartFastForward()
+    {
+        if (CanDriveDialogueLocally())
+            StartFastForward();
+        else
+            NVLNetworkPlayer.localPlayer?.CmdRequestStartFastForward();
+    }
+
+    public void RequestStopFastForward()
+    {
+        if (CanDriveDialogueLocally())
+            StopFastForward();
+        else
+            NVLNetworkPlayer.localPlayer?.CmdRequestStopFastForward();
+    }
+
+    // Author-facing: call from a DialogueScriptNode's UnityEvent to mark
+    // that the story has entered/left a section that needs both windows.
+    public void SetRequiresServer(bool value)
+    {
+        if (!CanDriveDialogueLocally()) return;
+
+        requiresServer = value;
+
+        if (NetworkServer.active)
+            NVLNetworkPlayer.hostInstance?.SetRequiresServer(value);
+    }
+
+    // Author-facing: call from a DialogueScriptNode (or a dedicated node)
+    // to mark that the next window-close decides the story's outcome.
+    public void BeginWindowCloseChoice(string groupIfHostCloses, string blockIfHostCloses, string groupIfClientCloses, string blockIfClientCloses)
+    {
+        if (!NetworkServer.active) return;
+
+        NVLNetworkPlayer.hostInstance?.SetAwaitingWindowCloseChoice(true, groupIfHostCloses, blockIfHostCloses, groupIfClientCloses, blockIfClientCloses);
+    }
+
+    // ===========================
+    // Networked choice tracking (used by DialogueChoiceNode)
+    // ===========================
+
+    public void RegisterActiveChoice(DialogueChoiceNode node, Action onComplete)
+    {
+        activeChoiceNode = node;
+        activeChoiceOnComplete = onComplete;
+    }
+
+    public void ShowChoiceUILocally(string blockID, int nodeIndex)
+    {
+        if (!DialogueLookup.TryFindBlockByID(blockID, out DialogueBlock block)) return;
+        if (nodeIndex < 0 || nodeIndex >= block.nodes.Length) return;
+
+        if (block.nodes[nodeIndex] is DialogueChoiceNode choiceNode)
+        {
+            activeChoiceNode = choiceNode;
+            choiceNode.DisplayChoicesLocally(this);
+        }
+    }
+
+    public void HideChoiceUILocally()
+    {
+        activeChoiceNode?.CleanupChoicesLocally();
+        activeChoiceNode = null;
+        activeChoiceOnComplete = null;
+    }
+
+    public void ResolveActiveChoiceByIndex(int choiceIndex)
+    {
+        if (!CanDriveDialogueLocally()) return;
+        activeChoiceNode?.ResolveChoice(choiceIndex, this, activeChoiceOnComplete);
+    }
+
     public void PlayGroup(DialogueGroup group)
     {
+        if (!CanDriveDialogueLocally()) return;
         if (group == null) return;
 
         currentGroup = group;
@@ -116,6 +219,7 @@ public class DialogueManager : MonoBehaviour
 
     public void PlayBlock(DialogueBlock block, Action onComplete = null)
     {
+        if (!CanDriveDialogueLocally()) return;
         if (block == null) return;
 
         currentBlock = block;
@@ -134,6 +238,7 @@ public class DialogueManager : MonoBehaviour
 
     public void PlaySpecificBlockInGroup(DialogueGroup group, DialogueBlock block = null)
     {
+        if (!CanDriveDialogueLocally()) return;
         if (group == null)
         {
             Debug.Log("No DialogueGroup detected");
@@ -165,6 +270,7 @@ public class DialogueManager : MonoBehaviour
 
     public void DialogueContinueClicked()
     {
+        if (!CanDriveDialogueLocally()) return;
         if (!GlobalAllowDialogueClick) return;
 
         //int pointerId = (int)Mouse.current.deviceId;
@@ -190,6 +296,7 @@ public class DialogueManager : MonoBehaviour
 
     public void StartFastForward()
     {
+        if (!CanDriveDialogueLocally()) return;
         if (!GlobalAllowDialogueClick) return;
         if (isFastForwarding) return;
 
@@ -238,6 +345,7 @@ public class DialogueManager : MonoBehaviour
 
     private void ProcessNextNode()
     {
+        if (!CanDriveDialogueLocally()) return;
         if (currentBlock == null)
         {
             Debug.Log("[DialogueManager] No current block to process.");

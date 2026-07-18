@@ -105,6 +105,14 @@ public class GameStateManager : MonoBehaviour
 
     public void LoadGame(int saveSlotNumber)
     {
+        DialogueManager dialogueManager = GameSingleton.instance.dialogueManager;
+
+        if (!dialogueManager.CanDriveDialogueLocally())
+        {
+            Debug.LogWarning("[GameStateManager] Only the host window can load a save.");
+            return;
+        }
+
         SaveData data = LoadSaveID(saveSlotNumber);
 
         if (data == null)
@@ -113,13 +121,15 @@ public class GameStateManager : MonoBehaviour
             return;
         }
 
-        GameSingleton.instance.dialogueManager.requiresServer = data.requiresServer;
+        dialogueManager.SetRequiresServer(data.requiresServer);
 
         GameSingleton.instance.sceneLoaderManager.LoadWindow1();
         GameSingleton.instance.sceneLoaderManager.CloseSaveLoadOptionsMenu();
 
         RestoreCharacters(data);
         FindAndPlayDialogue(data);
+
+        NVLNetworkManager.instance?.EvaluateWindowRequirement();
     }
 
     public void DeleteSave(int saveID)
@@ -410,30 +420,7 @@ public class GameStateManager : MonoBehaviour
 
     private void FindAndPlayDialogue(SaveData data)
     {
-        DialogueGroup[] allGroups = GameObject.FindObjectsByType<DialogueGroup>(FindObjectsSortMode.None);
-
-        DialogueGroup targetGroup = null;
-        DialogueBlock targetBlock = null;
-
-        foreach (DialogueGroup group in allGroups)
-        {
-            if (group.ID.Trim() == data.dialogueGroupID.Trim())
-            {
-                targetGroup = group;
-
-                foreach (DialogueBlock block in group.blocks)
-                {
-                    if (block.ID.Trim() == data.dialogueBlockID.Trim())
-                    {
-                        targetBlock = block;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-
-        if (targetGroup == null)
+        if (!DialogueLookup.TryFindGroupAndBlock(data.dialogueGroupID, data.dialogueBlockID, out DialogueGroup targetGroup, out DialogueBlock targetBlock))
         {
             Debug.LogWarning($"[GameStateManager] DialogueGroup '{data.dialogueGroupID}' not found.");
             return;

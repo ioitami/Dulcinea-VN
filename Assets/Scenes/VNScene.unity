@@ -1619,7 +1619,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 586249823}
         m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: DialogueContinueClicked
+        m_MethodName: RequestContinue
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -13352,7 +13352,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 586249823}
         m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: StartFastForward
+        m_MethodName: RequestStartFastForward
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -13367,7 +13367,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 586249823}
         m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: DialogueContinueClicked
+        m_MethodName: RequestContinue
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

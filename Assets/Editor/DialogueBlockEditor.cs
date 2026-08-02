@@ -190,6 +190,8 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Play Sound Node"), false, () => AddNode(typeof(DialoguePlaySoundNode)));
         menu.AddItem(new GUIContent("Play Group Node"), false, () => AddNode(typeof(DialoguePlayGroupNode)));
         menu.AddItem(new GUIContent("Set Dialogue Click Rights Node"), false, () => AddNode(typeof(DialogueSetDialogueClickRightsNode)));
+        menu.AddItem(new GUIContent("WindowClose Choice Node for Ending"), false, () => AddNode(typeof(DialogueWindowCloseChoiceNode)));
+        menu.AddItem(new GUIContent("Set Require Server"), false, () => AddNode(typeof(DialogueRequireServerNode)));
 
         menu.ShowAsContext();
     }

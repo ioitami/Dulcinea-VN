@@ -9,13 +9,13 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Characters
+  - CharacterUI
   - Water
   - UI
   - Camera
-  - MainMenuUI
-  - 
-  - 
+  - BackgroundUI
+  - CamUI1
+  - CamUI2
   - 
   - 
   - 

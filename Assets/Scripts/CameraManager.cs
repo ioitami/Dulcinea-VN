@@ -30,8 +30,7 @@ public class CameraManager : MonoBehaviour
 {
     public List<Transform> mainCameraList;
     public List<Transform> mainCameraLocations;
-    public List<Canvas> screenList;
-    public List<Transform> screenLocations;
+    public List<Transform> screenList;
 
 
     public void MoveCameraToLocation(int cameraID, int mainCamLocation)
@@ -62,7 +61,7 @@ public class CameraManager : MonoBehaviour
 
     public void EnableAllOverlayCanvas()
     {
-        foreach (Canvas c in screenList)
+        foreach (Transform c in screenList)
         {
             c.gameObject.SetActive(true);
         }
@@ -70,7 +69,7 @@ public class CameraManager : MonoBehaviour
 
     public void DisableAllOverlayCanvas()
     {
-        foreach (Canvas c in screenList)
+        foreach (Transform c in screenList)
         {
             c.gameObject.SetActive(false);
         }
@@ -85,12 +84,6 @@ public class CameraManager : MonoBehaviour
         screenList[id].gameObject.SetActive(false);
     }
 
-    public void MoveCanvasToScreenLocation(int screenToMove, int screenLocation)
-    {
-        Transform objToMove = screenList[screenToMove].transform;
-
-        objToMove.position = screenLocations[screenLocation].position;
-    }
 }
 
 

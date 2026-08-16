@@ -70,23 +70,33 @@ public class OptionsManager : MonoBehaviour
     }
 
     // Wired to the dropdown's OnValueChanged in the Inspector.
+    // Reads the label straight off the dropdown's own option list rather
+    // than indexing into resolutionOptions — if the two ever have a
+    // different count (e.g. leftover entries from scene setup), indexing
+    // into a second list silently applies the wrong entry. Reading back
+    // what's actually on screen can't desync like that.
     public void OnResolutionDropdownChanged(int index)
     {
-        if (index < 0 || index >= resolutionOptions.Count) return;
+        if (resolutionDropdown == null) return;
+        if (index < 0 || index >= resolutionDropdown.options.Count) return;
 
-        ResolutionOption chosen = resolutionOptions[index];
-        SetResolution(chosen.width, chosen.height);
+        SetResolution(resolutionDropdown.options[index].text);
+    }
+
+    public void SetResolution(int width, int height)
+    {
+        SetResolution($"{width}x{height}");
     }
 
     // The options menu is only reachable from window 1, but guard anyway:
     // a pure client should never be the one deciding resolution.
-    public void SetResolution(int width, int height)
+    public void SetResolution(string resolution)
     {
         if (NetworkClient.active && !NetworkServer.active) return;
 
-        ApplyResolutionLocally($"{width}x{height}");
+        ApplyResolutionLocally(resolution);
 
-        if (NetworkServer.active)
+        if (NetworkServer.active && TryParseResolution(resolution, out int width, out int height))
             NVLNetworkPlayer.hostInstance?.SetResolution(width, height);
     }
 
@@ -94,10 +104,7 @@ public class OptionsManager : MonoBehaviour
     // synced resolution hook — same method, so both windows always agree.
     public void ApplyResolutionLocally(string resolution)
     {
-        string[] parts = resolution.Split('x');
-        if (parts.Length != 2) return;
-        if (!int.TryParse(parts[0], out int width)) return;
-        if (!int.TryParse(parts[1], out int height)) return;
+        if (!TryParseResolution(resolution, out int width, out int height)) return;
 
         Screen.SetResolution(width, height, Screen.fullScreenMode);
 
@@ -107,5 +114,20 @@ public class OptionsManager : MonoBehaviour
             if (index >= 0)
                 resolutionDropdown.SetValueWithoutNotify(index);
         }
+    }
+
+    private static bool TryParseResolution(string resolution, out int width, out int height)
+    {
+        width = 0;
+        height = 0;
+
+        if (string.IsNullOrEmpty(resolution)) return false;
+
+        string[] parts = resolution.Split('x');
+        if (parts.Length != 2) return false;
+        if (!int.TryParse(parts[0], out width)) return false;
+        if (!int.TryParse(parts[1], out height)) return false;
+
+        return true;
     }
 }

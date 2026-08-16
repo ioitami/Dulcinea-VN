@@ -66,6 +66,11 @@ public class NVLNetworkPlayer : NetworkBehaviour
     [SyncVar(hook = nameof(OnAwaitingWindowCloseChoiceChanged))]
     private bool awaitingWindowCloseChoice = false;
 
+    // "WIDTHxHEIGHT" — a single string avoids any cross-field sync-order
+    // hazard. Only ever set by window 1 (the host); window 2 just follows.
+    [SyncVar(hook = nameof(OnResolutionChanged))]
+    private string syncedResolution = "";
+
     public bool RequiresServer => requiresServer;
     public bool AwaitingWindowCloseChoice => awaitingWindowCloseChoice;
 
@@ -73,6 +78,12 @@ public class NVLNetworkPlayer : NetworkBehaviour
     public void SetRequiresServer(bool value)
     {
         requiresServer = value;
+    }
+
+    [Server]
+    public void SetResolution(int width, int height)
+    {
+        syncedResolution = $"{width}x{height}";
     }
 
     [Server]
@@ -117,6 +128,14 @@ public class NVLNetworkPlayer : NetworkBehaviour
         CachedBlockIfHostCloses = outcomeBlockIfHostCloses;
         CachedGroupIfClientCloses = outcomeGroupIfClientCloses;
         CachedBlockIfClientCloses = outcomeBlockIfClientCloses;
+    }
+
+    private void OnResolutionChanged(string oldValue, string newValue)
+    {
+        if (string.IsNullOrEmpty(newValue)) return;
+
+        if (GameSingleton.instance != null && GameSingleton.instance.optionsManager != null)
+            GameSingleton.instance.optionsManager.ApplyResolutionLocally(newValue);
     }
 
     // ===========================

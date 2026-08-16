@@ -113,6 +113,8 @@ public class SceneLoaderManager : MonoBehaviour
     {
         GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.PreferencesOptionsMenu);
 
+        GameSingleton.instance.dialogueManager.StopFastForward();
+        GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
 
         // UI Transition Animation here
 
@@ -126,6 +128,8 @@ public class SceneLoaderManager : MonoBehaviour
         // =====
 
         GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.PreferencesOptionsMenu);
+
+        GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
     }
 
     public void CloseSaveLoadOptionsMenu()

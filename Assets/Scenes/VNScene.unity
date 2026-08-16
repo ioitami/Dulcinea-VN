@@ -1722,14 +1722,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 181346946}
-  - component: {fileID: 181346947}
   m_Layer: 9
-  m_Name: PreferencesOptionsMenu
+  m_Name: PreferenceOptionsMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &181346946
 Transform:
   m_ObjectHideFlags: 0
@@ -1746,18 +1745,6 @@ Transform:
   - {fileID: 788380714}
   m_Father: {fileID: 1794083509}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &181346947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 181346945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cf87e0ebf9bd3049ae222a3a0f7a347, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &195582241
 GameObject:
   m_ObjectHideFlags: 0
@@ -2235,6 +2222,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 281377659}
   m_CullTransparentMesh: 1
+--- !u!1 &301765561
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 301765562}
+  - component: {fileID: 301765563}
+  m_Layer: 0
+  m_Name: PreferenceOptionsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &301765562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301765561}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442938524}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &301765563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301765561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65d38ee0c807a1f43a8fb532330cd8c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolutionDropdown: {fileID: 1233157738}
+  resolutionOptions:
+  - width: 1920
+    height: 1080
+  - width: 1600
+    height: 900
+  - width: 1280
+    height: 720
+  - width: 960
+    height: 540
 --- !u!1001 &306565742
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3230,10 +3271,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ServerManager, Assembly-CSharp
-        m_MethodName: SendCommandToNVL
-        m_Mode: 5
+      - m_Target: {fileID: 2070489122}
+        m_TargetAssemblyTypeName: SceneLoaderManager, Assembly-CSharp
+        m_MethodName: LoadPreferencesOptionsMenu
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4926,12 +4967,12 @@ GameObject:
   - component: {fileID: 788380716}
   - component: {fileID: 788380715}
   m_Layer: 9
-  m_Name: PreferencesOptionsMenu_UI_Canvas
+  m_Name: PreferenceOptionsMenu_UI_Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &788380714
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9714,6 +9755,7 @@ Transform:
   - {fileID: 1718534200}
   - {fileID: 586249822}
   - {fileID: 1620640662}
+  - {fileID: 301765562}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1442938525

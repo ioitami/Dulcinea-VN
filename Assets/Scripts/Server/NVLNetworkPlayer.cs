@@ -134,8 +134,8 @@ public class NVLNetworkPlayer : NetworkBehaviour
     {
         if (string.IsNullOrEmpty(newValue)) return;
 
-        if (GameSingleton.instance != null && GameSingleton.instance.optionsManager != null)
-            GameSingleton.instance.optionsManager.ApplyResolutionLocally(newValue);
+        if (GameSingleton.instance != null && GameSingleton.instance.preferenceOptionsManager != null)
+            GameSingleton.instance.preferenceOptionsManager.ApplyResolutionLocally(newValue);
     }
 
     // ===========================

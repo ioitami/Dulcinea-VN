@@ -20,7 +20,7 @@ public class GameSingleton : MonoBehaviour
     public GameStateManager gameStateManager                { get; private set; }
     public NVLNetworkManager nvlNetworkManager              { get; private set; }
     public NVLNetworkPlayer nvlNetworkPlayer                { get; private set; }
-    public OptionsManager optionsManager                    { get; private set; }
+    public PreferenceOptionsManager preferenceOptionsManager{ get; private set; }
 
 
     void Awake()
@@ -50,7 +50,7 @@ public class GameSingleton : MonoBehaviour
         gameStateManager        = GetComponentInChildren<GameStateManager>();
         nvlNetworkManager       = GetComponentInChildren<NVLNetworkManager>();
         nvlNetworkPlayer        = GetComponentInChildren<NVLNetworkPlayer>();
-        optionsManager          = GetComponentInChildren<OptionsManager>();
+        preferenceOptionsManager= GetComponentInChildren<PreferenceOptionsManager>();
     }
 
 }

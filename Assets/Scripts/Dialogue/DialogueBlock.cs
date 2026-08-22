@@ -90,11 +90,6 @@ public class DialogueTextNode : DialogueBlockNode
 
         Debug.Log("Applying dialogue box UI");
 
-        if (block.dialogueBoxImage != null && character.dialogueBoxImage != null)
-            block.dialogueBoxImage.sprite = character.dialogueBoxImage;
-
-        if (block.dialogueBoxCharIconImage != null && character.dialogueBoxCharIconImage != null)
-            block.dialogueBoxCharIconImage.sprite = character.dialogueBoxCharIconImage;
     }
 }
 

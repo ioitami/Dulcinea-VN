@@ -22,8 +22,7 @@ public enum ScreenID
     NVL                     = 2,
     SaveLoadOptionsMenu     = 3,
     PreferencesOptionsMenu  = 4,
-    CharacterScreen         = 5,
-    DialogueLogHistory      = 6
+    DialogueLogHistory      = 5
 }
 
 public class CameraManager : MonoBehaviour
@@ -59,7 +58,7 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public void EnableAllOverlayCanvas()
+    public void EnableAllOverlay()
     {
         foreach (Transform c in screenList)
         {
@@ -67,7 +66,7 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public void DisableAllOverlayCanvas()
+    public void DisableAllOverlay()
     {
         foreach (Transform c in screenList)
         {
@@ -75,11 +74,11 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public void EnableOverlayCanvas(int id)
+    public void EnableOverlay(int id)
     {
         screenList[id].gameObject.SetActive(true);
     }
-    public void DisableOverlayCanvas(int id)
+    public void DisableOverlay(int id)
     {
         screenList[id].gameObject.SetActive(false);
     }

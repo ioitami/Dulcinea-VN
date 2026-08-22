@@ -28,49 +28,33 @@ public class SceneLoaderManager : MonoBehaviour
 
         //==============
 
-        GameSingleton.instance.cameraManager.DisableAllOverlayCanvas();
+        GameSingleton.instance.cameraManager.DisableAllOverlay();
 
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.MainMenu);
+        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.MainMenu);
         GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.MainMenu);
 
-
-        LoadBaseCharacterLayerScreen();
 
         // Display Dulci here? Or maybe full BG art
 
     }
     public void LoadWindow1()
     {
-        GameSingleton.instance.cameraManager.DisableAllOverlayCanvas();
+        GameSingleton.instance.cameraManager.DisableAllOverlay();
 
         GameSingleton.instance.cameraManager.EnableMainCamera((int)MainCameraID.Window1);
         ToggleAVL(true);
         ToggleNVL(true);
         GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.Window1);
 
-
-        LoadBaseCharacterLayerScreen();
     }
 
 
 
     // OVERLAY CANVAS CONTROLS
 
-    public void LoadBaseCharacterLayerScreen()
-    {
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.CharacterScreen);
-
-        GameSingleton.instance.characterManager.HideAllCharacters();
-    }
-
-    public void LoadCurrentCharacterLayerScreen()
-    {
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.CharacterScreen);
-    }
-
     public void LoadLoadMenu()
     {
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.SaveLoadOptionsMenu);
+        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.SaveLoadOptionsMenu);
 
         uiController.saveLoadMenu.saveMenu.gameObject.SetActive(false);
         uiController.saveLoadMenu.loadMenu.gameObject.SetActive(true);
@@ -95,7 +79,7 @@ public class SceneLoaderManager : MonoBehaviour
             GameSingleton.instance.gameStateManager.CaptureScreenshotRoutine()
         );
 
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.SaveLoadOptionsMenu);
+        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.SaveLoadOptionsMenu);
 
         uiController.saveLoadMenu.saveMenu.gameObject.SetActive(true);
         uiController.saveLoadMenu.loadMenu.gameObject.SetActive(false);
@@ -111,7 +95,7 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void LoadPreferencesOptionsMenu()
     {
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.PreferencesOptionsMenu);
+        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.PreferencesOptionsMenu);
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -127,7 +111,7 @@ public class SceneLoaderManager : MonoBehaviour
 
         // =====
 
-        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.PreferencesOptionsMenu);
+        GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.PreferencesOptionsMenu);
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
     }
@@ -139,7 +123,7 @@ public class SceneLoaderManager : MonoBehaviour
         // =====
 
 
-        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.SaveLoadOptionsMenu);
+        GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.SaveLoadOptionsMenu);
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
     }
@@ -147,7 +131,7 @@ public class SceneLoaderManager : MonoBehaviour
     public void LoadDialogueLogHistory()
     {
 
-        GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.DialogueLogHistory);
+        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.DialogueLogHistory);
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -158,7 +142,7 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void CloseDialogueLogHistory()
     {
-        GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.DialogueLogHistory);
+        GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.DialogueLogHistory);
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
         // UI Transition Animation here
@@ -170,11 +154,11 @@ public class SceneLoaderManager : MonoBehaviour
     {
         if (toggle == true)
         {
-            GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.AVL);
+            GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.AVL);
         }
         else
         {
-            GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.AVL);
+            GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.AVL);
         }
 
     }
@@ -183,11 +167,11 @@ public class SceneLoaderManager : MonoBehaviour
     {
         if (toggle == true)
         {
-            GameSingleton.instance.cameraManager.EnableOverlayCanvas((int)ScreenID.NVL);
+            GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.NVL);
         }
         else
         {
-            GameSingleton.instance.cameraManager.DisableOverlayCanvas((int)ScreenID.NVL);
+            GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.NVL);
         }
 
     }

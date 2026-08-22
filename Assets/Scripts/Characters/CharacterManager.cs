@@ -6,7 +6,8 @@ using UnityEngine.TextCore.Text;
 public class CharacterManager : MonoBehaviour
 {
     [SerializeField]
-    public Transform characterSpriteParent;
+    public Transform characterSpriteParent_Window1;
+    public Transform characterSpriteParent_Window2;
 
     [Header("Characters Setup")]
     public List<Character> characters = new List<Character>();
@@ -32,7 +33,15 @@ public class CharacterManager : MonoBehaviour
             GameObject container = c.ingameContainerObj;
 
             // Create container object
-            container.transform.SetParent(characterSpriteParent, true);
+            if(c.windowNumber == 1)
+            {
+                container.transform.SetParent(characterSpriteParent_Window1, true);
+            }
+            else if(c.windowNumber == 2)
+            {
+                container.transform.SetParent(characterSpriteParent_Window2, true);
+            }
+
             container.transform.localPosition = Vector3.zero;
 
             c.ingameContainerObj = container;
@@ -45,10 +54,6 @@ public class CharacterManager : MonoBehaviour
 
     }
 
-    public void SetCharacterSpriteParent(Transform transform)
-    {
-        characterSpriteParent = transform;
-    }
 
     public Character GetCharacter(string name)
     {

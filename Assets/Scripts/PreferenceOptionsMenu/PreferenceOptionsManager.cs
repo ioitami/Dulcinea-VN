@@ -29,10 +29,13 @@ public class PreferenceOptionsManager : MonoBehaviour
     // Default list — edit here to add/remove supported resolutions.
     public List<ResolutionOption> resolutionOptions = new List<ResolutionOption>
     {
-        new ResolutionOption(1920, 1080),
-        new ResolutionOption(1600, 900),
-        new ResolutionOption(1280, 720),
-        new ResolutionOption(960, 540),
+        new ResolutionOption(1920, 1440),
+        new ResolutionOption(1600, 1200),
+        new ResolutionOption(1440, 1050),
+        new ResolutionOption(1280, 960),
+        new ResolutionOption(1024, 768),
+        new ResolutionOption(800, 600),
+        new ResolutionOption(640, 480)
     };
 
     private void Start()

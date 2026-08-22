@@ -15,12 +15,11 @@ public class Character : MonoBehaviour
     [Header("Character Settings")]
     public string characterName;
 
+    [Range(1, 2)]
+    public int windowNumber = 1;
+
     [Header("Moods")]
     public List<CharacterMood> moods = new List<CharacterMood>();
-
-    [Header("Dialogue UI")]
-    public Sprite dialogueBoxImage;
-    public Sprite dialogueBoxCharIconImage;
 
     [HideInInspector] public GameObject container;
     [HideInInspector] public SpriteRenderer spriteRenderer;

@@ -2,6 +2,6 @@ using UnityEngine;
 
 public class AVL : MonoBehaviour
 {
-    public Transform avlCameraParent;
-    public Canvas avlCanvas;
+    public Canvas avlCanvasLayer1;
+    public Canvas avlCanvasLayer2;
 }

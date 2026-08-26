@@ -10,6 +10,7 @@ public class CharacterManager : MonoBehaviour
     public Transform characterSpriteParent_Window2;
 
     [Header("Characters Setup")]
+    public GameObject characterPrefab;
     public List<Character> characters = new List<Character>();
 
     //NOTE: MAKE IT RELATIVE TO CAMERA POSITION AND ACCOUNT FOR SCREEN SIZE OF WINDOW
@@ -30,21 +31,22 @@ public class CharacterManager : MonoBehaviour
 
         foreach (Character c in characters)
         {
-            GameObject container = c.ingameContainerObj;
+            GameObject characterContainer = Instantiate(characterPrefab, Vector3.zero, Quaternion.identity);
+          
 
             // Create container object
             if(c.windowNumber == 1)
             {
-                container.transform.SetParent(characterSpriteParent_Window1, true);
+                characterContainer.transform.SetParent(characterSpriteParent_Window1, true);
             }
             else if(c.windowNumber == 2)
             {
-                container.transform.SetParent(characterSpriteParent_Window2, true);
+                characterContainer.transform.SetParent(characterSpriteParent_Window2, true);
             }
 
-            container.transform.localPosition = Vector3.zero;
+            characterContainer.transform.localPosition = Vector3.zero;
 
-            c.ingameContainerObj = container;
+            c.ingameContainerObj = characterContainer;
 
             c.currentMood = c.moods[0];
             SetCharacterMood(c.characterName, 0);

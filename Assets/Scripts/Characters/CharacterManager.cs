@@ -32,10 +32,10 @@ public class CharacterManager : MonoBehaviour
         foreach (Character c in characters)
         {
             GameObject characterContainer = Instantiate(characterPrefab, Vector3.zero, Quaternion.identity);
-          
+          characterContainer.name = c.characterName + "_Container";
 
             // Create container object
-            if(c.windowNumber == 1)
+            if (c.windowNumber == 1)
             {
                 characterContainer.transform.SetParent(characterSpriteParent_Window1, true);
             }

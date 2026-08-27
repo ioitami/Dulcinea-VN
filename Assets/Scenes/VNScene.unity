@@ -157,13 +157,13 @@ MonoBehaviour:
   - {fileID: 1911436328}
   customPositions:
   - positionName: Middle
-    position: {x: 0, y: -1.5, z: 0}
+    position: {x: 0, y: -1.1, z: 0}
   - positionName: Left
-    position: {x: -1.5, y: -1.5, z: 0}
+    position: {x: -0.6, y: -1.1, z: 0}
   - positionName: Right
-    position: {x: 1.5, y: -200, z: 0}
+    position: {x: 0.6, y: -1.1, z: 0}
   - positionName: Bottom
-    position: {x: 0, y: -2.5, z: 0}
+    position: {x: 0, y: -2, z: 0}
 --- !u!4 &8349538
 Transform:
   m_ObjectHideFlags: 0
@@ -8310,22 +8310,11 @@ MonoBehaviour:
   - rid: 7314505712279486525
   - rid: 7314505731947626559
   - rid: 7314505712279486527
-  - rid: 1435079783949271128
+  - rid: 5454807545212567616
   - rid: 1554742707323142212
   references:
     version: 2
     RefIds:
-    - rid: 1435079783949271128
-      type: {class: DialogueShowCharacterNode, ns: , asm: Assembly-CSharp}
-      data:
-        characterIndex: 1
-        moodIndex: 1
-        scaleCommand: 0
-        scale: {x: 0.5, y: 0.5, z: 0.5}
-        positionCommand: 0
-        positionMode: 0
-        presetPositionIndex: 0
-        manualPosition: {x: 0, y: 0, z: 0}
     - rid: 1554742707323142212
       type: {class: DialogueChoiceNode, ns: , asm: Assembly-CSharp}
       data:
@@ -8344,6 +8333,13 @@ MonoBehaviour:
           onSelected:
             m_PersistentCalls:
               m_Calls: []
+    - rid: 5454807545212567616
+      type: {class: DialoguePlayAnimationNode, ns: , asm: Assembly-CSharp}
+      data:
+        characterIndex: 0
+        animationName: Wobble
+        command: 0
+        waitForCompletion: 1
     - rid: 7314505712279486525
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -8537,6 +8533,7 @@ Transform:
   - {fileID: 339441873}
   - {fileID: 2051292517}
   - {fileID: 1375751888}
+  - {fileID: 1601322728}
   - {fileID: 8349538}
   - {fileID: 1718534200}
   - {fileID: 586249822}
@@ -9417,6 +9414,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1600302503}
   m_CullTransparentMesh: 1
+--- !u!1 &1601322727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1601322728}
+  - component: {fileID: 1601322729}
+  m_Layer: 0
+  m_Name: BackgroundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1601322728
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1601322727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442938524}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1601322729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1601322727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a192076117752a458cbffb96c29dc97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgroundSpriteParent_Window1: {fileID: 4439200531052686081}
+  backgroundSpriteParent_Window2: {fileID: 667570200}
+  backgrounds: []
 --- !u!1 &1602417138
 GameObject:
   m_ObjectHideFlags: 0
@@ -9909,7 +9953,7 @@ MonoBehaviour:
     loopType: 1
     loopCount: 2
     points:
-    - targetLocalPosition: {x: 0, y: 400, z: 0}
+    - targetLocalPosition: {x: 0.2, y: -1.1, z: 0}
       relativeScale: {x: 1, y: 1, z: 1}
       relativeLocalRotation: {x: 0, y: 0, z: 0}
       duration: 1
@@ -9941,7 +9985,7 @@ MonoBehaviour:
       onPointReached:
         m_PersistentCalls:
           m_Calls: []
-    - targetLocalPosition: {x: 400, y: 0, z: 0}
+    - targetLocalPosition: {x: -0.2, y: -1.1, z: 0}
       relativeScale: {x: 1, y: 1, z: 1}
       relativeLocalRotation: {x: 0, y: 0, z: 0}
       duration: 0.5

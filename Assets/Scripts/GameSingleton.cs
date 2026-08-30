@@ -14,6 +14,7 @@ public class GameSingleton : MonoBehaviour
     public PlayerInput playerInput                          { get; private set; }
     public InputHandler inputHandler                        { get; private set; }
     public EventSystem eventSystem                          { get; private set; }
+    public BackgroundManager backgroundManager              { get; private set; }
     public CharacterManager characterManager                { get; private set; }
     public SpriteAnimationManager spriteAnimationManager    { get; private set; }
     public DialogueManager dialogueManager                  { get; private set; }
@@ -44,6 +45,7 @@ public class GameSingleton : MonoBehaviour
         playerInput             = GetComponentInChildren<PlayerInput>();
         inputHandler            = GetComponentInChildren<InputHandler>();
         eventSystem             = GetComponentInChildren<EventSystem>();
+        backgroundManager       = GetComponentInChildren<BackgroundManager>();
         characterManager        = GetComponentInChildren<CharacterManager>();
         spriteAnimationManager  = GetComponentInChildren<SpriteAnimationManager>();
         dialogueManager         = GetComponentInChildren<DialogueManager>();

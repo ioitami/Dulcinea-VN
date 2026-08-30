@@ -41,7 +41,7 @@ public class BackgroundManager : MonoBehaviour
 
             RemoveChildren(parent);
 
-            GameObject bgInstance = Instantiate(preset.backgroundPrefab, Vector3.zero, Quaternion.identity);
+            GameObject bgInstance = Instantiate(preset.backgroundPrefab);
             bgInstance.transform.SetParent(parent, false);
             bgInstance.transform.localPosition = Vector3.zero;
         }
@@ -67,7 +67,7 @@ public class BackgroundManager : MonoBehaviour
 
             RemoveChildren(parent);
 
-            GameObject bgInstance = Instantiate(preset.backgroundPrefab, Vector3.zero, Quaternion.identity);
+            GameObject bgInstance = Instantiate(preset.backgroundPrefab);
             bgInstance.transform.SetParent(parent, false);
             bgInstance.transform.localPosition = Vector3.zero;
         }
@@ -87,7 +87,7 @@ public class BackgroundManager : MonoBehaviour
 
             RemoveChildren(parent);
 
-            GameObject bgInstance = Instantiate(preset.backgroundPrefab, Vector3.zero, Quaternion.identity);
+            GameObject bgInstance = Instantiate(preset.backgroundPrefab);
             bgInstance.transform.SetParent(parent, false);
             bgInstance.transform.localPosition = Vector3.zero;
         }
@@ -107,7 +107,7 @@ public class BackgroundManager : MonoBehaviour
 
             RemoveChildren(parent);
 
-            GameObject bgInstance = Instantiate(preset.backgroundPrefab, Vector3.zero, Quaternion.identity);
+            GameObject bgInstance = Instantiate(preset.backgroundPrefab);
             bgInstance.transform.SetParent(parent, false);
             bgInstance.transform.localPosition = Vector3.zero;
         }

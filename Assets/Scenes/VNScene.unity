@@ -8142,6 +8142,7 @@ MonoBehaviour:
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
+  - rid: 1435079966179459346
   - rid: 7314505712279486525
   - rid: 7314505731947626559
   - rid: 7314505712279486527
@@ -8150,6 +8151,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 1435079966179459346
+      type: {class: DialogueSetBackgroundNode, ns: , asm: Assembly-CSharp}
+      data:
+        target: 1
+        backgroundName: TestBG1
     - rid: 1554742707323142212
       type: {class: DialogueChoiceNode, ns: , asm: Assembly-CSharp}
       data:
@@ -9299,6 +9305,10 @@ MonoBehaviour:
   backgrounds:
   - backgroundName: MainMenuBG
     backgroundPrefab: {fileID: 4240320780160267810, guid: 967c39c9b9919084e83212c088f19857, type: 3}
+  - backgroundName: TestBG1
+    backgroundPrefab: {fileID: 4240320780160267810, guid: 7503b6be164f02c47a089f71dd004f58, type: 3}
+  - backgroundName: TestBG2
+    backgroundPrefab: {fileID: 4240320780160267810, guid: 7503b6be164f02c47a089f71dd004f58, type: 3}
 --- !u!1 &1602417138
 GameObject:
   m_ObjectHideFlags: 0
@@ -13339,6 +13349,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 916514465}
     m_Modifications:
+    - target: {fileID: 345850346126675882, guid: 967c39c9b9919084e83212c088f19857, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 345850346126675882, guid: 967c39c9b9919084e83212c088f19857, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 345850346126675882, guid: 967c39c9b9919084e83212c088f19857, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -571,3 +571,44 @@ public class DialogueWindowCloseChoiceNode : DialogueBlockNode
     }
 }
 
+public enum BackgroundTarget
+{
+    MainMenu,
+    Window1,
+    Window2
+}
+
+[Serializable]
+public class DialogueSetBackgroundNode : DialogueBlockNode
+{
+    public BackgroundTarget target = BackgroundTarget.Window1;
+    public string backgroundName;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        BackgroundManager backgroundManager = GameSingleton.instance.backgroundManager;
+
+        if (backgroundManager == null)
+        {
+            Debug.LogWarning("[DialogueSetBackgroundNode] No BackgroundManager found.");
+            onComplete?.Invoke();
+            return;
+        }
+
+        switch (target)
+        {
+            case BackgroundTarget.MainMenu:
+                backgroundManager.SetMainMenuBackground(backgroundName);
+                break;
+            case BackgroundTarget.Window1:
+                backgroundManager.SetBackground(backgroundName, 1);
+                break;
+            case BackgroundTarget.Window2:
+                backgroundManager.SetBackground(backgroundName, 2);
+                break;
+        }
+
+        onComplete?.Invoke();
+    }
+}
+

@@ -183,6 +183,7 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Choice Node"), false, () => AddNode(typeof(DialogueChoiceNode)));
         menu.AddItem(new GUIContent("Script Node"), false, () => AddNode(typeof(DialogueScriptNode)));
         menu.AddItem(new GUIContent("Change Font Node"), false, () => AddNode(typeof(DialogueChangeFontNode)));
+        menu.AddItem(new GUIContent("Set Background Node"), false, () => AddNode(typeof(DialogueSetBackgroundNode)));
         menu.AddItem(new GUIContent("Show Character Node"), false, () => AddNode(typeof(DialogueShowCharacterNode)));
         menu.AddItem(new GUIContent("Hide Character Node"), false, () => AddNode(typeof(DialogueHideCharacterNode)));
         menu.AddItem(new GUIContent("Play Animation Node"), false, () => AddNode(typeof(DialoguePlayAnimationNode)));

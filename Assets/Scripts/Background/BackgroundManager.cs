@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
 public class BackgroundManager : MonoBehaviour
@@ -20,6 +21,8 @@ public class BackgroundManager : MonoBehaviour
 
         // Set Main Menu BG based on Save?
         SetMainMenuBackground(0);
+
+        // Set Default backgroundSprite for window2 (When player opens window 2 before starting/loading game on win 1)
     }
 
     void RemoveChildren(Transform parent)
@@ -30,24 +33,25 @@ public class BackgroundManager : MonoBehaviour
         }
     }
 
+    // The options menu / dialogue nodes are only ever driven from window 1,
+    // but guard anyway: a pure client should never be the one deciding
+    // what's on screen — it only ever follows what the host sets.
+    private bool CanSetBackgroundLocally()
+    {
+        return !(NetworkClient.active && !NetworkServer.active);
+    }
+
     // WILL REPLACE PREVIOUS BG IF ANY
     public void SetBackground(string backgroundName, int windowNumber)
     {
-        BackgroundPreset preset = backgrounds.Find(b => b.backgroundName == backgroundName);
+        if (!CanSetBackgroundLocally()) return;
 
-        if (preset != null)
+        ApplyBackgroundLocally(backgroundName, windowNumber);
+
+        if (NetworkServer.active)
         {
-            Transform parent = windowNumber == 1 ? backgroundSpriteParent_Window1 : backgroundSpriteParent_Window2;
-
-            RemoveChildren(parent);
-
-            GameObject bgInstance = Instantiate(preset.backgroundPrefab);
-            bgInstance.transform.SetParent(parent, false);
-            bgInstance.transform.localPosition = Vector3.zero;
-        }
-        else
-        {
-            Debug.LogWarning($"Background '{backgroundName}' not found!");
+            BackgroundTarget target = windowNumber == 1 ? BackgroundTarget.Window1 : BackgroundTarget.Window2;
+            NVLNetworkPlayer.hostInstance?.SetBackground(target, backgroundName);
         }
     }
 
@@ -59,62 +63,72 @@ public class BackgroundManager : MonoBehaviour
             return;
         }
 
-        BackgroundPreset preset = backgrounds[bgIndex];
-
-        if (preset != null)
-        {
-            Transform parent = windowNumber == 1 ? backgroundSpriteParent_Window1 : backgroundSpriteParent_Window2;
-
-            RemoveChildren(parent);
-
-            GameObject bgInstance = Instantiate(preset.backgroundPrefab);
-            bgInstance.transform.SetParent(parent, false);
-            bgInstance.transform.localPosition = Vector3.zero;
-        }
-        else
-        {
-            Debug.LogWarning($"Background number '{bgIndex}' not found!");
-        }
+        // Resolve to a name before doing anything else — syncing a raw
+        // index is fragile if the two windows' backgrounds lists were
+        // ever built or ordered slightly differently.
+        SetBackground(backgrounds[bgIndex].backgroundName, windowNumber);
     }
 
     public void SetMainMenuBackground(string backgroundName)
     {
-        BackgroundPreset preset = backgrounds.Find(b => b.backgroundName == backgroundName);
+        if (!CanSetBackgroundLocally()) return;
 
-        if (preset != null)
-        {
-            Transform parent = backgroundSpirteParent_MainMenu;
+        ApplyMainMenuBackgroundLocally(backgroundName);
 
-            RemoveChildren(parent);
-
-            GameObject bgInstance = Instantiate(preset.backgroundPrefab);
-            bgInstance.transform.SetParent(parent, false);
-            bgInstance.transform.localPosition = Vector3.zero;
-        }
-        else
-        {
-            Debug.LogWarning($"Background '{backgroundName}' not found!");
-        }
+        if (NetworkServer.active)
+            NVLNetworkPlayer.hostInstance?.SetBackground(BackgroundTarget.MainMenu, backgroundName);
     }
 
     public void SetMainMenuBackground(int bgIndex)
     {
-        BackgroundPreset preset = backgrounds[bgIndex];
-
-        if (preset != null)
-        {
-            Transform parent = backgroundSpirteParent_MainMenu;
-
-            RemoveChildren(parent);
-
-            GameObject bgInstance = Instantiate(preset.backgroundPrefab);
-            bgInstance.transform.SetParent(parent, false);
-            bgInstance.transform.localPosition = Vector3.zero;
-        }
-        else
+        if (bgIndex < 0 || bgIndex >= backgrounds.Count)
         {
             Debug.LogWarning($"Background number '{bgIndex}' not found!");
+            return;
         }
+
+        SetMainMenuBackground(backgrounds[bgIndex].backgroundName);
+    }
+
+    // Applied on this window directly, and on the other window via
+    // NVLNetworkPlayer's synced background hooks — same method, so both
+    // windows always agree.
+    public void ApplyBackgroundLocally(string backgroundName, int windowNumber)
+    {
+        BackgroundPreset preset = backgrounds.Find(b => b.backgroundName == backgroundName);
+
+        if (preset == null)
+        {
+            Debug.LogWarning($"Background '{backgroundName}' not found!");
+            return;
+        }
+
+        Transform parent = windowNumber == 1 ? backgroundSpriteParent_Window1 : backgroundSpriteParent_Window2;
+
+        RemoveChildren(parent);
+
+        GameObject bgInstance = Instantiate(preset.backgroundPrefab);
+        bgInstance.transform.SetParent(parent, false);
+        bgInstance.transform.localPosition = Vector3.zero;
+    }
+
+    public void ApplyMainMenuBackgroundLocally(string backgroundName)
+    {
+        BackgroundPreset preset = backgrounds.Find(b => b.backgroundName == backgroundName);
+
+        if (preset == null)
+        {
+            Debug.LogWarning($"Background '{backgroundName}' not found!");
+            return;
+        }
+
+        Transform parent = backgroundSpirteParent_MainMenu;
+
+        RemoveChildren(parent);
+
+        GameObject bgInstance = Instantiate(preset.backgroundPrefab);
+        bgInstance.transform.SetParent(parent, false);
+        bgInstance.transform.localPosition = Vector3.zero;
     }
 }
 

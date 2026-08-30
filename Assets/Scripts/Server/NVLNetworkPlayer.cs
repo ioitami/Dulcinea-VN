@@ -71,6 +71,17 @@ public class NVLNetworkPlayer : NetworkBehaviour
     [SyncVar(hook = nameof(OnResolutionChanged))]
     private string syncedResolution = "";
 
+    // One synced background-name slot per target. Only ever set by
+    // window 1 (the host); window 2 just follows, same as resolution.
+    [SyncVar(hook = nameof(OnBackgroundMainMenuChanged))]
+    private string syncedBackgroundMainMenu = "";
+
+    [SyncVar(hook = nameof(OnBackgroundWindow1Changed))]
+    private string syncedBackgroundWindow1 = "";
+
+    [SyncVar(hook = nameof(OnBackgroundWindow2Changed))]
+    private string syncedBackgroundWindow2 = "";
+
     public bool RequiresServer => requiresServer;
     public bool AwaitingWindowCloseChoice => awaitingWindowCloseChoice;
 
@@ -84,6 +95,23 @@ public class NVLNetworkPlayer : NetworkBehaviour
     public void SetResolution(int width, int height)
     {
         syncedResolution = $"{width}x{height}";
+    }
+
+    [Server]
+    public void SetBackground(BackgroundTarget target, string backgroundName)
+    {
+        switch (target)
+        {
+            case BackgroundTarget.MainMenu:
+                syncedBackgroundMainMenu = backgroundName;
+                break;
+            case BackgroundTarget.Window1:
+                syncedBackgroundWindow1 = backgroundName;
+                break;
+            case BackgroundTarget.Window2:
+                syncedBackgroundWindow2 = backgroundName;
+                break;
+        }
     }
 
     [Server]
@@ -136,6 +164,30 @@ public class NVLNetworkPlayer : NetworkBehaviour
 
         if (GameSingleton.instance != null && GameSingleton.instance.preferenceOptionsManager != null)
             GameSingleton.instance.preferenceOptionsManager.ApplyResolutionLocally(newValue);
+    }
+
+    private void OnBackgroundMainMenuChanged(string oldValue, string newValue)
+    {
+        if (string.IsNullOrEmpty(newValue)) return;
+
+        if (GameSingleton.instance != null && GameSingleton.instance.backgroundManager != null)
+            GameSingleton.instance.backgroundManager.ApplyMainMenuBackgroundLocally(newValue);
+    }
+
+    private void OnBackgroundWindow1Changed(string oldValue, string newValue)
+    {
+        if (string.IsNullOrEmpty(newValue)) return;
+
+        if (GameSingleton.instance != null && GameSingleton.instance.backgroundManager != null)
+            GameSingleton.instance.backgroundManager.ApplyBackgroundLocally(newValue, 1);
+    }
+
+    private void OnBackgroundWindow2Changed(string oldValue, string newValue)
+    {
+        if (string.IsNullOrEmpty(newValue)) return;
+
+        if (GameSingleton.instance != null && GameSingleton.instance.backgroundManager != null)
+            GameSingleton.instance.backgroundManager.ApplyBackgroundLocally(newValue, 2);
     }
 
     // ===========================

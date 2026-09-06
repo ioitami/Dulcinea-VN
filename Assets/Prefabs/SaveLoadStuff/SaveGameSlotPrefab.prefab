@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6276288999499707647}
-  - component: {fileID: 5221841646016651136}
+  - component: {fileID: 1669906397787253097}
   m_Layer: 5
   m_Name: SaveGameSlotPrefab
   m_TagString: Untagged
@@ -37,7 +37,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5221841646016651136
+--- !u!114 &1669906397787253097
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,12 +46,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3435986145270969083}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7325fbfdfc3077b43a194938d68480d5, type: 3}
+  m_Script: {fileID: 11500000, guid: e0808856bb58510468b5bb29c8039a73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saveSlotNumber: 2
-  thumbnailImage: {fileID: 8172199997060114997}
-  emptySaveSprite: {fileID: 21300000, guid: 1ed4d7beb74350149b16b85cce02be5e, type: 3}
+  isSaveBtn: 1
+  saveSlotNumber: 0
+  thumbnailImage: {fileID: 0}
+  emptySaveSprite: {fileID: 0}
   saveID_Text: {fileID: 2576977723525372082}
   chapterName_Text: {fileID: 2576977723525372082}
   saveTimeStamp_Text: {fileID: 2576977723525372082}
@@ -85,7 +86,7 @@ RectTransform:
   m_GameObject: {fileID: 6178526433342186664}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8095980607512674364}
@@ -94,7 +95,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 400, y: 300}
+  m_SizeDelta: {x: 240, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &950540098773243781
 CanvasRenderer:
@@ -178,7 +179,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5221841646016651136}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SaveGameButton, Assembly-CSharp
         m_MethodName: OnSaveClicked
         m_Mode: 1

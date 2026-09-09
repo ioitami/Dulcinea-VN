@@ -14137,9 +14137,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21de6b7d410a7014abed2b3d7896169d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lastVisitedPage: 1
   savePageDisplayPrefab: {fileID: 0}
   loadPageDisplayPrefab: {fileID: 0}
   saveLoadPageListBar: {fileID: 0}
+  savePage_Parent: {fileID: 0}
+  loadPage_Parent: {fileID: 0}
   savePageList: []
   loadPageList: []
 --- !u!1 &2059959437

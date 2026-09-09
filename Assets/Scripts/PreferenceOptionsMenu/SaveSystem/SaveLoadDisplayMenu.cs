@@ -7,9 +7,12 @@ using UnityEngine.UI;
 public class SaveLoadDisplayMenu : MonoBehaviour
 {
     public int lastVisitedPage = 1;
+    public int numPages = 9;
     [Space]
-    public GameObject savePageDisplayPrefab;
-    public GameObject loadPageDisplayPrefab;
+    public GameObject savePagePrefab;
+    public GameObject loadPagePrefab;
+    [Space]
+    public GameObject saveLoadGameButtonPrefab;
     [Space]
     public GameObject saveLoadPageListBar;
     public GameObject savePage_Parent;
@@ -20,16 +23,31 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     private void Awake()
     {
-        RefreshSaveLoadSlots();
+        RefreshAllSaveLoadSlots();
     }
 
-    public void RefreshSaveLoadSlots()
+    public void RefreshAllSaveLoadSlots()
     {
         // Clear existing save/load slots from save/loadpage parents
+        foreach (Transform child in savePage_Parent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (Transform child in loadPage_Parent.transform)
+        {
+            Destroy(child.gameObject);
+        }
 
 
         // spawn prefab for save and load pages, each spawned page needs to set the game slot number in the SaveLoadGameButton
         // script, then load the save/load thumbnail image, sprite, text etc.
+        for (int i = 0; i < numPages; i++)
+        {
+            GameObject savePage = Instantiate(savePagePrefab, savePage_Parent.transform);
+
+        }
+
 
         // Hide all save/load pages, then show last visited page for both save/load.
 

@@ -14138,9 +14138,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lastVisitedPage: 1
-  savePageDisplayPrefab: {fileID: 0}
-  loadPageDisplayPrefab: {fileID: 0}
-  saveLoadPageListBar: {fileID: 0}
+  numPages: 9
+  savePagePrefab: {fileID: 0}
+  loadPagePrefab: {fileID: 0}
+  saveLoadGameButtonPrefab: {fileID: 0}
+  saveLoadPageListBar: {fileID: 1147694611}
   savePage_Parent: {fileID: 0}
   loadPage_Parent: {fileID: 0}
   savePageList: []

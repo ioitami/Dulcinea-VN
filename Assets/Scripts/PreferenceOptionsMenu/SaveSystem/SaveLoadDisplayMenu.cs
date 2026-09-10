@@ -7,16 +7,14 @@ using UnityEngine.UI;
 public class SaveLoadDisplayMenu : MonoBehaviour
 {
     public int lastVisitedPage = 1;
-    public int numPages = 9;
+    public int numPages = GlobalVariables.totalSavePageNumber;
     [Space]
-    public GameObject savePagePrefab;
-    public GameObject loadPagePrefab;
-    [Space]
-    public GameObject saveLoadGameButtonPrefab;
+    public GameObject saveLoadPagePrefab;
     [Space]
     public GameObject saveLoadPageListBar;
-    public GameObject savePage_Parent;
-    public GameObject loadPage_Parent;
+    public Transform saveLoadPageList_Parent;
+    public Transform savePage_Parent;
+    public Transform loadPage_Parent;
     [Space]
     public List<GameObject> savePageList;
     public List<GameObject> loadPageList;
@@ -28,23 +26,42 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void RefreshAllSaveLoadSlots()
     {
+        int saveSlotsPerPage = saveLoadPagePrefab.transform.childCount;
+
+
         // Clear existing save/load slots from save/loadpage parents
-        foreach (Transform child in savePage_Parent.transform)
+        foreach (Transform child in savePage_Parent)
         {
             Destroy(child.gameObject);
         }
 
-        foreach (Transform child in loadPage_Parent.transform)
+        foreach (Transform child in loadPage_Parent)
         {
             Destroy(child.gameObject);
         }
 
+        // Set up save/load auto and quicksave pages
+        GameObject autoLoadPage = Instantiate(saveLoadPagePrefab, loadPage_Parent);
+        GameObject quickLoadPage = Instantiate(saveLoadPagePrefab, loadPage_Parent);
+        autoLoadPage.name = "LoadPage_Auto";
+        quickLoadPage.name = "LoadPage_Quick";
+        loadPageList.Add(autoLoadPage);
+        loadPageList.Add(quickLoadPage);
+
+        for (int i = 0; i < saveSlotsPerPage; i++)
+        {
+            autoLoadPage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().isSaveBtn = false;
+            quickLoadPage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().isSaveBtn = false;
+
+            autoLoadPage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().saveLoadSlotNumber = -1 - i;
+            quickLoadPage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().saveLoadSlotNumber = -1 - saveSlotsPerPage - i;
+        }
 
         // spawn prefab for save and load pages, each spawned page needs to set the game slot number in the SaveLoadGameButton
         // script, then load the save/load thumbnail image, sprite, text etc.
         for (int i = 0; i < numPages; i++)
         {
-            GameObject savePage = Instantiate(savePagePrefab, savePage_Parent.transform);
+            //GameObject savePage = Instantiate(savePagePrefab, savePage_Parent.transform);
 
         }
 

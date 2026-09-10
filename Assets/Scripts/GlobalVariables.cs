@@ -8,4 +8,6 @@ public static class GlobalVariables
 
     public static string readLines_global_saveFileName = "/CollectedPages";
     public static string readLines_global_saveFileExtension = ".memory";
+
+    public static int totalSavePageNumber = 9;
 }

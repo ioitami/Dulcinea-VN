@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SaveLoadGameButton : MonoBehaviour
 {
     public bool isSaveBtn;
-    public int saveSlotNumber;
+    public int saveLoadSlotNumber;
     public Image thumbnailImage;
     public Sprite emptySaveSprite;
     public TextMeshProUGUI saveID_Text;
@@ -21,7 +21,7 @@ public class SaveLoadGameButton : MonoBehaviour
 
     private void RefreshButton()
     {
-        SaveData data = GameSingleton.instance.gameStateManager.LoadSaveID(saveSlotNumber);
+        SaveData data = GameSingleton.instance.gameStateManager.LoadSaveID(saveLoadSlotNumber);
 
         if (data == null)
         {
@@ -32,7 +32,7 @@ public class SaveLoadGameButton : MonoBehaviour
             return;
         }
 
-        Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveSlotNumber);
+        Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveLoadSlotNumber);
 
         if (screenshot != null)
             thumbnailImage.sprite = screenshot;
@@ -48,11 +48,11 @@ public class SaveLoadGameButton : MonoBehaviour
     {
         if (isSaveBtn == true)
         {
-            GameSingleton.instance.gameStateManager.Save(saveSlotNumber, OnSaveComplete);
+            GameSingleton.instance.gameStateManager.Save(saveLoadSlotNumber, OnSaveComplete);
         }
         else
         {
-            GameSingleton.instance.gameStateManager.LoadGame(saveSlotNumber);
+            GameSingleton.instance.gameStateManager.LoadGame(saveLoadSlotNumber);
         }
 
     }

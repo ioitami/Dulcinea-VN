@@ -7,11 +7,16 @@ using UnityEngine.UI;
 public class SaveLoadGameButton : MonoBehaviour
 {
     public bool isSaveBtn;
+    [Space]
     public int saveLoadSlotNumber;
+    public bool hasSave;
+    [Space]
     public Image thumbnailImage;
     public Sprite emptySaveSprite;
+    public TextMeshProUGUI empty_Text;
     public TextMeshProUGUI saveID_Text;
     public TextMeshProUGUI chapterName_Text;
+    public TextMeshProUGUI saveDescription_Text;
     public TextMeshProUGUI saveTimeStamp_Text;
 
     private void OnEnable()

@@ -14,14 +14,14 @@ public class SaveLoadGameButton : MonoBehaviour
     public Image thumbnailImage;
     public Sprite emptySaveSprite;
     public TextMeshProUGUI empty_Text;
-    public TextMeshProUGUI saveID_Text;
-    public TextMeshProUGUI chapterName_Text;
+    public TextMeshProUGUI saveSlotNumber_Text;
+    public TextMeshProUGUI saveChapterName_Text;
     public TextMeshProUGUI saveDescription_Text;
     public TextMeshProUGUI saveTimeStamp_Text;
 
-    private void OnEnable()
+    private void Awake()
     {
-        RefreshButton();
+        //RefreshButton();
     }
 
     private void RefreshButton()
@@ -31,8 +31,9 @@ public class SaveLoadGameButton : MonoBehaviour
         if (data == null)
         {
             thumbnailImage.sprite = emptySaveSprite;
-            saveID_Text.text = "";
-            chapterName_Text.text = "";
+            saveSlotNumber_Text.text = "";
+            saveChapterName_Text.text = "";
+            saveDescription_Text.text = "";
             saveTimeStamp_Text.text = "";
             return;
         }
@@ -44,8 +45,8 @@ public class SaveLoadGameButton : MonoBehaviour
         else
             thumbnailImage.sprite = emptySaveSprite;
 
-        saveID_Text.text = "Save " + data.saveID.ToString();
-        chapterName_Text.text = data.chapterName;
+        saveSlotNumber_Text.text = "Save " + data.saveSlotNumber.ToString();
+        saveChapterName_Text.text = data.chapterName;
         saveTimeStamp_Text.text = data.saveTimeStamp;
     }
 

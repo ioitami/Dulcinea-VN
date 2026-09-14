@@ -35,7 +35,7 @@ public class LoadGameButton : MonoBehaviour
         else
             loadSpritePreview.sprite = emptySaveSprite;
 
-        saveID_Text.text = "Save " + data.saveID.ToString();
+        saveID_Text.text = "Save " + data.saveSlotNumber.ToString();
     }
 
     public void LoadGame()

@@ -31,16 +31,16 @@ public class SaveGameButton : MonoBehaviour
             return;
         }
 
-        Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveSlotNumber);
+        //Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveSlotNumber);
 
-        if (screenshot != null)
-            thumbnailImage.sprite = screenshot;
-        else
-            thumbnailImage.sprite = emptySaveSprite;
+        //if (screenshot != null)
+        //    thumbnailImage.sprite = screenshot;
+        //else
+        //    thumbnailImage.sprite = emptySaveSprite;
 
-        saveID_Text.text = "Save " + data.saveID.ToString();
-        chapterName_Text.text = data.chapterName;
-        saveTimeStamp_Text.text = data.saveTimeStamp;
+        //saveID_Text.text = "Save " + data.saveSlotNumber.ToString();
+        //chapterName_Text.text = data.chapterName;
+        //saveTimeStamp_Text.text = data.saveTimeStamp;
     }
 
     public void OnSaveClicked()

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class SaveData
 {
-    public int saveID;
+    public int saveSlotNumber;
     public string chapterName;
     public string description;
     public string saveTimeStamp;

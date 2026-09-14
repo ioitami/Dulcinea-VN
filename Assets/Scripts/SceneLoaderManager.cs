@@ -56,8 +56,7 @@ public class SceneLoaderManager : MonoBehaviour
     {
         GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.SaveLoadOptionsMenu);
 
-        uiController.saveLoadMenu.saveMenu.gameObject.SetActive(false);
-        uiController.saveLoadMenu.loadMenu.gameObject.SetActive(true);
+        uiController.saveLoadDisplayMenu.gameObject.SetActive(true);
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -81,8 +80,7 @@ public class SceneLoaderManager : MonoBehaviour
 
         GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.SaveLoadOptionsMenu);
 
-        uiController.saveLoadMenu.saveMenu.gameObject.SetActive(true);
-        uiController.saveLoadMenu.loadMenu.gameObject.SetActive(false);
+        uiController.saveLoadDisplayMenu.gameObject.SetActive(true);
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);

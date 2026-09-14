@@ -165,7 +165,7 @@ public class GameStateManager : MonoBehaviour
                 saves.Add(data);
         }
 
-        saves.Sort((a, b) => a.saveID.CompareTo(b.saveID));
+        saves.Sort((a, b) => a.saveSlotNumber.CompareTo(b.saveSlotNumber));
         return saves;
     }
 
@@ -256,7 +256,7 @@ public class GameStateManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
         SaveData data = new SaveData();
-        data.saveID = saveID;
+        data.saveSlotNumber = saveID;
         data.saveTimeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         data.screenshotBase64 = pendingScreenshotBase64;
 
@@ -443,7 +443,7 @@ public class GameStateManager : MonoBehaviour
     {
         try
         {
-            string path = GetSavePath(data.saveID);
+            string path = GetSavePath(data.saveSlotNumber);
             string json = JsonUtility.ToJson(data, true);
 
             Debug.Log($"[GameStateManager] Attempting to write to: {path}");

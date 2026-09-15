@@ -73,6 +73,17 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
             autoSavePage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().saveLoadSlotNumber = -1 - i;
             quickSavePage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().saveLoadSlotNumber = -1 - saveSlotsPerPage - i;
+
+            autoSavePage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().saveSlotNumber_Text.text = "A " + (i + 1);
+            quickSavePage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().saveSlotNumber_Text.text = "Q " + (i + 1);
+
+            autoLoadPage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().saveSlotNumber_Text.text = "A " + (i + 1);
+            quickLoadPage.transform.GetChild(i).GetComponent<SaveLoadGameButton>().saveSlotNumber_Text.text = "Q " + (i + 1);
+        }
+
+        for (int i = -1; i >= -saveSlotsPerPage * 2; i--)
+        {
+            RefreshSaveLoadButton(i);
         }
 
         // spawn prefab for save and load pages, each spawned page needs to set the game slot number in the SaveLoadGameButton
@@ -97,6 +108,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
                 currentSaveSlot.GetComponent<SaveLoadGameButton>().saveLoadSlotNumber = i * saveSlotsPerPage + j + 1;
                 currentLoadSlot.GetComponent<SaveLoadGameButton>().saveLoadSlotNumber = i * saveSlotsPerPage + j + 1;
+
+                currentSaveSlot.GetComponent<SaveLoadGameButton>().saveSlotNumber_Text.text = "" + (i * saveSlotsPerPage + j + 1);
+                currentLoadSlot.GetComponent<SaveLoadGameButton>().saveSlotNumber_Text.text = "" + (i * saveSlotsPerPage + j + 1);
 
                 currentSaveSlot.name = "SaveSlot_" + (i * saveSlotsPerPage + j + 1);
                 currentLoadSlot.name = "LoadSlot_" + (i * saveSlotsPerPage + j + 1);
@@ -169,24 +183,82 @@ public class SaveLoadDisplayMenu : MonoBehaviour
         }
     }
 
-    //private void RefreshButton()
-    //{
-    //    SaveData data = GameSingleton.instance.gameStateManager.LoadSaveID(loadSlotNumber);
+    private void RefreshSaveLoadButton(int saveSlotNum)
+    {
+        print("saveslot num:" + saveSlotNum);
+        SaveLoadGameButton saveGameBtn;
+        SaveLoadGameButton loadGameBtn;
 
-    //    if (data == null)
-    //    {
-    //        loadSpritePreview.sprite = emptySaveSprite;
-    //        saveID_Text.text = "Empty";
-    //        return;
-    //    }
+        int saveSlotsPerPage = saveLoadPagePrefab.transform.childCount;
 
-    //    Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(loadSlotNumber);
+        if (saveSlotNum < 0)
+        {
+            // AUTO SAVE/LOAD SLOTS
+            if (saveSlotNum >= -saveSlotsPerPage)
+            {
+                saveGameBtn = savePageList[0].transform.GetChild(-saveSlotNum - 1).GetComponent<SaveLoadGameButton>();
+                loadGameBtn = loadPageList[0].transform.GetChild(-saveSlotNum - 1).GetComponent<SaveLoadGameButton>();
+            }
+            else if (saveSlotNum >= -saveSlotsPerPage * 2)
+            {
+                saveGameBtn = savePageList[1].transform.GetChild(-saveSlotNum - 1 - saveSlotsPerPage).GetComponent<SaveLoadGameButton>();
+                loadGameBtn = loadPageList[1].transform.GetChild(-saveSlotNum - 1 - saveSlotsPerPage).GetComponent<SaveLoadGameButton>();
+            }
+            else
+            {
+                Debug.Log("Not within Auto/Quick Save Index Bounds!");
+                return;
+            }
+        }
+        // NORMAL SAVE/LOAD SLOTS
+        else
+        {
+            int pageIndex = (saveSlotNum -1) / saveSlotsPerPage;
+            int slotIndex = (saveSlotNum -1) % saveSlotsPerPage;
 
-    //    if (screenshot != null)
-    //        loadSpritePreview.sprite = screenshot;
-    //    else
-    //        loadSpritePreview.sprite = emptySaveSprite;
+            saveGameBtn = savePageList[pageIndex].transform.GetChild(slotIndex).GetComponent<SaveLoadGameButton>();
+            loadGameBtn = loadPageList[pageIndex].transform.GetChild(slotIndex).GetComponent<SaveLoadGameButton>();
+        }
 
-    //    saveID_Text.text = "Save " + data.saveID.ToString();
-    //}
+
+        SaveData data = GameSingleton.instance.gameStateManager.LoadSaveID(saveSlotNum);
+
+        // If Empty Save
+        if (data == null)
+        {
+            saveGameBtn.saveChapterName_Text.gameObject.SetActive(false);
+            saveGameBtn.saveDescription_Text.gameObject.SetActive(false);
+            saveGameBtn.saveTimeStamp_Text.gameObject.SetActive(false);
+
+            saveGameBtn.empty_Text.gameObject.SetActive(true);
+
+            loadGameBtn.saveChapterName_Text.gameObject.SetActive(false);
+            loadGameBtn.saveDescription_Text.gameObject.SetActive(false);
+            loadGameBtn.saveTimeStamp_Text.gameObject.SetActive(false);
+
+            loadGameBtn.empty_Text.gameObject.SetActive(true);
+
+            return;
+        }
+        saveGameBtn.saveChapterName_Text.gameObject.SetActive(true);
+        saveGameBtn.saveDescription_Text.gameObject.SetActive(true);
+        saveGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);
+
+        saveGameBtn.empty_Text.gameObject.SetActive(false);
+
+        loadGameBtn.saveChapterName_Text.gameObject.SetActive(true);
+        loadGameBtn.saveDescription_Text.gameObject.SetActive(true);
+        loadGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);
+
+        loadGameBtn.empty_Text.gameObject.SetActive(false);
+
+
+        Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveGameBtn.saveLoadSlotNumber);
+
+        //if (screenshot != null)
+        //    loadSpritePreview.sprite = screenshot;
+        //else
+        //    loadSpritePreview.sprite = emptySaveSprite;
+
+    }
 }

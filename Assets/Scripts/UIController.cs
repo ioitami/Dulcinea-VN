@@ -5,8 +5,8 @@ public class UIController : MonoBehaviour
     [Header("Main Menu")]
     public MainMenu mainMenu;
 
-    [Header("Save/Load Menu")]
-    public SaveLoadDisplayMenu saveLoadDisplayMenu;
+    [Header("Options Menu")]
+    public OptionsMenu optionsMenu;
 
     [Header("AVL")]
     public AVL avl;

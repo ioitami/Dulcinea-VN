@@ -38,6 +38,8 @@ public class SaveLoadGameButton : MonoBehaviour
             return;
         }
 
+        hasSave = true;
+
         Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveLoadSlotNumber);
 
         if (screenshot != null)

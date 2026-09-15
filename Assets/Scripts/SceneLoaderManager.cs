@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class SceneLoaderManager : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class SceneLoaderManager : MonoBehaviour
             uiController = FindAnyObjectByType<UIController>();
         }
 
-        uiController.saveLoadDisplayMenu.RefreshAllSaveLoadSlots();
+        uiController.optionsMenu.saveLoadDisplayMenu.RefreshAllSaveLoadSlots();
 
         LoadMainMenu();
     }
@@ -58,7 +59,9 @@ public class SceneLoaderManager : MonoBehaviour
     {
         GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.SaveLoadOptionsMenu);
 
-        uiController.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.optionsMenu.gameObject.SetActive(true);
+        uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.optionsMenu.saveLoadDisplayMenu.OpenLastVisitedLoadPage();
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -82,7 +85,9 @@ public class SceneLoaderManager : MonoBehaviour
 
         GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.SaveLoadOptionsMenu);
 
-        uiController.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.optionsMenu.gameObject.SetActive(true);
+        uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.optionsMenu.saveLoadDisplayMenu.OpenLastVisitedSavePage();
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);

@@ -91,7 +91,6 @@ public class GameStateManager : MonoBehaviour
     public SaveData LoadSaveID(int saveID)
     {
         string path = GetSavePath(saveID);
-        print(path);
 
         if (!File.Exists(path))
         {

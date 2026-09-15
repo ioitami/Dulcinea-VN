@@ -1,5 +1,6 @@
 using Ink.Parsed;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -137,6 +138,12 @@ public class SaveLoadDisplayMenu : MonoBehaviour
         GameObject QuickSavePageBtn = Instantiate(saveLoadPageButtonPrefab, savePageList_Parent);
         GameObject QuickLoadPageBtn = Instantiate(saveLoadPageButtonPrefab, loadPageList_Parent);
 
+        AutoSavePageBtn.GetComponentInChildren<TextMeshProUGUI>().text = "A";
+        AutoLoadPageBtn.GetComponentInChildren<TextMeshProUGUI>().text = "A";
+
+        QuickSavePageBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Q";
+        QuickLoadPageBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Q";
+
         AutoSavePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(0));
         AutoLoadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(0));
 
@@ -145,11 +152,16 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
         for (int i = 0; i < numPages; i++)
         {
+            int pageIndex = i;
+
             GameObject savePageBtn = Instantiate(saveLoadPageButtonPrefab, savePageList_Parent);
             GameObject loadPageBtn = Instantiate(saveLoadPageButtonPrefab, loadPageList_Parent);
 
-            savePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(i + 2));
-            loadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(i + 2));
+            savePageBtn.GetComponentInChildren<TextMeshProUGUI>().text = (pageIndex + 1).ToString();
+            loadPageBtn.GetComponentInChildren<TextMeshProUGUI>().text = (pageIndex + 1).ToString();
+
+            savePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(pageIndex + 2));
+            loadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(pageIndex + 2));
         }
 
         OpenLastVisitedSavePage();
@@ -157,6 +169,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void OpenSavePage(int pageNum)
     {
+        savePage_Parent.gameObject.SetActive(true);
+        loadPage_Parent.gameObject.SetActive(false);
+
         foreach (GameObject savePage in savePageList)
         {
             savePage.SetActive(false);
@@ -171,6 +186,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void OpenLoadPage(int pageNum)
     {
+        savePage_Parent.gameObject.SetActive(false);
+        loadPage_Parent.gameObject.SetActive(true);
+
         foreach (GameObject loadPage in loadPageList)
         {
             loadPage.SetActive(false);
@@ -185,6 +203,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void OpenLastVisitedSavePage()
     {
+        savePage_Parent.gameObject.SetActive(true);
+        loadPage_Parent.gameObject.SetActive(false);
+
         foreach (GameObject savePage in savePageList)
         {
             savePage.SetActive(false);
@@ -197,7 +218,10 @@ public class SaveLoadDisplayMenu : MonoBehaviour
     }
 
     public void OpenLastVisitedLoadPage() 
-    {         
+    {
+        savePage_Parent.gameObject.SetActive(false);
+        loadPage_Parent.gameObject.SetActive(true);
+
         foreach (GameObject loadPage in loadPageList)
         {
             loadPage.SetActive(false);
@@ -211,6 +235,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void HideAllPages()
     {
+        savePage_Parent.gameObject.SetActive(false);
+        loadPage_Parent.gameObject.SetActive(false);
+
         foreach (GameObject savePage in savePageList)
         {
             savePage.SetActive(false);
@@ -279,8 +306,15 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
             loadGameBtn.empty_Text.gameObject.SetActive(true);
 
+            saveGameBtn.hasSave = false;
+            loadGameBtn.hasSave = false;
+
             return;
         }
+
+        saveGameBtn.hasSave = true;
+        loadGameBtn.hasSave = true;
+
         saveGameBtn.saveChapterName_Text.gameObject.SetActive(true);
         saveGameBtn.saveDescription_Text.gameObject.SetActive(true);
         saveGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);

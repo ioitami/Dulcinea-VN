@@ -18,6 +18,8 @@ public class SceneLoaderManager : MonoBehaviour
             uiController = FindAnyObjectByType<UIController>();
         }
 
+        uiController.saveLoadDisplayMenu.RefreshAllSaveLoadSlots();
+
         LoadMainMenu();
     }
 

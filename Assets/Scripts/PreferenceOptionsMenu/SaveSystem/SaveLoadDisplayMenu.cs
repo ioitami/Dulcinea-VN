@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class SaveLoadDisplayMenu : MonoBehaviour
 {
-    public int lastVisitedPage = 1;
+    public int lastVisitedPage = 2;
     public int numPages = GlobalVariables.totalSavePageNumber;
     [Space]
     public GameObject saveLoadPagePrefab;
@@ -20,9 +20,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
     public List<GameObject> savePageList;
     public List<GameObject> loadPageList;
 
-    private void Awake()
+    private void OnEnable()
     {
-        RefreshAllSaveLoadSlots();
+        
     }
 
     public void RefreshAllSaveLoadSlots()
@@ -116,8 +116,7 @@ public class SaveLoadDisplayMenu : MonoBehaviour
                 currentLoadSlot.name = "LoadSlot_" + (i * saveSlotsPerPage + j + 1);
 
                 // Load each savedata here
-
-
+                RefreshSaveLoadButton(i * saveSlotsPerPage + j + 1);
             }
         }
 
@@ -138,15 +137,22 @@ public class SaveLoadDisplayMenu : MonoBehaviour
         GameObject QuickSavePageBtn = Instantiate(saveLoadPageButtonPrefab, savePageList_Parent);
         GameObject QuickLoadPageBtn = Instantiate(saveLoadPageButtonPrefab, loadPageList_Parent);
 
+        AutoSavePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(0));
+        AutoLoadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(0));
+
+        QuickSavePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(1));
+        QuickLoadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(1));
+
         for (int i = 0; i < numPages; i++)
         {
             GameObject savePageBtn = Instantiate(saveLoadPageButtonPrefab, savePageList_Parent);
             GameObject loadPageBtn = Instantiate(saveLoadPageButtonPrefab, loadPageList_Parent);
+
+            savePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(i + 2));
+            loadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(i + 2));
         }
 
-
-
-        HideAllPages();
+        OpenLastVisitedSavePage();
     }
 
     public void OpenSavePage(int pageNum)
@@ -155,6 +161,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
         {
             savePage.SetActive(false);
         }
+
+        savePageList_Parent.gameObject.SetActive(true);
+        loadPageList_Parent.gameObject.SetActive(false);
 
         savePageList[pageNum].SetActive(true);
         lastVisitedPage = pageNum;
@@ -167,8 +176,37 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             loadPage.SetActive(false);
         }
 
+        loadPageList_Parent.gameObject.SetActive(true);
+        savePageList_Parent.gameObject.SetActive(false);
+
         loadPageList[pageNum].SetActive(true);
         lastVisitedPage = pageNum;
+    }
+
+    public void OpenLastVisitedSavePage()
+    {
+        foreach (GameObject savePage in savePageList)
+        {
+            savePage.SetActive(false);
+        }
+
+        savePageList_Parent.gameObject.SetActive(true);
+        loadPageList_Parent.gameObject.SetActive(false);
+
+        savePageList[lastVisitedPage].SetActive(true);
+    }
+
+    public void OpenLastVisitedLoadPage() 
+    {         
+        foreach (GameObject loadPage in loadPageList)
+        {
+            loadPage.SetActive(false);
+        }
+
+        loadPageList_Parent.gameObject.SetActive(true);
+        savePageList_Parent.gameObject.SetActive(false);
+
+        loadPageList[lastVisitedPage].SetActive(true);
     }
 
     public void HideAllPages()
@@ -181,6 +219,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
         {
             loadPage.SetActive(false);
         }
+
+        savePageList_Parent.gameObject.SetActive(false);
+        loadPageList_Parent.gameObject.SetActive(false);
     }
 
     private void RefreshSaveLoadButton(int saveSlotNum)

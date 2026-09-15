@@ -13,6 +13,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
     public GameObject saveLoadPagePrefab;
     public GameObject saveLoadPageButtonPrefab;
     [Space]
+    public GameObject savePsgeHeaderText;
+    public GameObject loadPageHeaderText;
+    [Space]
     public Transform savePageList_Parent;
     public Transform loadPageList_Parent;
     public Transform savePage_Parent;
@@ -169,6 +172,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void OpenSavePage(int pageNum)
     {
+        savePsgeHeaderText.gameObject.SetActive(true);
+        loadPageHeaderText.gameObject.SetActive(false);
+
         savePage_Parent.gameObject.SetActive(true);
         loadPage_Parent.gameObject.SetActive(false);
 
@@ -186,6 +192,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void OpenLoadPage(int pageNum)
     {
+        savePsgeHeaderText.gameObject.SetActive(false);
+        loadPageHeaderText.gameObject.SetActive(true);
+
         savePage_Parent.gameObject.SetActive(false);
         loadPage_Parent.gameObject.SetActive(true);
 
@@ -203,6 +212,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void OpenLastVisitedSavePage()
     {
+        savePsgeHeaderText.gameObject.SetActive(true);
+        loadPageHeaderText.gameObject.SetActive(false);
+
         savePage_Parent.gameObject.SetActive(true);
         loadPage_Parent.gameObject.SetActive(false);
 
@@ -219,6 +231,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void OpenLastVisitedLoadPage() 
     {
+        savePsgeHeaderText.gameObject.SetActive(false);
+        loadPageHeaderText.gameObject.SetActive(true);
+
         savePage_Parent.gameObject.SetActive(false);
         loadPage_Parent.gameObject.SetActive(true);
 
@@ -235,6 +250,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     public void HideAllPages()
     {
+        savePsgeHeaderText.gameObject.SetActive(false);
+        loadPageHeaderText.gameObject.SetActive(false);
+
         savePage_Parent.gameObject.SetActive(false);
         loadPage_Parent.gameObject.SetActive(false);
 

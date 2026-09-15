@@ -20,6 +20,7 @@ public class SceneLoaderManager : MonoBehaviour
         }
 
         uiController.optionsMenu.saveLoadDisplayMenu.RefreshAllSaveLoadSlots();
+        uiController.optionsMenu.optionsTab.SetOptionsTabButtonListeners();
 
         LoadMainMenu();
     }

@@ -19,55 +19,55 @@ public class SaveLoadGameButton : MonoBehaviour
     public TextMeshProUGUI saveDescription_Text;
     public TextMeshProUGUI saveTimeStamp_Text;
 
-    private void Awake()
-    {
-        //RefreshButton();
-    }
+    //private void Awake()
+    //{
+    //    //RefreshButton();
+    //}
 
-    private void RefreshButton()
-    {
-        SaveData data = GameSingleton.instance.gameStateManager.LoadSaveID(saveLoadSlotNumber);
+    //private void RefreshButton()
+    //{
+    //    SaveData data = GameSingleton.instance.gameStateManager.LoadSaveID(saveLoadSlotNumber);
 
-        if (data == null)
-        {
-            thumbnailImage.sprite = emptySaveSprite;
-            saveSlotNumber_Text.text = "";
-            saveChapterName_Text.text = "";
-            saveDescription_Text.text = "";
-            saveTimeStamp_Text.text = "";
-            return;
-        }
+    //    if (data == null)
+    //    {
+    //        thumbnailImage.sprite = emptySaveSprite;
+    //        saveSlotNumber_Text.text = "";
+    //        saveChapterName_Text.text = "";
+    //        saveDescription_Text.text = "";
+    //        saveTimeStamp_Text.text = "";
+    //        return;
+    //    }
 
-        hasSave = true;
+    //    hasSave = true;
 
-        Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveLoadSlotNumber);
+    //    Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveLoadSlotNumber);
 
-        if (screenshot != null)
-            thumbnailImage.sprite = screenshot;
-        else
-            thumbnailImage.sprite = emptySaveSprite;
+    //    if (screenshot != null)
+    //        thumbnailImage.sprite = screenshot;
+    //    else
+    //        thumbnailImage.sprite = emptySaveSprite;
 
-        saveSlotNumber_Text.text = "Save " + data.saveSlotNumber.ToString();
-        saveChapterName_Text.text = data.chapterName;
-        saveTimeStamp_Text.text = data.saveTimeStamp;
-    }
+    //    saveSlotNumber_Text.text = "Save " + data.saveSlotNumber.ToString();
+    //    saveChapterName_Text.text = data.chapterName;
+    //    saveTimeStamp_Text.text = data.saveTimeStamp;
+    //}
 
-    public void OnSaveLoadButtonClicked()
-    {
-        if (isSaveBtn == true)
-        {
-            GameSingleton.instance.gameStateManager.Save(saveLoadSlotNumber, OnSaveComplete);
-        }
-        else
-        {
-            GameSingleton.instance.gameStateManager.LoadGame(saveLoadSlotNumber);
-        }
+    //public void OnSaveLoadButtonClicked()
+    //{
+    //    if (isSaveBtn == true)
+    //    {
+    //        GameSingleton.instance.gameStateManager.Save(saveLoadSlotNumber, OnSaveComplete);
+    //    }
+    //    else
+    //    {
+    //        GameSingleton.instance.gameStateManager.LoadGame(saveLoadSlotNumber);
+    //    }
 
-    }
+    //}
 
-    private void OnSaveComplete(SaveData data)
-    {
-        RefreshButton();
-    }
+    //private void OnSaveComplete(SaveData data)
+    //{
+    //    RefreshButton();
+    //}
 
 }

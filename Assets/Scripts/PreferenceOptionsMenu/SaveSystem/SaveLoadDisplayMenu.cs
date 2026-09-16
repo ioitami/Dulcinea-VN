@@ -271,7 +271,6 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
     private void RefreshSaveLoadButton(int saveSlotNum)
     {
-        print("saveslot num:" + saveSlotNum);
         SaveLoadGameButton saveGameBtn;
         SaveLoadGameButton loadGameBtn;
 
@@ -285,6 +284,7 @@ public class SaveLoadDisplayMenu : MonoBehaviour
                 saveGameBtn = savePageList[0].transform.GetChild(-saveSlotNum - 1).GetComponent<SaveLoadGameButton>();
                 loadGameBtn = loadPageList[0].transform.GetChild(-saveSlotNum - 1).GetComponent<SaveLoadGameButton>();
             }
+            // QUICK SAVE/LOAD SLOTS
             else if (saveSlotNum >= -saveSlotsPerPage * 2)
             {
                 saveGameBtn = savePageList[1].transform.GetChild(-saveSlotNum - 1 - saveSlotsPerPage).GetComponent<SaveLoadGameButton>();
@@ -318,35 +318,40 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
             saveGameBtn.empty_Text.gameObject.SetActive(true);
 
+
             loadGameBtn.saveChapterName_Text.gameObject.SetActive(false);
             loadGameBtn.saveDescription_Text.gameObject.SetActive(false);
             loadGameBtn.saveTimeStamp_Text.gameObject.SetActive(false);
 
             loadGameBtn.empty_Text.gameObject.SetActive(true);
 
+
             saveGameBtn.hasSave = false;
             loadGameBtn.hasSave = false;
 
             return;
         }
+        else
+        {
+            saveGameBtn.hasSave = true;
+            loadGameBtn.hasSave = true;
 
-        saveGameBtn.hasSave = true;
-        loadGameBtn.hasSave = true;
+            saveGameBtn.saveChapterName_Text.gameObject.SetActive(true);
+            saveGameBtn.saveDescription_Text.gameObject.SetActive(true);
+            saveGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);
 
-        saveGameBtn.saveChapterName_Text.gameObject.SetActive(true);
-        saveGameBtn.saveDescription_Text.gameObject.SetActive(true);
-        saveGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);
+            saveGameBtn.empty_Text.gameObject.SetActive(false);
 
-        saveGameBtn.empty_Text.gameObject.SetActive(false);
+            loadGameBtn.saveChapterName_Text.gameObject.SetActive(true);
+            loadGameBtn.saveDescription_Text.gameObject.SetActive(true);
+            loadGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);
 
-        loadGameBtn.saveChapterName_Text.gameObject.SetActive(true);
-        loadGameBtn.saveDescription_Text.gameObject.SetActive(true);
-        loadGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);
-
-        loadGameBtn.empty_Text.gameObject.SetActive(false);
+            loadGameBtn.empty_Text.gameObject.SetActive(false);
 
 
-        Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveGameBtn.saveLoadSlotNumber);
+            Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveGameBtn.saveLoadSlotNumber);
+        }
+
 
         //if (screenshot != null)
         //    loadSpritePreview.sprite = screenshot;

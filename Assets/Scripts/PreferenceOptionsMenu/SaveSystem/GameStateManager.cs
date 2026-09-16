@@ -98,6 +98,8 @@ public class GameStateManager : MonoBehaviour
             return null;
         }
 
+        Debug.Log($"[GameStateManager] Loading save {saveID} from: {path}");
+
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
         return data;
@@ -462,6 +464,28 @@ public class GameStateManager : MonoBehaviour
 
     private string GetSavePath(int saveID)
     {
+        int saveSlotsPerPage = GameSingleton.instance.sceneLoaderManager.uiController.optionsMenu.saveLoadDisplayMenu.saveLoadPagePrefab.transform.childCount;
+
+        if (saveID < 0)
+        {
+            // AUTO SAVE/LOAD SLOTS
+            if (saveID >= -saveSlotsPerPage)
+            {
+                return Path.Combine(SaveDirectory, SavePrefix + "Auto_" + (-saveID) + SaveExtension);
+            }
+            // QUICK SAVE/LOAD SLOTS
+            else if (saveID >= -saveSlotsPerPage * 2)
+            {
+                return Path.Combine(SaveDirectory, SavePrefix + "Quick_" + (-saveID - saveSlotsPerPage) + SaveExtension);
+            }
+            else
+            {
+                Debug.Log("Not within Auto/Quick Save Index Bounds!");
+            }
+        }
+
+        // Normal save otherwise
+
         return Path.Combine(SaveDirectory, SavePrefix + saveID + SaveExtension);
     }
 }

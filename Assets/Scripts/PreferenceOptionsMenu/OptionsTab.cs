@@ -22,7 +22,9 @@ public class OptionsTab : MonoBehaviour
         for (int i = 0; i < optionTabButtonList.Count; i++)
         {
             int index = i;
-            optionTabButtonList[i].optionsTabBtn.GetComponentInChildren<Button>().onClick.AddListener(() => SelectTabButton(index));
+
+            if (optionTabButtonList[i].optionsTabBtn != null) 
+                optionTabButtonList[i].optionsTabBtn.GetComponentInChildren<Button>().onClick.AddListener(() => SelectTabButton(index));
         }
     }
 
@@ -35,7 +37,8 @@ public class OptionsTab : MonoBehaviour
         }
 
         optionTabButtonList[index].optionsTabBtn.GetComponentInChildren<Button>().interactable = false;
-        optionTabButtonList[index].linkedRightPage.SetActive(true);
+
+        if (optionTabButtonList[index].linkedRightPage != null) optionTabButtonList[index].linkedRightPage.SetActive(true);
 
         optionTabButtonList[index].onClick.Invoke();
     }

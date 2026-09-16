@@ -299,7 +299,7 @@ public class SaveLoadDisplayMenu : MonoBehaviour
         // NORMAL SAVE/LOAD SLOTS
         else
         {
-            int pageIndex = (saveSlotNum -1) / saveSlotsPerPage;
+            int pageIndex = (saveSlotNum -1) / saveSlotsPerPage + 2; // savePageList[0]=Auto, [1]=Quick, numbered pages start at [2]
             int slotIndex = (saveSlotNum -1) % saveSlotsPerPage;
 
             saveGameBtn = savePageList[pageIndex].transform.GetChild(slotIndex).GetComponent<SaveLoadGameButton>();

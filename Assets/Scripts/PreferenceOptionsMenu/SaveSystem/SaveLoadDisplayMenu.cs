@@ -338,6 +338,12 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             saveGameBtn.hasSave = false;
             loadGameBtn.hasSave = false;
 
+            saveGameBtn.thumbnailImage = emptySavePreviewSprite;
+            loadGameBtn.thumbnailImage = emptySavePreviewSprite;
+
+            SetupHoverPreview(saveGameBtn.GetComponentInChildren<EventTrigger>(), saveGameBtn.thumbnailImage);
+            SetupHoverPreview(loadGameBtn.GetComponentInChildren<EventTrigger>(), loadGameBtn.thumbnailImage);
+
             return;
         }
         else
@@ -359,7 +365,6 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             saveGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
                 GameSingleton.instance.gameStateManager.Save(saveGameBtn.saveLoadSlotNumber);
             });
-            //saveGameBtn.GetComponentInChildren<EventTrigger>().OnPointerEnter();
 
             loadGameBtn.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
             loadGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
@@ -377,13 +382,34 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveGameBtn.saveLoadSlotNumber);
             saveGameBtn.thumbnailImage = screenshot;
             loadGameBtn.thumbnailImage = screenshot;
+
+            SetupHoverPreview(saveGameBtn.GetComponentInChildren<EventTrigger>(), saveGameBtn.thumbnailImage);
+            SetupHoverPreview(loadGameBtn.GetComponentInChildren<EventTrigger>(), loadGameBtn.thumbnailImage);
         }
 
 
-        //if (screenshot != null)
-        //    loadSpritePreview.sprite = screenshot;
-        //else
-        //    loadSpritePreview.sprite = emptySaveSprite;
+    }
 
+    private void SetupHoverPreview(EventTrigger trigger, Sprite thumbnail)
+    {
+        if (trigger == null) return;
+
+        EventTrigger.Entry enterEntry = trigger.triggers.Find(e => e.eventID == EventTriggerType.PointerEnter);
+        if (enterEntry == null)
+        {
+            enterEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+            trigger.triggers.Add(enterEntry);
+        }
+        enterEntry.callback.RemoveAllListeners();
+        enterEntry.callback.AddListener((data) => { savePreview_Screen1.sprite = thumbnail; });
+
+        EventTrigger.Entry exitEntry = trigger.triggers.Find(e => e.eventID == EventTriggerType.PointerExit);
+        if (exitEntry == null)
+        {
+            exitEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
+            trigger.triggers.Add(exitEntry);
+        }
+        exitEntry.callback.RemoveAllListeners();
+        exitEntry.callback.AddListener((data) => { savePreview_Screen1.sprite = emptySavePreviewSprite; });
     }
 }

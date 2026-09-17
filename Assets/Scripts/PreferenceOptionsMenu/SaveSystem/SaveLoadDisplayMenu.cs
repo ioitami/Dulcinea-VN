@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SaveLoadDisplayMenu : MonoBehaviour
@@ -20,6 +21,10 @@ public class SaveLoadDisplayMenu : MonoBehaviour
     public Transform loadPageList_Parent;
     public Transform savePage_Parent;
     public Transform loadPage_Parent;
+    [Space]
+    public Image savePreview_Screen1;
+    public Image savePreview_Screen2;
+    public Sprite emptySavePreviewSprite;
     [Space]
     public List<GameObject> savePageList;
     public List<GameObject> loadPageList;
@@ -147,10 +152,14 @@ public class SaveLoadDisplayMenu : MonoBehaviour
         QuickSavePageBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Q";
         QuickLoadPageBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Q";
 
+        AutoSavePageBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         AutoSavePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(0));
+        AutoLoadPageBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         AutoLoadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(0));
 
+        QuickSavePageBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         QuickSavePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(1));
+        QuickLoadPageBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         QuickLoadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(1));
 
         for (int i = 0; i < numPages; i++)
@@ -163,7 +172,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             savePageBtn.GetComponentInChildren<TextMeshProUGUI>().text = (pageIndex + 1).ToString();
             loadPageBtn.GetComponentInChildren<TextMeshProUGUI>().text = (pageIndex + 1).ToString();
 
+            savePageBtn.GetComponent<Button>().onClick.RemoveAllListeners();
             savePageBtn.GetComponent<Button>().onClick.AddListener(() => OpenSavePage(pageIndex + 2));
+            loadPageBtn.GetComponent<Button>().onClick.RemoveAllListeners();
             loadPageBtn.GetComponent<Button>().onClick.AddListener(() => OpenLoadPage(pageIndex + 2));
         }
 
@@ -315,14 +326,12 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             saveGameBtn.saveChapterName_Text.gameObject.SetActive(false);
             saveGameBtn.saveDescription_Text.gameObject.SetActive(false);
             saveGameBtn.saveTimeStamp_Text.gameObject.SetActive(false);
-
             saveGameBtn.empty_Text.gameObject.SetActive(true);
 
 
             loadGameBtn.saveChapterName_Text.gameObject.SetActive(false);
             loadGameBtn.saveDescription_Text.gameObject.SetActive(false);
             loadGameBtn.saveTimeStamp_Text.gameObject.SetActive(false);
-
             loadGameBtn.empty_Text.gameObject.SetActive(true);
 
 
@@ -339,17 +348,34 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             saveGameBtn.saveChapterName_Text.gameObject.SetActive(true);
             saveGameBtn.saveDescription_Text.gameObject.SetActive(true);
             saveGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);
-
             saveGameBtn.empty_Text.gameObject.SetActive(false);
 
             loadGameBtn.saveChapterName_Text.gameObject.SetActive(true);
             loadGameBtn.saveDescription_Text.gameObject.SetActive(true);
             loadGameBtn.saveTimeStamp_Text.gameObject.SetActive(true);
-
             loadGameBtn.empty_Text.gameObject.SetActive(false);
 
+            saveGameBtn.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
+            saveGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
+                GameSingleton.instance.gameStateManager.Save(saveGameBtn.saveLoadSlotNumber);
+            });
+            //saveGameBtn.GetComponentInChildren<EventTrigger>().OnPointerEnter();
+
+            loadGameBtn.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
+            loadGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
+                GameSingleton.instance.gameStateManager.LoadGame(loadGameBtn.saveLoadSlotNumber);
+            });
+
+            saveGameBtn.saveChapterName_Text.text = data.chapterName;
+            saveGameBtn.saveDescription_Text.text = data.description;
+            saveGameBtn.saveTimeStamp_Text.text = data.saveTimeStamp;
+
+            loadGameBtn.saveChapterName_Text.text = data.chapterName;
+            loadGameBtn.saveDescription_Text.text = data.description;
+            loadGameBtn.saveTimeStamp_Text.text = data.saveTimeStamp;
 
             Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveGameBtn.saveLoadSlotNumber);
+            savePreview_Screen1.sprite = screenshot;
         }
 
 

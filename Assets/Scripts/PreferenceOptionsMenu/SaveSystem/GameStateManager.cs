@@ -153,23 +153,23 @@ public class GameStateManager : MonoBehaviour
         return File.Exists(GetSavePath(saveID));
     }
 
-    public List<SaveData> LoadAllSaves()
-    {
-        List<SaveData> saves = new List<SaveData>();
+    //public List<SaveData> LoadAllSaves()
+    //{
+    //    List<SaveData> saves = new List<SaveData>();
 
-        string[] files = Directory.GetFiles(SaveDirectory, SavePrefix + "*" + SaveExtension);
+    //    string[] files = Directory.GetFiles(SaveDirectory, SavePrefix + "*" + SaveExtension);
 
-        foreach (string file in files)
-        {
-            string json = File.ReadAllText(file);
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
-            if (data != null)
-                saves.Add(data);
-        }
+    //    foreach (string file in files)
+    //    {
+    //        string json = File.ReadAllText(file);
+    //        SaveData data = JsonUtility.FromJson<SaveData>(json);
+    //        if (data != null)
+    //            saves.Add(data);
+    //    }
 
-        saves.Sort((a, b) => a.saveSlotNumber.CompareTo(b.saveSlotNumber));
-        return saves;
-    }
+    //    saves.Sort((a, b) => a.saveSlotNumber.CompareTo(b.saveSlotNumber));
+    //    return saves;
+    //}
 
     public void RegisterVisitedBlock(string blockID)
     {

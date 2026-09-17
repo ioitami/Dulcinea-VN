@@ -11,8 +11,7 @@ public class SaveLoadGameButton : MonoBehaviour
     public int saveLoadSlotNumber;
     public bool hasSave;
     [Space]
-    public Image thumbnailImage;
-    public Sprite emptySaveSprite;
+    public Sprite thumbnailImage;
     public TextMeshProUGUI empty_Text;
     public TextMeshProUGUI saveSlotNumber_Text;
     public TextMeshProUGUI saveChapterName_Text;

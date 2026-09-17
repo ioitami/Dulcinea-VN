@@ -375,6 +375,8 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             loadGameBtn.saveTimeStamp_Text.text = data.saveTimeStamp;
 
             Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveGameBtn.saveLoadSlotNumber);
+            saveGameBtn.thumbnailImage = screenshot;
+            loadGameBtn.thumbnailImage = screenshot;
         }
 
 

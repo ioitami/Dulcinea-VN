@@ -134,6 +134,14 @@ public class SceneLoaderManager : MonoBehaviour
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
     }
 
+    public void ResetAVLChoiceContainer()
+    {
+        foreach (Transform obj in GameSingleton.instance.sceneLoaderManager.uiController.avl.avlChoiceContainer)
+        {
+            Destroy(obj.gameObject);
+        }
+    }
+
     public void LoadDialogueLogHistory()
     {
 

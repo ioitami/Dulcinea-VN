@@ -94,7 +94,7 @@ public class GameStateManager : MonoBehaviour
 
         if (!File.Exists(path))
         {
-            Debug.Log($"[GameStateManager] No save found with ID {saveID}.");
+            //Debug.Log($"[GameStateManager] No save found with ID {saveID}.");
             return null;
         }
 
@@ -127,6 +127,7 @@ public class GameStateManager : MonoBehaviour
 
         GameSingleton.instance.sceneLoaderManager.LoadWindow1();
         GameSingleton.instance.sceneLoaderManager.CloseSaveLoadOptionsMenu();
+        GameSingleton.instance.sceneLoaderManager.ResetAVLChoiceContainer();
 
         RestoreCharacters(data);
         FindAndPlayDialogue(data);

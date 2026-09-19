@@ -338,16 +338,18 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             saveGameBtn.hasSave = false;
             loadGameBtn.hasSave = false;
 
+            // Destroy old thumbnails to prevent overuse of memory storage
+            DestroyDynamicThumbnail(saveGameBtn.thumbnailImage);
+
             saveGameBtn.thumbnailImage = emptySavePreviewSprite;
             loadGameBtn.thumbnailImage = emptySavePreviewSprite;
 
             saveGameBtn.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
             saveGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
-                GameSingleton.instance.gameStateManager.Save(saveGameBtn.saveLoadSlotNumber);
-            });
-            saveGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
-                GameSingleton.instance.sceneLoaderManager.uiController.optionsMenu.
-                saveLoadDisplayMenu.RefreshSaveLoadButton(saveGameBtn.saveLoadSlotNumber);
+                GameSingleton.instance.gameStateManager.Save(saveGameBtn.saveLoadSlotNumber, (savedData) => {
+                    RefreshSaveLoadButton(saveGameBtn.saveLoadSlotNumber);
+                    savePreview_Screen1.sprite = saveGameBtn.thumbnailImage;
+                });
             });
 
             SetupHoverPreview(saveGameBtn.GetComponentInChildren<EventTrigger>(), saveGameBtn.thumbnailImage);
@@ -372,7 +374,10 @@ public class SaveLoadDisplayMenu : MonoBehaviour
 
             saveGameBtn.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
             saveGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
-                GameSingleton.instance.gameStateManager.Save(saveGameBtn.saveLoadSlotNumber);
+                GameSingleton.instance.gameStateManager.Save(saveGameBtn.saveLoadSlotNumber, (savedData) => {
+                    RefreshSaveLoadButton(saveGameBtn.saveLoadSlotNumber);
+                    savePreview_Screen1.sprite = saveGameBtn.thumbnailImage;
+                });
             });
 
             loadGameBtn.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
@@ -387,6 +392,9 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             loadGameBtn.saveChapterName_Text.text = data.chapterName;
             loadGameBtn.saveDescription_Text.text = data.description;
             loadGameBtn.saveTimeStamp_Text.text = data.saveTimeStamp;
+            
+            // Destroy old thumbnails to prevent overuse of memory storage
+            DestroyDynamicThumbnail(saveGameBtn.thumbnailImage);
 
             Sprite screenshot = GameSingleton.instance.gameStateManager.GetSaveScreenshotSprite(saveGameBtn.saveLoadSlotNumber);
             saveGameBtn.thumbnailImage = screenshot;
@@ -420,5 +428,18 @@ public class SaveLoadDisplayMenu : MonoBehaviour
         }
         exitEntry.callback.RemoveAllListeners();
         exitEntry.callback.AddListener((data) => { savePreview_Screen1.sprite = emptySavePreviewSprite; });
+    }
+
+    private void DestroyDynamicThumbnail(Sprite sprite)
+    {
+        if (sprite == null) return;
+        if (sprite == emptySavePreviewSprite) return; // never destroy the default proj asset
+
+        if (sprite.texture != null)
+        {
+            Destroy(sprite.texture);
+        }
+
+        Destroy(sprite);
     }
 }

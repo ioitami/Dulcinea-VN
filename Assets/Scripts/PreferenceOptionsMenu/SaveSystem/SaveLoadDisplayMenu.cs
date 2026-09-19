@@ -341,6 +341,15 @@ public class SaveLoadDisplayMenu : MonoBehaviour
             saveGameBtn.thumbnailImage = emptySavePreviewSprite;
             loadGameBtn.thumbnailImage = emptySavePreviewSprite;
 
+            saveGameBtn.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
+            saveGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
+                GameSingleton.instance.gameStateManager.Save(saveGameBtn.saveLoadSlotNumber);
+            });
+            saveGameBtn.GetComponentInChildren<Button>().onClick.AddListener(() => {
+                GameSingleton.instance.sceneLoaderManager.uiController.optionsMenu.
+                saveLoadDisplayMenu.RefreshSaveLoadButton(saveGameBtn.saveLoadSlotNumber);
+            });
+
             SetupHoverPreview(saveGameBtn.GetComponentInChildren<EventTrigger>(), saveGameBtn.thumbnailImage);
             SetupHoverPreview(loadGameBtn.GetComponentInChildren<EventTrigger>(), loadGameBtn.thumbnailImage);
 

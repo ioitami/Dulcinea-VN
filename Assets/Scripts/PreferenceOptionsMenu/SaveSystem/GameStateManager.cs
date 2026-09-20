@@ -291,8 +291,8 @@ public class GameStateManager : MonoBehaviour
             return;
         }
 
-        if (dialogueManager.currentBlock != null)
-            data.chapterName = dialogueManager.currentBlock.ID;
+        if (dialogueManager.currentGroup != null)
+            data.chapterName = dialogueManager.currentGroup.chapterName;
         else
             data.chapterName = "Unknown";
 

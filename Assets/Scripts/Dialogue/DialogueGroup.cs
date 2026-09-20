@@ -4,6 +4,7 @@ using UnityEngine;
 public class DialogueGroup : MonoBehaviour
 {
     public string ID;
+    public string chapterName;
 
     public List<DialogueBlock> blocks = new List<DialogueBlock>();
 

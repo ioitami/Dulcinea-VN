@@ -877,6 +877,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 123
+  chapterName: 'Chapter 1: Test1'
   blocks:
   - {fileID: 1414716007}
   - {fileID: 1979431211}
@@ -1197,7 +1198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 4
-  saveDescription: 
+  saveDescription: test desc 4
   textBox: {fileID: 1388025002}
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
@@ -3104,7 +3105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 3
-  saveDescription: 
+  saveDescription: test desc 3
   textBox: {fileID: 1388025002}
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
@@ -8544,7 +8545,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 1
-  saveDescription: 
+  saveDescription: test desc 1
   textBox: {fileID: 1388025002}
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
@@ -9494,6 +9495,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 1234
+  chapterName: 'Chapter 1: Test 2'
   blocks:
   - {fileID: 528105939}
   - {fileID: 247370599}
@@ -9961,8 +9963,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 794565c4b5da652469ab6bdfcdacb557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  avlCanvasLayer1: {fileID: 0}
-  avlCanvasLayer2: {fileID: 613142355}
+  avlCanvas: {fileID: 613142355}
+  avlChoiceContainer: {fileID: 1237805812}
 --- !u!1 &1620640661
 GameObject:
   m_ObjectHideFlags: 0
@@ -11781,7 +11783,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 2
-  saveDescription: 
+  saveDescription: test desc 2
   textBox: {fileID: 1541217802}
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}

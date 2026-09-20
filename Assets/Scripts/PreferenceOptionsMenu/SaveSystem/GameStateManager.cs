@@ -324,8 +324,29 @@ public class GameStateManager : MonoBehaviour
         data.charactersMood = new List<string>();
         data.charactersPosition = new List<SerializableVector3>();
 
-        CharacterManager characterManager = GameSingleton.instance.characterManager;
+        foreach (CharacterSnapshotEntry entry in blockStartCharacterSnapshot)
+        {
+            data.charactersOnScreen.Add(entry.characterName);
+            data.charactersMood.Add(entry.moodName);
+            data.charactersPosition.Add(new SerializableVector3(entry.position));
+        }
+    }
 
+    [Serializable]
+    private class CharacterSnapshotEntry
+    {
+        public string characterName;
+        public string moodName;
+        public Vector3 position;
+    }
+
+    private List<CharacterSnapshotEntry> blockStartCharacterSnapshot = new List<CharacterSnapshotEntry>();
+
+    public void CaptureBlockStartCharacterSnapshot()
+    {
+        blockStartCharacterSnapshot.Clear();
+
+        CharacterManager characterManager = GameSingleton.instance.characterManager;
         if (characterManager == null) return;
 
         foreach (Character character in characterManager.characters)
@@ -333,11 +354,12 @@ public class GameStateManager : MonoBehaviour
             if (character.ingameContainerObj == null) continue;
             if (!character.ingameContainerObj.activeSelf) continue;
 
-            data.charactersOnScreen.Add(character.characterName);
-            data.charactersMood.Add(character.currentMood != null ? character.currentMood.moodName : "");
-            data.charactersPosition.Add(new SerializableVector3(
-                character.ingameContainerObj.transform.localPosition
-            ));
+            blockStartCharacterSnapshot.Add(new CharacterSnapshotEntry
+            {
+                characterName = character.characterName,
+                moodName = character.currentMood != null ? character.currentMood.moodName : "",
+                position = character.ingameContainerObj.transform.localPosition
+            });
         }
     }
 
@@ -489,4 +511,6 @@ public class GameStateManager : MonoBehaviour
 
         return Path.Combine(SaveDirectory, SavePrefix + saveID + SaveExtension);
     }
+
+
 }

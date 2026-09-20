@@ -229,8 +229,12 @@ public class DialogueManager : MonoBehaviour
         clickToContinueEnabled = false;
         onBlockComplete = onComplete;
 
+        GameSingleton.instance.gameStateManager.CaptureBlockStartCharacterSnapshot();
+
         if (currentBlock.textBox != null)
+        {
             currentBlock.textBox.text = "";
+        }
 
         SetNextIconVisible(false);
         ProcessNextNode();

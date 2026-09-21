@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
@@ -25,21 +25,20 @@ public class CharacterManager : MonoBehaviour
     }
 
 
-
     public void InitializeCharacters()
     {
 
         foreach (Character c in characters)
         {
             GameObject characterContainer = Instantiate(characterPrefab, Vector3.zero, Quaternion.identity);
-          characterContainer.name = c.characterName + "_Container";
+            characterContainer.name = c.characterName + "_Container";
 
             // Create container object
             if (c.windowNumber == 1)
             {
                 characterContainer.transform.SetParent(characterSpriteParent_Window1, true);
             }
-            else if(c.windowNumber == 2)
+            else if (c.windowNumber == 2)
             {
                 characterContainer.transform.SetParent(characterSpriteParent_Window2, true);
             }
@@ -59,9 +58,9 @@ public class CharacterManager : MonoBehaviour
 
     public Character GetCharacter(string name)
     {
-        for(int i = 0; i < characters.Count; i++)
+        for (int i = 0; i < characters.Count; i++)
         {
-            if (characters[i].characterName.ToLower() == name.ToLower())
+            if (characters[i].GetStableID().ToLower() == name.ToLower())
             {
                 return characters[i];
             }
@@ -136,7 +135,7 @@ public class CharacterManager : MonoBehaviour
         character.ingameContainerObj.SetActive(true);
 
         if (mood == null) return;
-            
+
         SetCharacterMood(name, mood);
 
         if (position == null) return;
@@ -276,13 +275,13 @@ public class CharacterManager : MonoBehaviour
 
         SpriteAnimationManager animationManager = GameSingleton.instance.spriteAnimationManager;
 
-        if (animationManager == null) 
+        if (animationManager == null)
         {
             Debug.Log("NO ANIMATIONMANAGER DETECTED");
             return;
         }
 
-        animationManager.PlayAnimation(animationName:animName, spriteTransform: character.ingameContainerObj.transform, onComplete: onComplete);
+        animationManager.PlayAnimation(animationName: animName, spriteTransform: character.ingameContainerObj.transform, onComplete: onComplete);
 
     }
     public void PlayAnimationCharacter(int characterID, string animName, System.Action onComplete = null)
@@ -311,4 +310,3 @@ public class CharacterPosPresets
     public string positionName;
     public Vector3 position;
 }
-

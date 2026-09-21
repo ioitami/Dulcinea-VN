@@ -1,4 +1,4 @@
-using UnityEditor;
+Ôªøusing UnityEditor;
 using UnityEngine;
 using System;
 
@@ -116,13 +116,13 @@ public class DialogueBlockEditor : Editor
         GUILayout.FlexibleSpace();
 
         GUI.enabled = index > 0;
-        if (GUILayout.Button("Å™", GUILayout.Width(25)))
+        if (GUILayout.Button("‚óÄ", GUILayout.Width(25)))
         {
             nodes.MoveArrayElement(index, index - 1);
         }
 
         GUI.enabled = index < nodes.arraySize - 1;
-        if (GUILayout.Button("Å´", GUILayout.Width(25)))
+        if (GUILayout.Button("‚ñ∂", GUILayout.Width(25)))
         {
             nodes.MoveArrayElement(index, index + 1);
         }
@@ -144,6 +144,8 @@ public class DialogueBlockEditor : Editor
         }
 
         EditorGUILayout.EndHorizontal();
+
+        DrawLocalizationKeys(node, typeName, index);
 
         if (foldouts[index])
         {
@@ -171,6 +173,32 @@ public class DialogueBlockEditor : Editor
         }
 
         EditorGUILayout.EndVertical();
+    }
+
+    // Shows the exact localization key(s) this node will be looked up by at
+    // runtime, always visible regardless of foldout state ‚Äî reuses
+    // LocalizationManager's own key-building methods so this can never
+    // drift out of sync with what actually gets looked up in-game.
+    void DrawLocalizationKeys(SerializedProperty node, string typeName, int index)
+    {
+        string blockID = id.stringValue;
+
+        if (typeName == "Text")
+        {
+            string key = LocalizationManager.MakeDialogueTextKey(blockID, index);
+            EditorGUILayout.LabelField("Localization key", key, EditorStyles.miniLabel);
+        }
+        else if (typeName == "Choice")
+        {
+            SerializedProperty choices = node.FindPropertyRelative("choices");
+            if (choices == null) return;
+
+            for (int c = 0; c < choices.arraySize; c++)
+            {
+                string key = LocalizationManager.MakeChoiceKey(blockID, index, c);
+                EditorGUILayout.LabelField($"Choice {c + 1} key", key, EditorStyles.miniLabel);
+            }
+        }
     }
 
     void ShowAddMenu()

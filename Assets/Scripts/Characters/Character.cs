@@ -14,6 +14,7 @@ public class Character : MonoBehaviour
 {
     [Header("Character Settings")]
     public string characterName;
+    public string characterID;
 
     [Range(1, 2)]
     public int windowNumber = 1;
@@ -26,6 +27,11 @@ public class Character : MonoBehaviour
 
     public CharacterMood currentMood;
     public GameObject ingameContainerObj;
+
+    public string GetStableID()
+    {
+        return string.IsNullOrEmpty(characterID) ? characterName : characterID;
+    }
 }
 
 [System.Serializable]

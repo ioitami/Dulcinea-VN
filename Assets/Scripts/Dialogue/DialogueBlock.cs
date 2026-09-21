@@ -18,6 +18,16 @@ public class DialogueBlock : MonoBehaviour
 
     [SerializeReference]
     public DialogueBlockNode[] nodes;
+
+    private void Awake()
+    {
+        DialogueRegistry.RegisterBlock(this);
+    }
+
+    private void OnDestroy()
+    {
+        DialogueRegistry.UnregisterBlock(this);
+    }
 }
 
 
@@ -50,15 +60,29 @@ public class DialogueTextNode : DialogueBlockNode
         else
             speed = manager.typingSpeed;
 
+        string localizedText = GetLocalizedText(manager);
 
         // Add change textbox background UI and character icon (used instead of name) here based on the characterindex
         ApplyCharacterTextUI(manager);
-        UpdateDialogueLogHistory(manager);
+        UpdateDialogueLogHistory(manager, localizedText);
 
-        manager.StartTyping(text, speed, appendText, requirePlayerClickContinue, onComplete);
+        manager.StartTyping(localizedText, speed, appendText, requirePlayerClickContinue, onComplete);
     }
 
-    private void UpdateDialogueLogHistory(DialogueManager manager)
+    // Looks up this line's own text by a key derived from the block it's
+    // in and its position within that block — no new serialized field
+    // needed, and it's a no-op returning the authored text until a string
+    // table actually exists for the current language.
+    private string GetLocalizedText(DialogueManager manager)
+    {
+        if (LocalizationManager.instance == null) return text;
+        if (manager.currentBlock == null) return text;
+
+        string key = LocalizationManager.MakeDialogueTextKey(manager.currentBlock.ID, manager.CurrentNodeIndex - 1);
+        return LocalizationManager.instance.Get(key, text);
+    }
+
+    private void UpdateDialogueLogHistory(DialogueManager manager, string displayedText)
     {
         DialogueLogHistory logHistory = GameSingleton.instance.sceneLoaderManager.uiController.dialogueLogHistory;
         if (logHistory == null) return;
@@ -69,10 +93,16 @@ public class DialogueTextNode : DialogueBlockNode
         {
             CharacterManager characterManager = GameSingleton.instance.characterManager;
             if (characterManager != null && characterIndex < characterManager.characters.Count)
-                characterName = characterManager.characters[characterIndex].characterName;
+            {
+                Character character = characterManager.characters[characterIndex];
+                string nameKey = character.GetStableID();
+                characterName = LocalizationManager.instance != null
+                    ? LocalizationManager.instance.Get(nameKey, character.characterName)
+                    : character.characterName;
+            }
         }
 
-        logHistory.LogDialogueText(manager.currentBlock, text, characterName);
+        logHistory.LogDialogueText(manager.currentBlock, displayedText, characterName);
     }
 
     private void ApplyCharacterTextUI(DialogueManager manager)
@@ -193,22 +223,25 @@ public class DialogueChoiceNode : DialogueBlockNode
         // they all instantiate identical choice UI from their own local
         // scene data. Falls back to a direct local display when no
         // networking is running at all (editor/offline testing).
+        int nodeIndex = manager.CurrentNodeIndex - 1;
+
         if (NVLNetworkPlayer.hostInstance != null)
         {
-            int nodeIndex = manager.CurrentNodeIndex - 1;
             NVLNetworkPlayer.hostInstance.RpcShowChoiceUI(manager.currentBlock.ID, nodeIndex);
         }
         else
         {
-            DisplayChoicesLocally(manager);
+            DisplayChoicesLocally(manager, manager.currentBlock.ID, nodeIndex);
         }
     }
 
     // Display-only: instantiates the choice buttons and wires clicks to
     // route through the network (or directly, offline) rather than
     // resolving the outcome inline — the outcome is only ever resolved on
-    // the authoritative instance via ResolveChoice.
-    public void DisplayChoicesLocally(DialogueManager manager)
+    // the authoritative instance via ResolveChoice. blockID/nodeIndex are
+    // passed explicitly (rather than read from manager.currentBlock) since
+    // a pure client's DialogueManager doesn't track those locally.
+    public void DisplayChoicesLocally(DialogueManager manager, string blockID, int nodeIndex)
     {
         CleanupChoicesLocally();
 
@@ -221,7 +254,12 @@ public class DialogueChoiceNode : DialogueBlockNode
 
             TextMeshProUGUI label = choiceObj.GetComponentInChildren<TextMeshProUGUI>();
             if (label != null)
-                label.text = choice.text;
+            {
+                string key = LocalizationManager.MakeChoiceKey(blockID, nodeIndex, i);
+                label.text = LocalizationManager.instance != null
+                    ? LocalizationManager.instance.Get(key, choice.text)
+                    : choice.text;
+            }
 
             Button button = choiceObj.GetComponent<Button>();
             if (button != null)
@@ -340,8 +378,8 @@ public class DialogueShowCharacterNode : DialogueBlockNode
         if (characterIndex < 0 || characterIndex >= characterManager.characters.Count) { onComplete?.Invoke(); return; }
 
         Character character = characterManager.characters[characterIndex];
-        string charName  = character.characterName;
-        string moodName  = character.moods[moodIndex].moodName;
+        string charName = character.characterName;
+        string moodName = character.moods[moodIndex].moodName;
 
         if (positionCommand)
         {
@@ -611,4 +649,3 @@ public class DialogueSetBackgroundNode : DialogueBlockNode
         onComplete?.Invoke();
     }
 }
-

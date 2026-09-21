@@ -82,6 +82,11 @@ public class NVLNetworkPlayer : NetworkBehaviour
     [SyncVar(hook = nameof(OnBackgroundWindow2Changed))]
     private string syncedBackgroundWindow2 = "";
 
+    // Only ever set by window 1 (the host); window 2 just follows, same as
+    // resolution/background, so both windows always show the same language.
+    [SyncVar(hook = nameof(OnLanguageChanged))]
+    private string syncedLanguageCode = "";
+
     public bool RequiresServer => requiresServer;
     public bool AwaitingWindowCloseChoice => awaitingWindowCloseChoice;
 
@@ -112,6 +117,12 @@ public class NVLNetworkPlayer : NetworkBehaviour
                 syncedBackgroundWindow2 = backgroundName;
                 break;
         }
+    }
+
+    [Server]
+    public void SetLanguage(string languageCode)
+    {
+        syncedLanguageCode = languageCode;
     }
 
     [Server]
@@ -188,6 +199,14 @@ public class NVLNetworkPlayer : NetworkBehaviour
 
         if (GameSingleton.instance != null && GameSingleton.instance.backgroundManager != null)
             GameSingleton.instance.backgroundManager.ApplyBackgroundLocally(newValue, 2);
+    }
+
+    private void OnLanguageChanged(string oldValue, string newValue)
+    {
+        if (string.IsNullOrEmpty(newValue)) return;
+
+        if (GameSingleton.instance != null && GameSingleton.instance.localizationManager != null)
+            GameSingleton.instance.localizationManager.ApplyLanguageLocally(newValue);
     }
 
     // ===========================

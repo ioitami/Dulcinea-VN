@@ -22,6 +22,7 @@ public class GameSingleton : MonoBehaviour
     public NVLNetworkManager nvlNetworkManager              { get; private set; }
     public NVLNetworkPlayer nvlNetworkPlayer                { get; private set; }
     public PreferenceOptionsManager preferenceOptionsManager{ get; private set; }
+    public LocalizationManager localizationManager          { get; private set; }
 
 
     void Awake()
@@ -39,20 +40,21 @@ public class GameSingleton : MonoBehaviour
 
 
         // Load all the connected scripts
-        cameraManager           = GetComponentInChildren<CameraManager>();
-        sceneLoaderManager      = GetComponentInChildren<SceneLoaderManager>();
-        audioManager            = GetComponentInChildren<AudioManager>();
-        playerInput             = GetComponentInChildren<PlayerInput>();
-        inputHandler            = GetComponentInChildren<InputHandler>();
-        eventSystem             = GetComponentInChildren<EventSystem>();
-        backgroundManager       = GetComponentInChildren<BackgroundManager>();
-        characterManager        = GetComponentInChildren<CharacterManager>();
-        spriteAnimationManager  = GetComponentInChildren<SpriteAnimationManager>();
-        dialogueManager         = GetComponentInChildren<DialogueManager>();
-        gameStateManager        = GetComponentInChildren<GameStateManager>();
-        nvlNetworkManager       = GetComponentInChildren<NVLNetworkManager>();
-        nvlNetworkPlayer        = GetComponentInChildren<NVLNetworkPlayer>();
-        preferenceOptionsManager= GetComponentInChildren<PreferenceOptionsManager>();
+        cameraManager = GetComponentInChildren<CameraManager>();
+        sceneLoaderManager = GetComponentInChildren<SceneLoaderManager>();
+        audioManager = GetComponentInChildren<AudioManager>();
+        playerInput = GetComponentInChildren<PlayerInput>();
+        inputHandler = GetComponentInChildren<InputHandler>();
+        eventSystem = GetComponentInChildren<EventSystem>();
+        backgroundManager = GetComponentInChildren<BackgroundManager>();
+        characterManager = GetComponentInChildren<CharacterManager>();
+        spriteAnimationManager = GetComponentInChildren<SpriteAnimationManager>();
+        dialogueManager = GetComponentInChildren<DialogueManager>();
+        gameStateManager = GetComponentInChildren<GameStateManager>();
+        nvlNetworkManager = GetComponentInChildren<NVLNetworkManager>();
+        nvlNetworkPlayer = GetComponentInChildren<NVLNetworkPlayer>();
+        preferenceOptionsManager = GetComponentInChildren<PreferenceOptionsManager>();
+        localizationManager = GetComponentInChildren<LocalizationManager>();
     }
 
 }

@@ -18,7 +18,7 @@ public class GameStateManager : MonoBehaviour
     [Header("Visited Blocks")]
     private const string VisitedBlocksFile = "visited_blocks.json";
     private string VisitedBlocksPath => Path.Combine(Application.streamingAssetsPath, VisitedBlocksFile);
-    
+
     public HashSet<string> visitedBlockIDs = new HashSet<string>();
 
     private string SaveDirectory => Path.Combine(Application.persistentDataPath, SaveFolder);
@@ -292,15 +292,27 @@ public class GameStateManager : MonoBehaviour
         }
 
         if (dialogueManager.currentGroup != null)
-            data.chapterName = dialogueManager.currentGroup.chapterName;
+        {
+            string key = LocalizationManager.MakeBlockKey("chapter", dialogueManager.currentGroup.ID);
+            string fallback = dialogueManager.currentGroup.chapterName;
+            data.chapterName = LocalizationManager.instance != null ? LocalizationManager.instance.Get(key, fallback) : fallback;
+        }
         else
+        {
             data.chapterName = "Unknown";
+        }
 
 
         if (dialogueManager.currentBlock != null)
-            data.description = dialogueManager.currentBlock.saveDescription;
+        {
+            string key = LocalizationManager.MakeBlockKey("desc", dialogueManager.currentBlock.ID);
+            string fallback = dialogueManager.currentBlock.saveDescription;
+            data.description = LocalizationManager.instance != null ? LocalizationManager.instance.Get(key, fallback) : fallback;
+        }
         else
+        {
             data.description = "";
+        }
 
 
         if (dialogueManager.currentGroup != null)
@@ -326,7 +338,7 @@ public class GameStateManager : MonoBehaviour
 
         foreach (CharacterSnapshotEntry entry in blockStartCharacterSnapshot)
         {
-            data.charactersOnScreen.Add(entry.characterName);
+            data.charactersOnScreen.Add(entry.characterKey);
             data.charactersMood.Add(entry.moodName);
             data.charactersPosition.Add(new SerializableVector3(entry.position));
         }
@@ -335,7 +347,7 @@ public class GameStateManager : MonoBehaviour
     [Serializable]
     private class CharacterSnapshotEntry
     {
-        public string characterName;
+        public string characterKey;
         public string moodName;
         public Vector3 position;
     }
@@ -356,7 +368,7 @@ public class GameStateManager : MonoBehaviour
 
             blockStartCharacterSnapshot.Add(new CharacterSnapshotEntry
             {
-                characterName = character.characterName,
+                characterKey = character.GetStableID(),
                 moodName = character.currentMood != null ? character.currentMood.moodName : "",
                 position = character.ingameContainerObj.transform.localPosition
             });

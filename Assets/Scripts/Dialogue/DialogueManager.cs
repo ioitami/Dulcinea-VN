@@ -158,7 +158,7 @@ public class DialogueManager : MonoBehaviour
         if (block.nodes[nodeIndex] is DialogueChoiceNode choiceNode)
         {
             activeChoiceNode = choiceNode;
-            choiceNode.DisplayChoicesLocally(this);
+            choiceNode.DisplayChoicesLocally(this, blockID, nodeIndex);
         }
     }
 
@@ -280,7 +280,7 @@ public class DialogueManager : MonoBehaviour
         //int pointerId = (int)Mouse.current.deviceId;
 
         //if (EventSystem.current.IsPointerOverGameObject(pointerId)) return;
-            
+
         if (isTyping)
         {
             SkipTyping();
@@ -329,7 +329,7 @@ public class DialogueManager : MonoBehaviour
     {
         Debug.Log("Stopping FastForward");
         isFastForwarding = false;
-        
+
 
         if (fastForwardCoroutine != null)
         {
@@ -487,7 +487,7 @@ public class DialogueManager : MonoBehaviour
 
     private void OnTextFinished(bool requireClick, Action onComplete)
     {
-        if(isFastForwarding)
+        if (isFastForwarding)
         {
             // Don't wait for click
             isWaitingForClick = false;

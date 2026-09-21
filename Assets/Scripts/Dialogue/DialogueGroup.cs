@@ -8,6 +8,16 @@ public class DialogueGroup : MonoBehaviour
 
     public List<DialogueBlock> blocks = new List<DialogueBlock>();
 
+    private void Awake()
+    {
+        DialogueRegistry.RegisterGroup(this);
+    }
+
+    private void OnDestroy()
+    {
+        DialogueRegistry.UnregisterGroup(this);
+    }
+
     private void OnValidate()
     {
         // Auto-populate blocks from children in order

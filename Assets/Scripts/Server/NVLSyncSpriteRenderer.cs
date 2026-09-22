@@ -11,13 +11,12 @@ public class NVLSyncSpriteRenderer : NetworkBehaviour
     [SyncVar(hook = nameof(OnSpriteChanged))]
     private string syncedSpriteName = "";
 
-    [SyncVar(hook = nameof(OnActiveChanged))]
-    private bool syncedActive = false;
-
     private void Awake()
     {
         if (spriteRenderer == null)
+        {
             spriteRenderer = GetComponent<SpriteRenderer>();
+        }
     }
 
     [Server]
@@ -32,10 +31,9 @@ public class NVLSyncSpriteRenderer : NetworkBehaviour
         syncedSpriteName = newSprite.name;
     }
 
-    [Server]
-    public void SetActive(bool active)
+    public void ApplyCurrentSprite()
     {
-        syncedActive = active;
+        OnSpriteChanged(syncedSpriteName, syncedSpriteName);
     }
 
     private void OnSpriteChanged(string oldName, string newName)
@@ -43,7 +41,10 @@ public class NVLSyncSpriteRenderer : NetworkBehaviour
         if (string.IsNullOrEmpty(newName))
         {
             if (spriteRenderer != null)
+            {
                 spriteRenderer.sprite = null;
+            }
+
             return;
         }
 
@@ -52,7 +53,9 @@ public class NVLSyncSpriteRenderer : NetworkBehaviour
         if (found != null)
         {
             if (spriteRenderer != null)
+            {
                 spriteRenderer.sprite = found;
+            }
         }
         else
         {
@@ -60,23 +63,15 @@ public class NVLSyncSpriteRenderer : NetworkBehaviour
         }
     }
 
-    private void OnActiveChanged(bool oldActive, bool newActive)
-    {
-        gameObject.SetActive(newActive);
-    }
-
     private void Update()
     {
         if (!isServer) return;
+        if (spriteRenderer == null || spriteRenderer.sprite == null) return;
 
-        if (spriteRenderer != null && spriteRenderer.sprite != null)
+        if (spriteRenderer.sprite.name != syncedSpriteName)
         {
-            if (spriteRenderer.sprite.name != syncedSpriteName)
-                SetSprite(spriteRenderer.sprite);
+            SetSprite(spriteRenderer.sprite);
         }
-
-        if (gameObject.activeSelf != syncedActive)
-            SetActive(gameObject.activeSelf);
     }
 
     private Sprite FindSprite(string spriteName)
@@ -84,9 +79,12 @@ public class NVLSyncSpriteRenderer : NetworkBehaviour
         foreach (Sprite sprite in availableSprites)
         {
             if (sprite != null && sprite.name == spriteName)
+            {
                 return sprite;
+            }
         }
 
         return null;
     }
+
 }

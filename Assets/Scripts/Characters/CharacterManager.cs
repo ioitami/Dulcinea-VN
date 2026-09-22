@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
 public class CharacterManager : MonoBehaviour
 {
+    public static CharacterManager instance;
+
     [SerializeField]
     public Transform characterSpriteParent_Window1;
     public Transform characterSpriteParent_Window2;
@@ -13,48 +16,77 @@ public class CharacterManager : MonoBehaviour
     public GameObject characterPrefab;
     public List<Character> characters = new List<Character>();
 
-    //NOTE: MAKE IT RELATIVE TO CAMERA POSITION AND ACCOUNT FOR SCREEN SIZE OF WINDOW
     [Header("Default Anchors (Local Space)")]
     public List<CharacterPosPresets> customPositions = new List<CharacterPosPresets>();
 
-
-
     private void Awake()
     {
-        InitializeCharacters();
+        instance = this;
     }
 
+    private void Start()
+    {
+        if (NetworkServer.active)
+        {
+            InitializeCharacters();
+        }
+    }
 
     public void InitializeCharacters()
     {
-
         foreach (Character c in characters)
         {
-            GameObject characterContainer = Instantiate(characterPrefab, Vector3.zero, Quaternion.identity);
-            characterContainer.name = c.characterName + "_Container";
-
-            // Create container object
-            if (c.windowNumber == 1)
-            {
-                characterContainer.transform.SetParent(characterSpriteParent_Window1, true);
-            }
-            else if (c.windowNumber == 2)
-            {
-                characterContainer.transform.SetParent(characterSpriteParent_Window2, true);
-            }
-
-            characterContainer.transform.localPosition = Vector3.zero;
-
-            c.ingameContainerObj = characterContainer;
-
-            c.currentMood = c.moods[0];
-            SetCharacterMood(c.characterName, 0);
-
-            HideCharacter(c.characterName);
+            SpawnCharacterContainer(c);
         }
-
     }
 
+    private void SpawnCharacterContainer(Character c)
+    {
+        GameObject containerInstance = Instantiate(characterPrefab, Vector3.zero, Quaternion.identity);
+        containerInstance.name = c.characterName + "_Container";
+
+        NVLCharacterContainer networkedContainer = containerInstance.GetComponent<NVLCharacterContainer>();
+
+        if (networkedContainer == null)
+        {
+            Debug.LogWarning($"[CharacterManager] characterPrefab is missing NVLCharacterContainer for '{c.characterName}'.");
+            Destroy(containerInstance);
+            return;
+        }
+
+        networkedContainer.characterStableID = c.GetStableID();
+        networkedContainer.windowNumber = c.windowNumber;
+
+        NetworkServer.Spawn(containerInstance);
+    }
+
+    public void RegisterSpawnedContainer(string stableID, GameObject container)
+    {
+        Character character = characters.Find(c => c.GetStableID() == stableID);
+
+        if (character == null)
+        {
+            Debug.LogWarning($"[CharacterManager] No Character entry found for stable ID '{stableID}'.");
+            return;
+        }
+
+        character.ingameContainerObj = container;
+
+        NVLSyncSpriteRenderer spriteSync = container.GetComponentInChildren<NVLSyncSpriteRenderer>(true);
+
+        if (spriteSync != null)
+        {
+            spriteSync.availableSprites = character.moods.ConvertAll(m => m.sprite).ToArray();
+            spriteSync.ApplyCurrentSprite();
+        }
+
+        if (NetworkServer.active)
+        {
+            character.currentMood = character.moods[0];
+            SetCharacterMood(character.characterName, 0);
+            HideCharacter(character.characterName);
+        }
+    }
 
     public Character GetCharacter(string name)
     {
@@ -89,7 +121,7 @@ public class CharacterManager : MonoBehaviour
 
         if (character == null) return;
 
-        character.ingameContainerObj.SetActive(true);
+        SetVisualActive(character, true);
         SetCharacterMood(name, mood);
     }
 
@@ -99,7 +131,7 @@ public class CharacterManager : MonoBehaviour
 
         if (character == null) return;
 
-        character.ingameContainerObj.SetActive(true);
+        SetVisualActive(character, true);
         SetCharacterMood(name, mood);
     }
 
@@ -109,9 +141,8 @@ public class CharacterManager : MonoBehaviour
 
         if (character == null) return;
 
-        character.ingameContainerObj.SetActive(true);
+        SetVisualActive(character, true);
         SetCharacterMood(name, mood);
-
 
         if (positionName == null) return;
 
@@ -132,7 +163,7 @@ public class CharacterManager : MonoBehaviour
 
         if (character == null) return;
 
-        character.ingameContainerObj.SetActive(true);
+        SetVisualActive(character, true);
 
         if (mood == null) return;
 
@@ -141,7 +172,6 @@ public class CharacterManager : MonoBehaviour
         if (position == null) return;
 
         MoveCharacter(name, position.Value);
-
     }
 
     public void ShowCharacter(int characterID, string mood, string positionName = null)
@@ -150,9 +180,8 @@ public class CharacterManager : MonoBehaviour
 
         if (character == null) return;
 
-        character.ingameContainerObj.SetActive(true);
+        SetVisualActive(character, true);
         SetCharacterMood(name, mood);
-
 
         if (positionName == null) return;
 
@@ -173,7 +202,7 @@ public class CharacterManager : MonoBehaviour
 
         if (character == null) return;
 
-        character.ingameContainerObj.SetActive(true);
+        SetVisualActive(character, true);
 
         if (mood == null) return;
 
@@ -182,7 +211,6 @@ public class CharacterManager : MonoBehaviour
         if (position == null) return;
 
         MoveCharacter(name, position.Value);
-
     }
 
     public void HideCharacter(string name)
@@ -191,8 +219,7 @@ public class CharacterManager : MonoBehaviour
 
         if (character == null) return;
 
-        character.ingameContainerObj.SetActive(false);
-
+        SetVisualActive(character, false);
     }
 
     public void HideCharacter(int characterID)
@@ -201,16 +228,26 @@ public class CharacterManager : MonoBehaviour
 
         if (character == null) return;
 
-        character.ingameContainerObj.SetActive(false);
-
+        SetVisualActive(character, false);
     }
-
 
     public void HideAllCharacters()
     {
         foreach (Character character in characters)
         {
-            character.ingameContainerObj.SetActive(false);
+            SetVisualActive(character, false);
+        }
+    }
+
+    private void SetVisualActive(Character character, bool active)
+    {
+        if (character.ingameContainerObj == null) return;
+
+        NVLCharacterContainer container = character.ingameContainerObj.GetComponent<NVLCharacterContainer>();
+
+        if (container != null)
+        {
+            container.SetVisualActive(active);
         }
     }
 
@@ -226,6 +263,7 @@ public class CharacterManager : MonoBehaviour
             character.ingameContainerObj.GetComponentInChildren<SpriteRenderer>().sprite = charMoodSprite;
         }
     }
+
     public void SetCharacterMood(string name, int moodID)
     {
         Character character = GetCharacter(name);
@@ -236,6 +274,7 @@ public class CharacterManager : MonoBehaviour
             character.ingameContainerObj.GetComponentInChildren<SpriteRenderer>().sprite = character.currentMood.sprite;
         }
     }
+
     public void SetCharacterMood(int characterID, int moodID)
     {
         Character character = GetCharacter(characterID);
@@ -282,8 +321,8 @@ public class CharacterManager : MonoBehaviour
         }
 
         animationManager.PlayAnimation(animationName: animName, spriteTransform: character.ingameContainerObj.transform, onComplete: onComplete);
-
     }
+
     public void PlayAnimationCharacter(int characterID, string animName, System.Action onComplete = null)
     {
         Character character = GetCharacter(characterID);
@@ -299,9 +338,7 @@ public class CharacterManager : MonoBehaviour
         }
 
         animationManager.PlayAnimation(animationName: animName, spriteTransform: character.ingameContainerObj.transform, onComplete: onComplete);
-
     }
-
 }
 
 [System.Serializable]

@@ -364,7 +364,10 @@ public class GameStateManager : MonoBehaviour
         foreach (Character character in characterManager.characters)
         {
             if (character.ingameContainerObj == null) continue;
-            if (!character.ingameContainerObj.activeSelf) continue;
+
+            NVLCharacterContainer container = character.ingameContainerObj.GetComponent<NVLCharacterContainer>();
+
+            if (container == null || !container.IsVisualActive) continue;
 
             blockStartCharacterSnapshot.Add(new CharacterSnapshotEntry
             {

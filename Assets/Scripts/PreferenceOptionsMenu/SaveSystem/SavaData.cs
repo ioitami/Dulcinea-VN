@@ -15,4 +15,8 @@ public class SaveData
     public List<string> charactersOnScreen;
     public List<string> charactersMood;
     public List<SerializableVector3> charactersPosition;
+    public string window1Background;
+    public string window2Background;
+    public string window1Text;
+    public string window2Text;
 }

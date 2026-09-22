@@ -9,6 +9,10 @@ public class BackgroundManager : MonoBehaviour
     public Transform backgroundSpriteParent_Window1;
     public Transform backgroundSpriteParent_Window2;
 
+
+    public string CurrentWindow1Background { get; private set; } = "";
+    public string CurrentWindow2Background { get; private set; } = "";
+
     [Header("Backgrounds List")]
     public List<BackgroundPreset> backgrounds = new List<BackgroundPreset>();
 
@@ -110,6 +114,15 @@ public class BackgroundManager : MonoBehaviour
         GameObject bgInstance = Instantiate(preset.backgroundPrefab);
         bgInstance.transform.SetParent(parent, false);
         bgInstance.transform.localPosition = Vector3.zero;
+
+        if (windowNumber == 1)
+        {
+            CurrentWindow1Background = backgroundName;
+        }
+        else
+        {
+            CurrentWindow2Background = backgroundName;
+        }
     }
 
     public void ApplyMainMenuBackgroundLocally(string backgroundName)

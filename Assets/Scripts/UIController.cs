@@ -10,6 +10,7 @@ public class UIController : MonoBehaviour
 
     [Header("AVL")]
     public AVL avl;
+    public NVL nvl;
 
     [Header("Window1")]
     public Window1 window1;

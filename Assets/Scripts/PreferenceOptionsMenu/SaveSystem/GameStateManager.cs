@@ -130,6 +130,8 @@ public class GameStateManager : MonoBehaviour
         GameSingleton.instance.sceneLoaderManager.ResetAVLChoiceContainer();
 
         RestoreCharacters(data);
+        RestoreDialogueText(data);
+        RestoreBackgrounds(data);
         FindAndPlayDialogue(data);
 
         NVLNetworkManager.instance?.EvaluateWindowRequirement();
@@ -265,6 +267,7 @@ public class GameStateManager : MonoBehaviour
 
         CollectDialogueData(data);
         CollectCharacterData(data);
+        CollectBackgroundData(data);
         WriteToFile(data);
 
         Debug.Log($"[GameStateManager] Saved slot {saveID} — chapter: {data.chapterName}.");
@@ -288,6 +291,8 @@ public class GameStateManager : MonoBehaviour
             data.dialogueGroupID = "";
             data.dialogueBlockID = "";
             data.requiresServer = false;
+            data.window1Text = "";
+            data.window2Text = "";
             return;
         }
 
@@ -327,9 +332,25 @@ public class GameStateManager : MonoBehaviour
             data.dialogueBlockID = "";
 
         data.requiresServer = dialogueManager.requiresServer;
+
+        data.window1Text = dialogueManager.window1TextBox != null ? dialogueManager.window1TextBox.text : "";
+        data.window2Text = dialogueManager.window2TextBox != null ? dialogueManager.window2TextBox.text : "";
     }
 
+    private void CollectBackgroundData(SaveData data)
+    {
+        BackgroundManager backgroundManager = GameSingleton.instance.backgroundManager;
 
+        if (backgroundManager == null)
+        {
+            data.window1Background = "";
+            data.window2Background = "";
+            return;
+        }
+
+        data.window1Background = backgroundManager.CurrentWindow1Background;
+        data.window2Background = backgroundManager.CurrentWindow2Background;
+    }
     private void CollectCharacterData(SaveData data)
     {
         data.charactersOnScreen = new List<string>();
@@ -455,6 +476,39 @@ public class GameStateManager : MonoBehaviour
             Vector3 position = data.charactersPosition[i].ToVector3();
 
             characterManager.ShowCharacter(charName, moodName, position);
+        }
+    }
+    private void RestoreDialogueText(SaveData data)
+    {
+        DialogueManager dialogueManager = GameSingleton.instance.dialogueManager;
+
+        if (dialogueManager == null) return;
+
+        if (dialogueManager.window1TextBox != null)
+        {
+            dialogueManager.window1TextBox.text = data.window1Text ?? "";
+        }
+
+        if (dialogueManager.window2TextBox != null)
+        {
+            dialogueManager.window2TextBox.text = data.window2Text ?? "";
+        }
+    }
+
+    private void RestoreBackgrounds(SaveData data)
+    {
+        BackgroundManager backgroundManager = GameSingleton.instance.backgroundManager;
+
+        if (backgroundManager == null) return;
+
+        if (!string.IsNullOrEmpty(data.window1Background))
+        {
+            backgroundManager.SetBackground(data.window1Background, 1);
+        }
+
+        if (!string.IsNullOrEmpty(data.window2Background))
+        {
+            backgroundManager.SetBackground(data.window2Background, 2);
         }
     }
 

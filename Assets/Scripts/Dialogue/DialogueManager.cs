@@ -12,6 +12,8 @@ public class DialogueManager : MonoBehaviour
 {
     [Header("UI Components")]
     public Image nextIcon;
+    public TextMeshProUGUI window1TextBox;
+    public TextMeshProUGUI window2TextBox;
 
     [Header("Typing Settings")]
     public float typingSpeed = 0.03f;
@@ -70,6 +72,12 @@ public class DialogueManager : MonoBehaviour
     // Public API
     // ===========================
     private bool previousGlobalAllowDialogueClick = true;
+
+    private void Awake()
+    {
+        window1TextBox = GameSingleton.instance.sceneLoaderManager.uiController.avl.avlText;
+        window2TextBox = GameSingleton.instance.sceneLoaderManager.uiController.nvl.nvlText;
+    }
 
     public void SetGlobalAllowDialogueClick(bool allow)
     {

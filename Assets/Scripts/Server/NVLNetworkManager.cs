@@ -38,8 +38,7 @@ public class NVLNetworkManager : NetworkManager
         base.OnStartHost();
         Debug.Log("[NVLNetworkManager] Started as host.");
 
-        if (serverCamera != null) serverCamera.gameObject.SetActive(true);
-        if (clientCamera != null) clientCamera.gameObject.SetActive(false);
+        SetActiveWindow(isServer: true);
 
         GameSingleton.instance.dialogueManager.isMainServer = true;
     }
@@ -58,9 +57,7 @@ public class NVLNetworkManager : NetworkManager
         // Pure client — not the host
         if (!NetworkServer.active)
         {
-
-            if (serverCamera != null) serverCamera.gameObject.SetActive(false);
-            if (clientCamera != null) clientCamera.gameObject.SetActive(true);
+            SetActiveWindow(isServer: false);
 
             GameSingleton.instance.dialogueManager.isMainServer = false;
 
@@ -68,6 +65,35 @@ public class NVLNetworkManager : NetworkManager
         }
 
         EvaluateWindowRequirement();
+    }
+
+    // To set which window is active for selecting purposes
+    // (avl and nvl canvas interactable cant be active at the same time)
+    public void SetActiveWindow(bool isServer)
+    {
+        if (serverCamera != null) serverCamera.gameObject.SetActive(isServer);
+        if (clientCamera != null) clientCamera.gameObject.SetActive(!isServer);
+
+        SetAVLNVLInteractable(isServer);
+    }
+
+
+    private void SetAVLNVLInteractable(bool isServer)
+    {
+        AVL avl = GameSingleton.instance.sceneLoaderManager.uiController.avl;
+        NVL nvl = GameSingleton.instance.sceneLoaderManager.uiController.nvl;
+
+        if (avl != null && avl.avlCanvasGroup != null)
+        {
+            avl.avlCanvasGroup.interactable = isServer;
+            avl.avlCanvasGroup.blocksRaycasts = isServer;
+        }
+
+        if (nvl != null && nvl.nvlCanvasGroup != null)
+        {
+            nvl.nvlCanvasGroup.interactable = !isServer;
+            nvl.nvlCanvasGroup.blocksRaycasts = !isServer;
+        }
     }
 
     public override void OnStopClient()

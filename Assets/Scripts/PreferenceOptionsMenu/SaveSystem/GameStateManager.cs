@@ -363,12 +363,16 @@ public class GameStateManager : MonoBehaviour
         data.charactersOnScreen = new List<string>();
         data.charactersMood = new List<string>();
         data.charactersPosition = new List<SerializableVector3>();
+        data.charactersScale = new List<SerializableVector3>();
+        data.charactersRotation = new List<SerializableQuaternion>();
 
         foreach (CharacterSnapshotEntry entry in blockStartCharacterSnapshot)
         {
             data.charactersOnScreen.Add(entry.characterKey);
             data.charactersMood.Add(entry.moodName);
             data.charactersPosition.Add(new SerializableVector3(entry.position));
+            data.charactersScale.Add(new SerializableVector3(entry.scale));
+            data.charactersRotation.Add(new SerializableQuaternion(entry.rotation));
         }
     }
 
@@ -378,6 +382,8 @@ public class GameStateManager : MonoBehaviour
         public string characterKey;
         public string moodName;
         public Vector3 position;
+        public Vector3 scale;
+        public Quaternion rotation;
     }
 
     private List<CharacterSnapshotEntry> blockStartCharacterSnapshot = new List<CharacterSnapshotEntry>();
@@ -401,7 +407,9 @@ public class GameStateManager : MonoBehaviour
             {
                 characterKey = character.GetStableID(),
                 moodName = character.currentMood != null ? character.currentMood.moodName : "",
-                position = character.ingameContainerObj.transform.localPosition
+                position = character.ingameContainerObj.transform.localPosition,
+                scale = character.ingameContainerObj.transform.localScale,
+                rotation = character.ingameContainerObj.transform.localRotation
             });
         }
     }
@@ -483,6 +491,16 @@ public class GameStateManager : MonoBehaviour
             Vector3 position = data.charactersPosition[i].ToVector3();
 
             characterManager.ShowCharacter(charName, moodName, position);
+
+            if (data.charactersScale != null && i < data.charactersScale.Count)
+            {
+                characterManager.ScaleCharacter(charName, data.charactersScale[i].ToVector3());
+            }
+
+            if (data.charactersRotation != null && i < data.charactersRotation.Count)
+            {
+                characterManager.RotateCharacter(charName, data.charactersRotation[i].ToQuaternion());
+            }
         }
     }
     private void RestoreDialogueText(SaveData data)

@@ -19,6 +19,8 @@ public class SaveData
     public List<string> charactersOnScreen;
     public List<string> charactersMood;
     public List<SerializableVector3> charactersPosition;
+    public List<SerializableVector3> charactersScale;
+    public List<SerializableQuaternion> charactersRotation;
 
     public string window1Background;
     public string window2Background;

@@ -316,6 +316,46 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
+    public void ScaleCharacter(string name, Vector3 scale)
+    {
+        Character character = GetCharacter(name);
+
+        if (character != null)
+        {
+            character.ingameContainerObj.transform.localScale = scale;
+        }
+    }
+
+    public void ScaleCharacter(int characterID, Vector3 scale)
+    {
+        Character character = GetCharacter(characterID);
+
+        if (character != null)
+        {
+            character.ingameContainerObj.transform.localScale = scale;
+        }
+    }
+
+    public void RotateCharacter(string name, Quaternion rotation)
+    {
+        Character character = GetCharacter(name);
+
+        if (character != null)
+        {
+            character.ingameContainerObj.transform.localRotation = rotation;
+        }
+    }
+
+    public void RotateCharacter(int characterID, Quaternion rotation)
+    {
+        Character character = GetCharacter(characterID);
+
+        if (character != null)
+        {
+            character.ingameContainerObj.transform.localRotation = rotation;
+        }
+    }
+
     public void PlayAnimationCharacter(string charName, string animName, System.Action onComplete = null)
     {
         Character character = GetCharacter(charName);

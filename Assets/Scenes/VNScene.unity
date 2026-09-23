@@ -724,7 +724,6 @@ MonoBehaviour:
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
-  - rid: 7314505712279486525
   - rid: 7314505712279486527
   - rid: 888366338690777159
   references:
@@ -736,15 +735,6 @@ MonoBehaviour:
         splitID: Split1
         nextGroup: {fileID: 1558606597}
         nextBlock: {fileID: 528105939}
-    - rid: 7314505712279486525
-      type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
-      data:
-        text: 'This is Group 2 Block 2 Node 1 (7) '
-        appendText: 1
-        requirePlayerClickContinue: 0
-        overwriteTextSpeed: 0
-        textSpeed: 0.04
-        characterIndex: -1
     - rid: 7314505712279486527
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -2100,8 +2090,6 @@ MonoBehaviour:
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
   - rid: 7314505712279486525
-  - rid: 7314505712279486526
-  - rid: 7314505731947626560
   - rid: 7314505712279486527
   references:
     version: 2
@@ -2111,14 +2099,10 @@ MonoBehaviour:
       data:
         text: This is Split window 2
         appendText: 1
-        requirePlayerClickContinue: 1
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1
-    - rid: 7314505712279486526
-      type: {class: DialoguePauseNode, ns: , asm: Assembly-CSharp}
-      data:
-        pauseDuration: 1
     - rid: 7314505712279486527
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -2128,10 +2112,6 @@ MonoBehaviour:
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1
-    - rid: 7314505731947626560
-      type: {class: DialogueHideCharacterNode, ns: , asm: Assembly-CSharp}
-      data:
-        characterIndex: 0
 --- !u!4 &365002143
 Transform:
   m_ObjectHideFlags: 0
@@ -3420,8 +3400,6 @@ MonoBehaviour:
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
   - rid: 7314505712279486525
-  - rid: 7314505712279486526
-  - rid: 7314505731947626560
   - rid: 7314505712279486527
   references:
     version: 2
@@ -3435,10 +3413,6 @@ MonoBehaviour:
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1
-    - rid: 7314505712279486526
-      type: {class: DialoguePauseNode, ns: , asm: Assembly-CSharp}
-      data:
-        pauseDuration: 1
     - rid: 7314505712279486527
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -3448,10 +3422,6 @@ MonoBehaviour:
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1
-    - rid: 7314505731947626560
-      type: {class: DialogueHideCharacterNode, ns: , asm: Assembly-CSharp}
-      data:
-        characterIndex: 0
 --- !u!4 &528105940
 Transform:
   m_ObjectHideFlags: 0
@@ -3804,17 +3774,22 @@ MonoBehaviour:
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
+  - rid: 1759103693537411139
   - rid: 7314505712279486525
   - rid: 7314505712279486527
   references:
     version: 2
     RefIds:
+    - rid: 1759103693537411139
+      type: {class: DialogueSetBackgroundNode/DialogueSetLinkedSplitContinueNode, ns: , asm: Assembly-CSharp}
+      data:
+        linked: 1
     - rid: 7314505712279486525
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
         text: This is Split window 1
         appendText: 0
-        requirePlayerClickContinue: 1
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1

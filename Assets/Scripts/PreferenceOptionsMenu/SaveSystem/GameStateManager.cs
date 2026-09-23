@@ -333,6 +333,13 @@ public class GameStateManager : MonoBehaviour
 
         data.requiresServer = dialogueManager.requiresServer;
 
+        data.splitActive = dialogueManager.IsSplitActive;
+        data.splitWindow1GroupID = dialogueManager.SplitWindow1Group != null ? dialogueManager.SplitWindow1Group.ID : "";
+        data.splitWindow1BlockID = dialogueManager.SplitWindow1Block != null ? dialogueManager.SplitWindow1Block.ID : "";
+        data.splitWindow2GroupID = dialogueManager.SplitWindow2Group != null ? dialogueManager.SplitWindow2Group.ID : "";
+        data.splitWindow2BlockID = dialogueManager.SplitWindow2Block != null ? dialogueManager.SplitWindow2Block.ID : "";
+        data.linkedSplitContinue = dialogueManager.LinkedSplitContinue;
+
         data.window1Text = dialogueManager.window1TextBox != null ? dialogueManager.window1TextBox.text : "";
         data.window2Text = dialogueManager.window2TextBox != null ? dialogueManager.window2TextBox.text : "";
     }
@@ -514,6 +521,28 @@ public class GameStateManager : MonoBehaviour
 
     private void FindAndPlayDialogue(SaveData data)
     {
+        DialogueManager dialogueManager = GameSingleton.instance.dialogueManager;
+
+        dialogueManager.SetLinkedSplitContinue(data.linkedSplitContinue);
+
+        if (data.splitActive)
+        {
+            if (!DialogueLookup.TryFindGroupAndBlock(data.splitWindow1GroupID, data.splitWindow1BlockID, out DialogueGroup w1Group, out DialogueBlock w1Block))
+            {
+                Debug.LogWarning($"[GameStateManager] Split window1 group '{data.splitWindow1GroupID}' not found.");
+                return;
+            }
+
+            if (!DialogueLookup.TryFindGroupAndBlock(data.splitWindow2GroupID, data.splitWindow2BlockID, out DialogueGroup w2Group, out DialogueBlock w2Block))
+            {
+                Debug.LogWarning($"[GameStateManager] Split window2 group '{data.splitWindow2GroupID}' not found.");
+                return;
+            }
+
+            dialogueManager.BeginSplit(w1Group, w1Block, w2Group, w2Block);
+            return;
+        }
+
         if (!DialogueLookup.TryFindGroupAndBlock(data.dialogueGroupID, data.dialogueBlockID, out DialogueGroup targetGroup, out DialogueBlock targetBlock))
         {
             Debug.LogWarning($"[GameStateManager] DialogueGroup '{data.dialogueGroupID}' not found.");
@@ -526,7 +555,7 @@ public class GameStateManager : MonoBehaviour
             return;
         }
 
-        GameSingleton.instance.dialogueManager.PlaySpecificBlockInGroup(targetGroup, targetBlock);
+        dialogueManager.PlaySpecificBlockInGroup(targetGroup, targetBlock);
     }
 
     // ===========================

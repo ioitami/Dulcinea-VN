@@ -211,49 +211,43 @@ public class NVLNetworkPlayer : NetworkBehaviour
 
     // ===========================
     // Client -> Server input commands
-    // Only used by a pure client (the window that is NOT hosting); the
+    // Only used by client (window that is NOT hosting); the
     // host drives DialogueManager directly without a network round-trip.
     // ===========================
 
     [Command]
-    public void CmdRequestContinue()
+    public void CmdRequestContinue(int windowNumber)
     {
-        GameSingleton.instance.dialogueManager.DialogueContinueClicked();
+        GameSingleton.instance.dialogueManager.ContinueClicked(windowNumber);
     }
 
     [Command]
-    public void CmdRequestStartFastForward()
+    public void CmdRequestStartFastForward(int windowNumber)
     {
-        GameSingleton.instance.dialogueManager.StartFastForward();
+        GameSingleton.instance.dialogueManager.StartFastForward(windowNumber);
     }
 
     [Command]
-    public void CmdRequestStopFastForward()
+    public void CmdRequestStopFastForward(int windowNumber)
     {
-        GameSingleton.instance.dialogueManager.StopFastForward();
+        GameSingleton.instance.dialogueManager.StopFastForward(windowNumber);
     }
 
     [Command]
-    public void CmdSelectChoice(int choiceIndex)
+    public void CmdSelectChoice(int windowNumber, int choiceIndex)
     {
-        GameSingleton.instance.dialogueManager.ResolveActiveChoiceByIndex(choiceIndex);
-    }
-
-    // ===========================
-    // Server -> Client choice display
-    // Both host and client instantiate identical choice UI from their own
-    // local (identical) scene data, looked up by block ID + node index.
-    // ===========================
-
-    [ClientRpc]
-    public void RpcShowChoiceUI(string blockID, int nodeIndex)
-    {
-        GameSingleton.instance.dialogueManager.ShowChoiceUILocally(blockID, nodeIndex);
+        GameSingleton.instance.dialogueManager.ResolveActiveChoiceByIndex(windowNumber, choiceIndex);
     }
 
     [ClientRpc]
-    public void RpcHideChoiceUI()
+    public void RpcShowChoiceUI(int windowNumber, string blockID, int nodeIndex)
     {
-        GameSingleton.instance.dialogueManager.HideChoiceUILocally();
+        GameSingleton.instance.dialogueManager.ShowChoiceUILocally(windowNumber, blockID, nodeIndex);
+    }
+
+    [ClientRpc]
+    public void RpcHideChoiceUI(int windowNumber)
+    {
+        GameSingleton.instance.dialogueManager.HideChoiceUILocally(windowNumber);
     }
 }

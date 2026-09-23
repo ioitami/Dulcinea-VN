@@ -1,6 +1,7 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
-using System;
+using static DialogueSetBackgroundNode;
 
 [CustomEditor(typeof(DialogueBlock))]
 public class DialogueBlockEditor : Editor
@@ -221,6 +222,9 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Set Dialogue Click Rights Node"), false, () => AddNode(typeof(DialogueSetDialogueClickRightsNode)));
         menu.AddItem(new GUIContent("WindowClose Choice Node for Ending"), false, () => AddNode(typeof(DialogueWindowCloseChoiceNode)));
         menu.AddItem(new GUIContent("Set Require Server"), false, () => AddNode(typeof(DialogueRequireServerNode)));
+        menu.AddItem(new GUIContent("Split Play Group Node"), false, () => AddNode(typeof(SplitPlayGroupNode)));
+        menu.AddItem(new GUIContent("End Split Group Node"), false, () => AddNode(typeof(EndSplitGroupNode)));
+        menu.AddItem(new GUIContent("Set Linked Split Continue Node"), false, () => AddNode(typeof(DialogueSetLinkedSplitContinueNode)));
 
         menu.ShowAsContext();
     }

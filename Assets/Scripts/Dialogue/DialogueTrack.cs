@@ -374,6 +374,31 @@ public class DialogueTrack
         callback?.Invoke();
     }
 
+    public void StopAllActivity()
+    {
+        if (typingCoroutine != null)
+        {
+            manager.StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+
+        if (fastForwardCoroutine != null)
+        {
+            manager.StopCoroutine(fastForwardCoroutine);
+            fastForwardCoroutine = null;
+        }
+
+        if (blinkCoroutine != null)
+        {
+            manager.StopCoroutine(blinkCoroutine);
+            blinkCoroutine = null;
+        }
+
+        isTyping = false;
+        isWaitingForClick = false;
+        isFastForwarding = false;
+    }
+
     private void SetNextIconVisible(bool visible)
     {
         if (nextIcon == null) return;

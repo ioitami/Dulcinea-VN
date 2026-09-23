@@ -523,6 +523,7 @@ public class GameStateManager : MonoBehaviour
     {
         DialogueManager dialogueManager = GameSingleton.instance.dialogueManager;
 
+        dialogueManager.StopAllDialogueActivity();
         dialogueManager.SetLinkedSplitContinue(data.linkedSplitContinue);
 
         if (data.splitActive)

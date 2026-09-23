@@ -227,6 +227,18 @@ public class DialogueManager : MonoBehaviour
         NVLNetworkPlayer.hostInstance?.SetAwaitingWindowCloseChoice(true, groupIfHostCloses, blockIfHostCloses, groupIfClientCloses, blockIfClientCloses);
     }
 
+    public void StopAllDialogueActivity()
+    {
+        primaryTrack.StopAllActivity();
+        window1SplitTrack?.StopAllActivity();
+        window2SplitTrack?.StopAllActivity();
+
+        window1SplitTrack = null;
+        window2SplitTrack = null;
+        pendingSplitEnds.Clear();
+        linkedSplitContinue = false;
+    }
+
     // ===========================
     // Split tracks
     // ===========================
@@ -266,7 +278,8 @@ public class DialogueManager : MonoBehaviour
             Debug.LogWarning($"[DialogueManager] EndSplitGroupNode ID mismatch: '{pendingSplitEnds[0].splitID}' vs '{pendingSplitEnds[1].splitID}'.");
         }
 
-        PendingSplitEnd resolved = pendingSplitEnds[1];
+        // Whichever node finishes first will decide and resolve what the next node group/block will be
+        PendingSplitEnd resolved = pendingSplitEnds[0];
         pendingSplitEnds.Clear();
 
         window1SplitTrack = null;

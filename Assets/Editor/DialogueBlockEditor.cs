@@ -1,6 +1,7 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
-using System;
+using static DialogueSetBackgroundNode;
 
 [CustomEditor(typeof(DialogueBlock))]
 public class DialogueBlockEditor : Editor

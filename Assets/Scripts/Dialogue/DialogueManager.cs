@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Mirror;
 using TMPro;
@@ -12,6 +13,7 @@ public class DialogueManager : MonoBehaviour
 {
     [Header("UI Components")]
     public Image nextIcon;
+    public Image nextIconWindow2;
     public TextMeshProUGUI window1TextBox;
     public TextMeshProUGUI window2TextBox;
 
@@ -25,543 +27,81 @@ public class DialogueManager : MonoBehaviour
     [Header("Player Settings")]
     public bool GlobalAllowDialogueClick = true;
 
-    [Header("Dialogue Info")]
-    // Accessed by nodes directly
-    public DialogueBlock currentBlock;
-    public bool clickToContinueEnabled;
-
-
-    // Internal state
-    [SerializeField]
-    public DialogueGroup currentGroup;
-    [SerializeField]
-    private int currentBlockIndex; // DialogueBlocks within a DialogueGroup
-
-    private Action onBlockComplete;
-
-    [SerializeField]
-    private int currentNodeIndex; // DialogueNodes within a DialogueBlock
-    [SerializeField]
-    private bool isTyping;
-    [SerializeField]
-    private bool isWaitingForClick;
-    private string lastTypedText;
-    private Action pendingOnComplete;
-
-    public int CurrentNodeIndex => currentNodeIndex;
-
-    // ===========================
-    // Networked choice tracking
-    // ===========================
-    private DialogueChoiceNode activeChoiceNode;
-    private Action activeChoiceOnComplete;
-
-    private Coroutine typingCoroutine;
-    private Coroutine blinkCoroutine;
-    private Coroutine fastForwardCoroutine;
-
     [Header("Server Info")]
     public bool requiresServer = false;
     public bool isMainServer = true;
 
+    // The single always-present track driving normal linear play.
+    private DialogueTrack primaryTrack;
 
-    [SerializeField]
-    public bool isFastForwarding = false;
+    // Non-null only while a split is active.
+    private DialogueTrack window1SplitTrack;
+    private DialogueTrack window2SplitTrack;
 
-    // ===========================
-    // Public API
-    // ===========================
-    private bool previousGlobalAllowDialogueClick = true;
+    private bool linkedSplitContinue = false;
+
+    private class PendingSplitEnd
+    {
+        public string splitID;
+        public DialogueGroup nextGroup;
+        public DialogueBlock nextBlock;
+    }
+
+    private readonly List<PendingSplitEnd> pendingSplitEnds = new List<PendingSplitEnd>();
+
+    // Set by DialogueTrack.ProcessNextNode for the duration of a node's
+    // synchronous Execute call, so existing node classes reading
+    // manager.currentBlock/isFastForwarding/etc. keep working unchanged.
+    public DialogueTrack ActiveTrack { get; set; }
 
     private void Awake()
     {
-        window1TextBox = GameSingleton.instance.sceneLoaderManager.uiController.avl.avlText;
-        window2TextBox = GameSingleton.instance.sceneLoaderManager.uiController.nvl.nvlText;
-    }
-
-    public void SetGlobalAllowDialogueClick(bool allow)
-    {
-        previousGlobalAllowDialogueClick = GlobalAllowDialogueClick;
-        GlobalAllowDialogueClick = allow;
-    }
-
-    public void RememberGlobalAllowDialogueClickBool()
-    {
-        GlobalAllowDialogueClick = previousGlobalAllowDialogueClick;
+        primaryTrack = new DialogueTrack(this, 0, nextIcon);
     }
 
     // ===========================
-    // Networking authority
+    // Backward-compatible surface for existing node classes
     // ===========================
 
-    // True when this instance is allowed to actually drive dialogue state:
-    // either it's the host/server, or there's no networking active at all
-    // (offline/editor testing). A pure (non-host) client is never allowed
-    // to drive state directly — it must go through Request*() below.
-    public bool CanDriveDialogueLocally()
+    public DialogueBlock currentBlock => (ActiveTrack ?? primaryTrack).currentBlock;
+    public DialogueGroup currentGroup => (ActiveTrack ?? primaryTrack).currentGroup;
+    public int CurrentNodeIndex => (ActiveTrack ?? primaryTrack).currentNodeIndex;
+
+    public bool isFastForwarding
     {
-        return NetworkServer.active || !NetworkClient.active;
+        get => (ActiveTrack ?? primaryTrack).isFastForwarding;
+        set { (ActiveTrack ?? primaryTrack).isFastForwarding = value; }
     }
 
-    public void RequestContinue()
+    public bool clickToContinueEnabled
     {
-        if (CanDriveDialogueLocally())
-            DialogueContinueClicked();
-        else
-            NVLNetworkPlayer.localPlayer?.CmdRequestContinue();
+        get => (ActiveTrack ?? primaryTrack).clickToContinueEnabled;
+        set { (ActiveTrack ?? primaryTrack).clickToContinueEnabled = value; }
     }
-
-    public void RequestStartFastForward()
-    {
-        if (CanDriveDialogueLocally())
-            StartFastForward();
-        else
-            NVLNetworkPlayer.localPlayer?.CmdRequestStartFastForward();
-    }
-
-    public void RequestStopFastForward()
-    {
-        if (CanDriveDialogueLocally())
-            StopFastForward();
-        else
-            NVLNetworkPlayer.localPlayer?.CmdRequestStopFastForward();
-    }
-
-    // Author-facing: call from a DialogueScriptNode's UnityEvent to mark
-    // that the story has entered/left a section that needs both windows.
-    public void SetRequiresServer(bool value)
-    {
-        if (!CanDriveDialogueLocally()) return;
-
-        requiresServer = value;
-
-        if (NetworkServer.active)
-            NVLNetworkPlayer.hostInstance?.SetRequiresServer(value);
-    }
-
-    // Author-facing: call from a DialogueScriptNode (or a dedicated node)
-    // to mark that the next window-close decides the story's outcome.
-    public void BeginWindowCloseChoice(string groupIfHostCloses, string blockIfHostCloses, string groupIfClientCloses, string blockIfClientCloses)
-    {
-        if (!NetworkServer.active) return;
-
-        NVLNetworkPlayer.hostInstance?.SetAwaitingWindowCloseChoice(true, groupIfHostCloses, blockIfHostCloses, groupIfClientCloses, blockIfClientCloses);
-    }
-
-    // ===========================
-    // Networked choice tracking (used by DialogueChoiceNode)
-    // ===========================
-
-    public void RegisterActiveChoice(DialogueChoiceNode node, Action onComplete)
-    {
-        activeChoiceNode = node;
-        activeChoiceOnComplete = onComplete;
-    }
-
-    public void ShowChoiceUILocally(string blockID, int nodeIndex)
-    {
-        if (!DialogueLookup.TryFindBlockByID(blockID, out DialogueBlock block)) return;
-        if (nodeIndex < 0 || nodeIndex >= block.nodes.Length) return;
-
-        if (block.nodes[nodeIndex] is DialogueChoiceNode choiceNode)
-        {
-            activeChoiceNode = choiceNode;
-            choiceNode.DisplayChoicesLocally(this, blockID, nodeIndex);
-        }
-    }
-
-    public void HideChoiceUILocally()
-    {
-        activeChoiceNode?.CleanupChoicesLocally();
-        activeChoiceNode = null;
-        activeChoiceOnComplete = null;
-    }
-
-    public void ResolveActiveChoiceByIndex(int choiceIndex)
-    {
-        if (!CanDriveDialogueLocally()) return;
-        activeChoiceNode?.ResolveChoice(choiceIndex, this, activeChoiceOnComplete);
-    }
-
-    public void PlayGroup(DialogueGroup group)
-    {
-        if (!CanDriveDialogueLocally()) return;
-        if (group == null) return;
-
-        currentGroup = group;
-        currentBlockIndex = 0;
-
-        PlayNextBlockInGroup();
-    }
-
-    private void PlayNextBlockInGroup()
-    {
-        if (currentGroup == null) return;
-
-        if (currentBlockIndex >= currentGroup.blocks.Count)
-        {
-            OnGroupFinished();
-            return;
-        }
-
-        DialogueBlock block = currentGroup.blocks[currentBlockIndex];
-        currentBlockIndex++;
-
-        if (block == null)
-        {
-            PlayNextBlockInGroup();
-            return;
-        }
-
-        // Stop fast forwarding if the next block has not been visited
-        if (isFastForwarding && !GameSingleton.instance.gameStateManager.HasVisitedBlock(block.ID))
-        {
-            StopFastForward();
-            Debug.Log($"[DialogueManager] Fast forward stopped — block '{block.ID}' not yet visited.");
-        }
-
-        PlayBlock(block, PlayNextBlockInGroup);
-    }
-
-
-
-    public void PlayBlock(DialogueBlock block, Action onComplete = null)
-    {
-        if (!CanDriveDialogueLocally()) return;
-        if (block == null) return;
-
-        currentBlock = block;
-        currentNodeIndex = 0;
-        isTyping = false;
-        isWaitingForClick = false;
-        clickToContinueEnabled = false;
-        onBlockComplete = onComplete;
-
-        GameSingleton.instance.gameStateManager.CaptureBlockStartCharacterSnapshot();
-
-        if (currentBlock.textBox != null)
-        {
-            currentBlock.textBox.text = "";
-        }
-
-        SetNextIconVisible(false);
-        ProcessNextNode();
-    }
-
-    public void PlaySpecificBlockInGroup(DialogueGroup group, DialogueBlock block = null)
-    {
-        if (!CanDriveDialogueLocally()) return;
-        if (group == null)
-        {
-            Debug.Log("No DialogueGroup detected");
-            return;
-        }
-
-        if (block == null)
-        {
-            PlayGroup(group);
-            return;
-        }
-
-        int index = group.blocks.IndexOf(block);
-
-        if (index == -1)
-        {
-            Debug.LogWarning($"[DialogueManager] Block '{block.ID}' not found in group '{group.ID}'. Playing group from start.");
-            PlayGroup(group);
-            return;
-        }
-
-        currentGroup = group;
-        currentBlockIndex = index;
-
-        PlayNextBlockInGroup();
-    }
-
-
-
-    public void DialogueContinueClicked()
-    {
-        if (!CanDriveDialogueLocally()) return;
-        if (!GlobalAllowDialogueClick) return;
-
-        //int pointerId = (int)Mouse.current.deviceId;
-
-        //if (EventSystem.current.IsPointerOverGameObject(pointerId)) return;
-
-        if (isTyping)
-        {
-            SkipTyping();
-            return;
-        }
-
-        if (isWaitingForClick)
-        {
-            isWaitingForClick = false;
-            SetNextIconVisible(false);
-
-            Action callback = pendingOnComplete;
-            pendingOnComplete = null;
-            callback?.Invoke();
-        }
-    }
-
-    public void StartFastForward()
-    {
-        if (!CanDriveDialogueLocally()) return;
-        if (!GlobalAllowDialogueClick) return;
-        if (isFastForwarding) return;
-
-        if (currentBlock != null && !GameSingleton.instance.gameStateManager.HasVisitedBlock(currentBlock.ID))
-        {
-            Debug.Log("[DialogueManager] Block not yet visited, fast forward blocked.");
-            return;
-        }
-
-        Debug.Log("Starting FastForward");
-        isFastForwarding = true;
-        isWaitingForClick = false;
-
-
-        if (isTyping)
-        {
-            SkipTyping();
-        }
-        else
-        {
-            OnNodeCompletedFastForward();
-        }
-    }
-
-    public void StopFastForward()
-    {
-        Debug.Log("Stopping FastForward");
-        isFastForwarding = false;
-
-
-        if (fastForwardCoroutine != null)
-        {
-            StopCoroutine(fastForwardCoroutine);
-            fastForwardCoroutine = null;
-        }
-    }
-
-    public void ChangeTypingSpeed(float speed)
-    {
-        typingSpeed = Mathf.Max(speed, 0.0001f);
-    }
-
-    // ===========================
-    // Node Processing
-    // ===========================
-
-    private void ProcessNextNode()
-    {
-        if (!CanDriveDialogueLocally()) return;
-        if (currentBlock == null)
-        {
-            Debug.Log("[DialogueManager] No current block to process.");
-            return;
-        }
-
-        // Do not advance if waiting for click is true and fast forwarding is disabled
-        if (isFastForwarding == false && isWaitingForClick == true)
-        {
-            return;
-        }
-
-        if (currentNodeIndex >= currentBlock.nodes.Length)
-        {
-            OnBlockFinished();
-            return;
-        }
-
-        DialogueBlockNode node = currentBlock.nodes[currentNodeIndex];
-        currentNodeIndex++;
-
-        if (node == null)
-        {
-            ProcessNextNode();
-            return;
-        }
-
-        if (isFastForwarding)
-            node.Execute(this, OnNodeCompletedFastForward);
-        else
-            node.Execute(this, ProcessNextNode);
-    }
-
-    private void OnNodeCompletedFastForward()
-    {
-        if (!isFastForwarding)
-        {
-            ProcessNextNode();
-            return;
-        }
-
-        if (fastForwardCoroutine != null) StopCoroutine(fastForwardCoroutine);
-
-        fastForwardCoroutine = StartCoroutine(FastForwardDelayRoutine());
-    }
-
-    private IEnumerator FastForwardDelayRoutine()
-    {
-        yield return new WaitForSeconds(fastForwardDelay);
-
-        if (isFastForwarding)
-            ProcessNextNode();
-    }
-
-    // ===========================
-    // Typing (called by DialogueTextNode)
-    // ===========================
 
     public void StartTyping(string text, float speed, bool append, bool requireClick, Action onComplete)
     {
-        Debug.Log("Currently Typing in Text Node... Group: " + currentGroup.name + ", DialogueBlock index: " + currentBlockIndex + ", DialogueNode index: " + currentNodeIndex);
-
-        if (append && currentBlock.textBox != null)
-            lastTypedText = currentBlock.textBox.text + text;
-        else
-            lastTypedText = text;
-
-
-        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
-        typingCoroutine = StartCoroutine(TypeRoutine(text, speed, append, requireClick, onComplete));
-
-        if (isFastForwarding)
-            SkipTyping();
+        (ActiveTrack ?? primaryTrack).StartTyping(text, speed, append, requireClick, onComplete);
     }
 
-    private IEnumerator TypeRoutine(string text, float speed, bool append, bool requireClick, Action onComplete)
+    public void RegisterActiveChoice(DialogueChoiceNode node, Action onComplete)
     {
-        isTyping = true;
-
-        if (currentBlock.textBox != null && !append)
-            currentBlock.textBox.text = "";
-
-        int i = 0;
-        while (i < text.Length)
-        {
-            if (text[i] == '<')
-            {
-                // Find the closing bracket and append the whole tag at once
-                int closeIndex = text.IndexOf('>', i);
-                if (closeIndex != -1)
-                {
-                    string tag = text.Substring(i, closeIndex - i + 1);
-                    if (currentBlock.textBox != null)
-                        currentBlock.textBox.text += tag;
-                    i = closeIndex + 1;
-                    continue;
-                }
-            }
-
-            if (currentBlock.textBox != null)
-                currentBlock.textBox.text += text[i];
-
-            i++;
-            yield return new WaitForSeconds(speed);
-        }
-
-        isTyping = false;
-        OnTextFinished(requireClick, onComplete);
+        DialogueTrack track = ActiveTrack ?? primaryTrack;
+        track.activeChoiceNode = node;
+        track.activeChoiceOnComplete = onComplete;
     }
 
-    private void SkipTyping()
+    public Coroutine RunBlink(Image icon)
     {
-        if (typingCoroutine != null)
-        {
-            StopCoroutine(typingCoroutine);
-            typingCoroutine = null;
-        }
-
-        if (currentBlock.textBox != null)
-            currentBlock.textBox.text = lastTypedText;
-
-        isTyping = false;
-
-        // Determine requireClick from the node that was interrupted
-        int lastIndex = currentNodeIndex - 1;
-        bool requireClick = clickToContinueEnabled;
-
-        if (lastIndex >= 0 && lastIndex < currentBlock.nodes.Length)
-            if (currentBlock.nodes[lastIndex] is DialogueTextNode tn)
-                requireClick = tn.requirePlayerClickContinue || clickToContinueEnabled;
-
-        // Re-create the onComplete that TypeRoutine would have called
-        OnTextFinished(requireClick, ProcessNextNode);
+        return StartCoroutine(BlinkIconRoutine(icon));
     }
 
-    private void OnTextFinished(bool requireClick, Action onComplete)
-    {
-        if (isFastForwarding)
-        {
-            // Don't wait for click
-            isWaitingForClick = false;
-            OnNodeCompletedFastForward();
-            return;
-        }
-
-        if (requireClick || clickToContinueEnabled)
-        {
-            isWaitingForClick = true;
-            pendingOnComplete = onComplete;
-            SetNextIconVisible(true);
-        }
-        else
-        {
-            onComplete?.Invoke();
-        }
-    }
-
-    // ===========================
-    // Fast Forward
-    // ===========================
-
-    private IEnumerator FastForwardRoutine()
-    {
-        Debug.Log("FastForwarding...");
-
-        while (isFastForwarding)
-        {
-            Debug.Log("FastForwarding tick...");
-
-            yield return new WaitForSeconds(fastForwardDelay);
-        }
-    }
-
-    // ===========================
-    // Next Icon
-    // ===========================
-
-    private void SetNextIconVisible(bool visible)
-    {
-        if (nextIcon == null) return;
-
-        nextIcon.gameObject.SetActive(visible);
-
-        if (visible)
-        {
-            if (blinkCoroutine != null) StopCoroutine(blinkCoroutine);
-            blinkCoroutine = StartCoroutine(BlinkIcon());
-        }
-        else
-        {
-            if (blinkCoroutine != null)
-            {
-                StopCoroutine(blinkCoroutine);
-                blinkCoroutine = null;
-            }
-        }
-    }
-
-    private IEnumerator BlinkIcon()
+    private IEnumerator BlinkIconRoutine(Image icon)
     {
         while (true)
         {
-            yield return Fade(nextIcon, 1f, 0f, blinkSpeed);
-            yield return Fade(nextIcon, 0f, 1f, blinkSpeed);
+            yield return Fade(icon, 1f, 0f, blinkSpeed);
+            yield return Fade(icon, 0f, 1f, blinkSpeed);
         }
     }
 
@@ -581,31 +121,243 @@ public class DialogueManager : MonoBehaviour
     }
 
     // ===========================
-    // Completion
+    // Track lookup
     // ===========================
 
-    private void OnBlockFinished()
+    // Returns the split track for that window if a split is active,
+    // otherwise the primary track regardless of which window is asking.
+    public DialogueTrack GetTrack(int windowNumber)
     {
-        SetNextIconVisible(false);
+        if (window1SplitTrack != null && windowNumber == 1) return window1SplitTrack;
+        if (window2SplitTrack != null && windowNumber == 2) return window2SplitTrack;
+        return primaryTrack;
+    }
 
-        if (currentBlock != null)
+    public bool IsSplitActive => window1SplitTrack != null && window2SplitTrack != null;
+    public DialogueGroup SplitWindow1Group => window1SplitTrack?.currentGroup;
+    public DialogueBlock SplitWindow1Block => window1SplitTrack?.currentBlock;
+    public DialogueGroup SplitWindow2Group => window2SplitTrack?.currentGroup;
+    public DialogueBlock SplitWindow2Block => window2SplitTrack?.currentBlock;
+    public bool LinkedSplitContinue => linkedSplitContinue;
+
+    public void SetLinkedSplitContinue(bool value)
+    {
+        linkedSplitContinue = value;
+    }
+
+    // ===========================
+    // Networking authority
+    // ===========================
+
+    public bool CanDriveDialogueLocally()
+    {
+        return NetworkServer.active || !NetworkClient.active;
+    }
+
+    public void RequestContinue(int windowNumber)
+    {
+        if (CanDriveDialogueLocally())
+            ContinueClicked(windowNumber);
+        else
+            NVLNetworkPlayer.localPlayer?.CmdRequestContinue(windowNumber);
+    }
+
+    public void ContinueClicked(int windowNumber)
+    {
+        if (!GlobalAllowDialogueClick) return;
+
+        if (window1SplitTrack != null && window2SplitTrack != null && linkedSplitContinue)
         {
-            GameSingleton.instance.gameStateManager.RegisterVisitedBlock(currentBlock.ID);
+            window1SplitTrack.HandleContinueClick();
+            window2SplitTrack.HandleContinueClick();
+            return;
         }
 
-        currentBlock = null;
-        Debug.Log("[DialogueManager] Block finished.");
-
-
-        Action callback = onBlockComplete;
-        onBlockComplete = null;
-        callback?.Invoke();
+        GetTrack(windowNumber).HandleContinueClick();
     }
 
-    private void OnGroupFinished()
+    public void RequestStartFastForward(int windowNumber)
     {
-        currentGroup = null;
-        Debug.Log("[DialogueManager] Group finished.");
+        if (CanDriveDialogueLocally())
+            StartFastForward(windowNumber);
+        else
+            NVLNetworkPlayer.localPlayer?.CmdRequestStartFastForward(windowNumber);
     }
 
+    public void RequestStopFastForward(int windowNumber)
+    {
+        if (CanDriveDialogueLocally())
+            StopFastForward(windowNumber);
+        else
+            NVLNetworkPlayer.localPlayer?.CmdRequestStopFastForward(windowNumber);
+    }
+
+    public void StartFastForward(int windowNumber)
+    {
+        if (!GlobalAllowDialogueClick) return;
+        GetTrack(windowNumber).StartFastForward();
+    }
+
+    public void StopFastForward(int windowNumber)
+    {
+        GetTrack(windowNumber).StopFastForward();
+    }
+
+    public void StopFastForward()
+    {
+        primaryTrack.StopFastForward();
+        window1SplitTrack?.StopFastForward();
+        window2SplitTrack?.StopFastForward();
+    }
+
+    public void SetRequiresServer(bool value)
+    {
+        if (!CanDriveDialogueLocally()) return;
+
+        requiresServer = value;
+
+        if (NetworkServer.active)
+            NVLNetworkPlayer.hostInstance?.SetRequiresServer(value);
+    }
+
+    public void BeginWindowCloseChoice(string groupIfHostCloses, string blockIfHostCloses, string groupIfClientCloses, string blockIfClientCloses)
+    {
+        if (!NetworkServer.active) return;
+
+        NVLNetworkPlayer.hostInstance?.SetAwaitingWindowCloseChoice(true, groupIfHostCloses, blockIfHostCloses, groupIfClientCloses, blockIfClientCloses);
+    }
+
+    public void StopAllDialogueActivity()
+    {
+        primaryTrack.StopAllActivity();
+        window1SplitTrack?.StopAllActivity();
+        window2SplitTrack?.StopAllActivity();
+
+        window1SplitTrack = null;
+        window2SplitTrack = null;
+        pendingSplitEnds.Clear();
+        linkedSplitContinue = false;
+    }
+
+    // ===========================
+    // Split tracks
+    // ===========================
+
+    public void BeginSplit(DialogueGroup group1, DialogueBlock block1, DialogueGroup group2, DialogueBlock block2)
+    {
+        if (!CanDriveDialogueLocally()) return;
+
+        if (window1SplitTrack != null || window2SplitTrack != null)
+        {
+            Debug.LogWarning("[DialogueManager] A split is already active; ignoring nested SplitPlayGroupNode.");
+            return;
+        }
+
+        if (primaryTrack.currentBlock != null)
+        {
+            GameSingleton.instance.gameStateManager.RegisterVisitedBlock(primaryTrack.currentBlock.ID);
+        }
+
+        window1SplitTrack = new DialogueTrack(this, 1, nextIcon);
+        window2SplitTrack = new DialogueTrack(this, 2, nextIconWindow2);
+
+        window1SplitTrack.PlaySpecificBlockInGroup(group1, block1);
+        window2SplitTrack.PlaySpecificBlockInGroup(group2, block2);
+    }
+
+    public void ReportSplitEnd(string splitID, DialogueGroup nextGroup, DialogueBlock nextBlock)
+    {
+        if (!CanDriveDialogueLocally()) return;
+
+        pendingSplitEnds.Add(new PendingSplitEnd { splitID = splitID, nextGroup = nextGroup, nextBlock = nextBlock });
+
+        if (pendingSplitEnds.Count < 2) return;
+
+        if (pendingSplitEnds[0].splitID != pendingSplitEnds[1].splitID)
+        {
+            Debug.LogWarning($"[DialogueManager] EndSplitGroupNode ID mismatch: '{pendingSplitEnds[0].splitID}' vs '{pendingSplitEnds[1].splitID}'.");
+        }
+
+        // Whichever node finishes first will decide and resolve what the next node group/block will be
+        PendingSplitEnd resolved = pendingSplitEnds[0];
+        pendingSplitEnds.Clear();
+
+        window1SplitTrack = null;
+        window2SplitTrack = null;
+        linkedSplitContinue = false;
+
+        primaryTrack.PlaySpecificBlockInGroup(resolved.nextGroup, resolved.nextBlock);
+    }
+
+    private bool previousGlobalAllowDialogueClick = true;
+
+    public void SetGlobalAllowDialogueClick(bool allow)
+    {
+        previousGlobalAllowDialogueClick = GlobalAllowDialogueClick;
+        GlobalAllowDialogueClick = allow;
+    }
+
+    public void RememberGlobalAllowDialogueClickBool()
+    {
+        GlobalAllowDialogueClick = previousGlobalAllowDialogueClick;
+    }
+
+    // ===========================
+    // Networked choice tracking
+    // ===========================
+
+    public void ShowChoiceUILocally(int windowNumber, string blockID, int nodeIndex)
+    {
+        if (!DialogueLookup.TryFindBlockByID(blockID, out DialogueBlock block)) return;
+        if (nodeIndex < 0 || nodeIndex >= block.nodes.Length) return;
+
+        if (block.nodes[nodeIndex] is DialogueChoiceNode choiceNode)
+        {
+            GetTrack(windowNumber).activeChoiceNode = choiceNode;
+            choiceNode.DisplayChoicesLocally(this, windowNumber, blockID, nodeIndex);
+        }
+    }
+
+    public void HideChoiceUILocally(int windowNumber)
+    {
+        DialogueTrack track = GetTrack(windowNumber);
+        track.activeChoiceNode?.CleanupChoicesLocally();
+        track.activeChoiceNode = null;
+        track.activeChoiceOnComplete = null;
+    }
+
+    public void ResolveActiveChoiceByIndex(int windowNumber, int choiceIndex)
+    {
+        if (!CanDriveDialogueLocally()) return;
+
+        DialogueTrack track = GetTrack(windowNumber);
+        track.activeChoiceNode?.ResolveChoice(choiceIndex, this, track, track.activeChoiceOnComplete);
+    }
+
+    // ===========================
+    // Entry points
+    // ===========================
+
+    public void PlayGroup(DialogueGroup group)
+    {
+        if (!CanDriveDialogueLocally()) return;
+        if (group == null) return;
+
+        primaryTrack.PlayGroup(group);
+    }
+
+    public void PlayBlock(DialogueBlock block, Action onComplete = null)
+    {
+        if (!CanDriveDialogueLocally()) return;
+        if (block == null) return;
+
+        (ActiveTrack ?? primaryTrack).PlayBlock(block, onComplete);
+    }
+
+    public void PlaySpecificBlockInGroup(DialogueGroup group, DialogueBlock block = null)
+    {
+        if (!CanDriveDialogueLocally()) return;
+
+        (ActiveTrack ?? primaryTrack).PlaySpecificBlockInGroup(group, block);
+    }
 }

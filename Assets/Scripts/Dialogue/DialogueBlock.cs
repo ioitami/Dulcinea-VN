@@ -210,38 +210,28 @@ public class DialogueChoiceNode : DialogueBlockNode
             return;
         }
 
-        // Only runs here on the authoritative (host/offline) instance —
-        // DialogueManager gates node execution to that context already.
+        DialogueTrack track = manager.ActiveTrack;
+
         manager.RegisterActiveChoice(this, onComplete);
 
-        if (manager.isFastForwarding)
+        if (track.isFastForwarding)
         {
-            manager.StopFastForward();
+            track.StopFastForward();
         }
 
-        // Broadcast to every window (including this one, if networked) so
-        // they all instantiate identical choice UI from their own local
-        // scene data. Falls back to a direct local display when no
-        // networking is running at all (editor/offline testing).
         int nodeIndex = manager.CurrentNodeIndex - 1;
 
         if (NVLNetworkPlayer.hostInstance != null)
         {
-            NVLNetworkPlayer.hostInstance.RpcShowChoiceUI(manager.currentBlock.ID, nodeIndex);
+            NVLNetworkPlayer.hostInstance.RpcShowChoiceUI(track.windowNumber, manager.currentBlock.ID, nodeIndex);
         }
         else
         {
-            DisplayChoicesLocally(manager, manager.currentBlock.ID, nodeIndex);
+            DisplayChoicesLocally(manager, track.windowNumber, manager.currentBlock.ID, nodeIndex);
         }
     }
 
-    // Display-only: instantiates the choice buttons and wires clicks to
-    // route through the network (or directly, offline) rather than
-    // resolving the outcome inline — the outcome is only ever resolved on
-    // the authoritative instance via ResolveChoice. blockID/nodeIndex are
-    // passed explicitly (rather than read from manager.currentBlock) since
-    // a pure client's DialogueManager doesn't track those locally.
-    public void DisplayChoicesLocally(DialogueManager manager, string blockID, int nodeIndex)
+    public void DisplayChoicesLocally(DialogueManager manager, int windowNumber, string blockID, int nodeIndex)
     {
         CleanupChoicesLocally();
 
@@ -267,17 +257,15 @@ public class DialogueChoiceNode : DialogueBlockNode
                 button.onClick.AddListener(() =>
                 {
                     if (NVLNetworkPlayer.localPlayer != null)
-                        NVLNetworkPlayer.localPlayer.CmdSelectChoice(capturedIndex);
+                        NVLNetworkPlayer.localPlayer.CmdSelectChoice(windowNumber, capturedIndex);
                     else
-                        manager.ResolveActiveChoiceByIndex(capturedIndex);
+                        manager.ResolveActiveChoiceByIndex(windowNumber, capturedIndex);
                 });
             }
         }
     }
 
-    // Authoritative resolution — only ever invoked on the host/offline
-    // instance, either directly (offline) or via CmdSelectChoice (networked).
-    public void ResolveChoice(int index, DialogueManager manager, Action onComplete)
+    public void ResolveChoice(int index, DialogueManager manager, DialogueTrack track, Action onComplete)
     {
         if (choices == null || index < 0 || index >= choices.Count) return;
 
@@ -286,24 +274,19 @@ public class DialogueChoiceNode : DialogueBlockNode
         chosen.onSelected?.Invoke();
 
         if (NVLNetworkPlayer.hostInstance != null)
-            NVLNetworkPlayer.hostInstance.RpcHideChoiceUI();
+            NVLNetworkPlayer.hostInstance.RpcHideChoiceUI(track.windowNumber);
         else
-            manager.HideChoiceUILocally();
+            manager.HideChoiceUILocally(track.windowNumber);
 
-        // Register current block as visited before jumping to new node
-        if (manager.currentBlock != null)
+        if (track.currentBlock != null)
         {
-            GameSingleton.instance.gameStateManager.RegisterVisitedBlock(manager.currentBlock.ID);
+            GameSingleton.instance.gameStateManager.RegisterVisitedBlock(track.currentBlock.ID);
         }
 
         if (chosen.linkedGroup != null)
-        {
-            manager.PlaySpecificBlockInGroup(chosen.linkedGroup, chosen.linkedBlock);
-        }
+            track.PlaySpecificBlockInGroup(chosen.linkedGroup, chosen.linkedBlock);
         else
-        {
             onComplete?.Invoke();
-        }
     }
 
     public void CleanupChoicesLocally()
@@ -647,5 +630,75 @@ public class DialogueSetBackgroundNode : DialogueBlockNode
         }
 
         onComplete?.Invoke();
+    }
+
+    [Serializable]
+    public class SplitPlayGroupNode : DialogueBlockNode
+    {
+        [Header("Window 1 Path")]
+        public DialogueGroup window1Group;
+        public DialogueBlock window1Block;
+
+        [Header("Window 2 Path")]
+        public DialogueGroup window2Group;
+        public DialogueBlock window2Block;
+
+        public override void Execute(DialogueManager manager, Action onComplete)
+        {
+            if (window1Group == null || window2Group == null)
+            {
+                Debug.LogWarning("[SplitPlayGroupNode] Both window paths must be assigned.");
+                onComplete?.Invoke();
+                return;
+            }
+
+            if (window1Block != null && window2Block != null && window1Block == window2Block)
+            {
+                Debug.LogError("[SplitPlayGroupNode] Window 1 and Window 2 paths point to the same DialogueBlock — split ignored.");
+                onComplete?.Invoke();
+                return;
+            }
+
+            if (window1Block != null && window2Block != null && window1Block.textBox != null && window1Block.textBox == window2Block.textBox)
+            {
+                Debug.LogError("[SplitPlayGroupNode] Window 1 and Window 2 blocks share the same textBox — split ignored.");
+                onComplete?.Invoke();
+                return;
+            }
+
+            // Does not call onComplete — the primary track pauses here until
+            // ReportSplitEnd converges both split tracks back together.
+            manager.BeginSplit(window1Group, window1Block, window2Group, window2Block);
+        }
+    }
+
+
+    [Serializable]
+    public class EndSplitGroupNode : DialogueBlockNode
+    {
+        public string splitID;
+        public DialogueGroup nextGroup;
+        public DialogueBlock nextBlock;
+
+        public override void Execute(DialogueManager manager, Action onComplete)
+        {
+            // Does not call onComplete — this track is done. Convergence (if
+            // this is the last side to arrive) resumes the primary track
+            // instead; otherwise this side just waits here.
+            manager.ReportSplitEnd(splitID, nextGroup, nextBlock);
+        }
+    }
+
+
+    [Serializable]
+    public class DialogueSetLinkedSplitContinueNode : DialogueBlockNode
+    {
+        public bool linked = true;
+
+        public override void Execute(DialogueManager manager, Action onComplete)
+        {
+            manager.SetLinkedSplitContinue(linked);
+            onComplete?.Invoke();
+        }
     }
 }

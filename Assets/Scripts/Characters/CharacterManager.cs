@@ -83,8 +83,18 @@ public class CharacterManager : MonoBehaviour
         if (NetworkServer.active)
         {
             character.currentMood = character.moods[0];
-            SetCharacterMood(character.characterName, 0);
-            HideCharacter(character.characterName);
+
+            SpriteRenderer spriteRenderer = container.GetComponentInChildren<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = character.currentMood.sprite;
+            }
+
+            NVLCharacterContainer networkContainer = container.GetComponent<NVLCharacterContainer>();
+            if (networkContainer != null)
+            {
+                networkContainer.SetVisualActive(false);
+            }
         }
     }
 

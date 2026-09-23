@@ -31,11 +31,11 @@ public class CameraManager : MonoBehaviour
     public List<Transform> mainCameraLocations;
     public List<Transform> screenList;
 
+    public List<Transform> uiLayerCameraList;
 
     public void MoveCameraToLocation(int cameraID, int mainCamLocation)
     {
         Transform cam = mainCameraList[cameraID].transform;
-
         cam.position = mainCameraLocations[mainCamLocation].position;
     }
 
@@ -43,11 +43,21 @@ public class CameraManager : MonoBehaviour
     {
         DisableAllCameras(); // only one main cam should be active at a time
         mainCameraList[id].gameObject.SetActive(true);
+
+        if (uiLayerCameraList != null && id < uiLayerCameraList.Count)
+        {
+            uiLayerCameraList[id].gameObject.SetActive(true);
+        }
     }
 
     public void DisableMainCamera(int id)
     {
         mainCameraList[id].gameObject.SetActive(false);
+
+        if (uiLayerCameraList != null && id < uiLayerCameraList.Count)
+        {
+            uiLayerCameraList[id].gameObject.SetActive(false);
+        }
     }
 
     public void DisableAllCameras()
@@ -55,6 +65,14 @@ public class CameraManager : MonoBehaviour
         foreach (Transform t in mainCameraList)
         {
             t.gameObject.SetActive(false);
+        }
+
+        if (uiLayerCameraList != null)
+        {
+            foreach (Transform t in uiLayerCameraList)
+            {
+                t.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -78,11 +96,11 @@ public class CameraManager : MonoBehaviour
     {
         screenList[id].gameObject.SetActive(true);
     }
+
     public void DisableOverlay(int id)
     {
         screenList[id].gameObject.SetActive(false);
     }
-
 }
 
 

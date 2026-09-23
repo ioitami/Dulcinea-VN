@@ -97,10 +97,9 @@ public class DialogueBlockEditor : Editor
 
     void DrawNode(SerializedProperty node, int index)
     {
-        string fullType = node.managedReferenceFullTypename;
-        string typeName = fullType.Split(' ')[1]
-                                  .Replace("Dialogue", "")
-                                  .Replace("Node", "");
+        string typeName = node.managedReferenceValue.GetType().Name
+                           .Replace("Dialogue", "")
+                           .Replace("Node", "");
 
 
         EditorGUILayout.BeginVertical("box");

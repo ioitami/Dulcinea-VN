@@ -42,6 +42,8 @@ public class NVLNetworkManager : NetworkManager
         if (clientCamera != null) clientCamera.gameObject.SetActive(false);
 
         GameSingleton.instance.dialogueManager.isMainServer = true;
+
+        SetAVLNVLInteractable(isServer: true);
     }
 
     public override void OnStartClient()
@@ -64,10 +66,34 @@ public class NVLNetworkManager : NetworkManager
 
             GameSingleton.instance.dialogueManager.isMainServer = false;
 
+            SetAVLNVLInteractable(isServer: false);
+
             Debug.Log("[NVLNetworkManager] Client camera activated.");
         }
 
         EvaluateWindowRequirement();
+    }
+
+    // Only the server (window1/host) should be able to click AVL, and only
+    // the client (window2) should be able to click NVL — both canvases stay
+    // active/rendering (for easier editor testing), but only one side's
+    // CanvasGroup accepts input at a time.
+    private void SetAVLNVLInteractable(bool isServer)
+    {
+        AVL avl = GameSingleton.instance.sceneLoaderManager.uiController.avl;
+        NVL nvl = GameSingleton.instance.sceneLoaderManager.uiController.nvl;
+
+        if (avl != null && avl.avlCanvasGroup != null)
+        {
+            avl.avlCanvasGroup.interactable = isServer;
+            avl.avlCanvasGroup.blocksRaycasts = isServer;
+        }
+
+        if (nvl != null && nvl.nvlCanvasGroup != null)
+        {
+            nvl.nvlCanvasGroup.interactable = !isServer;
+            nvl.nvlCanvasGroup.blocksRaycasts = !isServer;
+        }
     }
 
     public override void OnStopClient()

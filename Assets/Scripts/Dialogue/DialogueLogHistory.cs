@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class DialogueLogHistory : MonoBehaviour
+public class DialogueLogHistory : UIScreenBase
 {
     public Canvas dialogueLogHistoryCanvas;
     public Transform dialogueLogHistoryContent;

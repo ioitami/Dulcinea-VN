@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SaveLoadDisplayMenu : MonoBehaviour
+public class SaveLoadDisplayMenu : UIScreenBase
 {
     public int lastVisitedPage = 2;
     public int numPages = GlobalVariables.totalSavePageNumber;

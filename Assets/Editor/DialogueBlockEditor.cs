@@ -97,10 +97,9 @@ public class DialogueBlockEditor : Editor
 
     void DrawNode(SerializedProperty node, int index)
     {
-        string fullType = node.managedReferenceFullTypename;
-        string typeName = fullType.Split(' ')[1]
-                                  .Replace("Dialogue", "")
-                                  .Replace("Node", "");
+        string typeName = node.managedReferenceValue.GetType().Name
+                           .Replace("Dialogue", "")
+                           .Replace("Node", "");
 
 
         EditorGUILayout.BeginVertical("box");
@@ -225,6 +224,7 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Split Play Group Node"), false, () => AddNode(typeof(SplitPlayGroupNode)));
         menu.AddItem(new GUIContent("End Split Group Node"), false, () => AddNode(typeof(EndSplitGroupNode)));
         menu.AddItem(new GUIContent("Set Linked Split Continue Node"), false, () => AddNode(typeof(DialogueSetLinkedSplitContinueNode)));
+        menu.AddItem(new GUIContent("Force End Split Node"), false, () => AddNode(typeof(DialogueForceEndSplitNode)));
 
         menu.ShowAsContext();
     }

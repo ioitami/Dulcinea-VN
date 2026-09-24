@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class NVL : MonoBehaviour
+public class NVL : UIScreenBase
 {
     public Canvas nvlCanvas;
     public CanvasGroup nvlCanvasGroup;

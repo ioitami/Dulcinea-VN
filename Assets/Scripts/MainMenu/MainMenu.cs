@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MainMenu : MonoBehaviour
+public class MainMenu : UIScreenBase
 {
     public Canvas mainMenuCanvas;
     public GameObject mainMenuBGSprites;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class OptionsMenu : MonoBehaviour
+public class OptionsMenu : UIScreenBase
 {
     public SaveLoadDisplayMenu saveLoadDisplayMenu;
     public OptionsTab optionsTab;

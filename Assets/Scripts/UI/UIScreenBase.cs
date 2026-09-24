@@ -1,0 +1,56 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+public abstract class UIScreenBase : MonoBehaviour
+{
+    [Tooltip("Lookup key used by UIController.EnableScreen/DisableScreen/GetScreen.")]
+    public string screenName;
+
+    private static readonly Dictionary<string, UIScreenBase> registry = new Dictionary<string, UIScreenBase>();
+
+    protected virtual void Awake()
+    {
+        if (string.IsNullOrEmpty(screenName)) return;
+
+        if (registry.ContainsKey(screenName))
+        {
+            Debug.LogWarning($"[UIScreenBase] Duplicate screen name '{screenName}' on '{name}' — overwriting previous registration.");
+        }
+
+        registry[screenName] = this;
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (string.IsNullOrEmpty(screenName)) return;
+
+        if (registry.TryGetValue(screenName, out UIScreenBase current) && current == this)
+        {
+            registry.Remove(screenName);
+        }
+    }
+
+    public void SetScreenActive(bool active)
+    {
+        gameObject.SetActive(active);
+    }
+
+    public static UIScreenBase Get(string screenName)
+    {
+        registry.TryGetValue(screenName, out UIScreenBase screen);
+
+        if (screen == null)
+        {
+            Debug.LogError($"[UIScreenBase] No screen found with name '{screenName}'.");
+        }
+
+        return screen;
+    }
+
+    public static T Get<T>(string screenName) where T : UIScreenBase
+    {
+        return Get(screenName) as T;
+    }
+
+    public static IEnumerable<UIScreenBase> All => registry.Values;
+}

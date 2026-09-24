@@ -36,9 +36,17 @@ public class SceneLoaderManager : MonoBehaviour
         // Display Dulci here? Or maybe full BG art
     }
 
-    public void LoadWindow1()
+    public void LoadWindows()
     {
         uiController.DisableAllScreens();
+
+        // Window1 and Window2 both represent full window content blocks
+        // (camera rig + background) that coexist simultaneously in every
+        // process's scene — only CameraManager's active camera decides
+        // which one is actually rendered, so both stay active here rather
+        // than being mutually exclusive like the other screens.
+        uiController.EnableScreen("Window1");
+        uiController.EnableScreen("Window2");
 
         GameSingleton.instance.cameraManager.EnableMainCamera((int)MainCameraID.Window1);
         ToggleAVL(true);

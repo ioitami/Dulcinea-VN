@@ -125,7 +125,7 @@ public class GameStateManager : MonoBehaviour
 
         dialogueManager.SetRequiresServer(data.requiresServer);
 
-        GameSingleton.instance.sceneLoaderManager.LoadWindow1();
+        GameSingleton.instance.sceneLoaderManager.LoadWindows();
         GameSingleton.instance.sceneLoaderManager.CloseSaveLoadOptionsMenu();
         GameSingleton.instance.sceneLoaderManager.ResetAVLChoiceContainer();
 

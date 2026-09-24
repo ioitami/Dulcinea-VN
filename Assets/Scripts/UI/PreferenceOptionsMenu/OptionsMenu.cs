@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class OptionsMenu : UIScreenBase
 {
-    public SaveLoadDisplayMenu saveLoadDisplayMenu;
     public OptionsTab optionsTab;
+    public SaveLoadDisplayMenu saveLoadDisplayMenu;
+    public PreferencesOptionsMenu preferencesOptionsMenu;
 }

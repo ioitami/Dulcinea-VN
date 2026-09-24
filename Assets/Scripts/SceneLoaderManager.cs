@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
@@ -36,9 +36,12 @@ public class SceneLoaderManager : MonoBehaviour
         // Display Dulci here? Or maybe full BG art
     }
 
-    public void LoadWindow1()
+    public void LoadWindows()
     {
         uiController.DisableAllScreens();
+
+        uiController.EnableScreen("Window1");
+        uiController.EnableScreen("Window2");
 
         GameSingleton.instance.cameraManager.EnableMainCamera((int)MainCameraID.Window1);
         ToggleAVL(true);
@@ -50,10 +53,8 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void LoadLoadMenu()
     {
-        uiController.EnableScreen("SaveLoadOptionsMenu");
-
-        uiController.optionsMenu.gameObject.SetActive(true);
-        uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.EnableScreen("OptionsMenu");
+        uiController.EnableScreen("SaveLoadDisplayMenu");
         uiController.optionsMenu.saveLoadDisplayMenu.OpenLastVisitedLoadPage();
 
         GameSingleton.instance.dialogueManager.StopFastForward();
@@ -76,10 +77,8 @@ public class SceneLoaderManager : MonoBehaviour
             GameSingleton.instance.gameStateManager.CaptureScreenshotRoutine()
         );
 
-        uiController.EnableScreen("SaveLoadOptionsMenu");
-
-        uiController.optionsMenu.gameObject.SetActive(true);
-        uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.EnableScreen("OptionsMenu");
+        uiController.EnableScreen("SaveLoadDisplayMenu");
         uiController.optionsMenu.saveLoadDisplayMenu.OpenLastVisitedSavePage();
 
         GameSingleton.instance.dialogueManager.StopFastForward();
@@ -92,6 +91,7 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void LoadPreferencesOptionsMenu()
     {
+        uiController.EnableScreen("OptionsMenu");
         uiController.EnableScreen("PreferencesOptionsMenu");
 
         GameSingleton.instance.dialogueManager.StopFastForward();
@@ -119,14 +119,14 @@ public class SceneLoaderManager : MonoBehaviour
 
         // =====
 
-        uiController.DisableScreen("SaveLoadOptionsMenu");
+        uiController.DisableScreen("SaveLoadDisplayMenu");
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
     }
 
     public void ResetAVLChoiceContainer()
     {
-        foreach (Transform obj in GameSingleton.instance.sceneLoaderManager.uiController.avl.avlChoiceContainer)
+        foreach (Transform obj in uiController.avl.avlChoiceContainer)
         {
             Destroy(obj.gameObject);
         }

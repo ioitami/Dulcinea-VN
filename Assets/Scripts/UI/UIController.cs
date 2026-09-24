@@ -8,8 +8,6 @@ public class UIController : MonoBehaviour
 
     [Header("Options Menu")]
     public OptionsMenu optionsMenu;
-    public SaveLoadDisplayMenu saveLoadDisplayMenu;
-    public PreferencesOptionsMenu preferencesOptionsMenu;
 
     [Header("AVL")]
     public AVL avl;
@@ -21,6 +19,16 @@ public class UIController : MonoBehaviour
 
     [Header("ConvoLog")]
     public DialogueLogHistory dialogueLogHistory;
+
+    private void Awake()
+    {
+        UIScreenBase[] allScreens = FindObjectsByType<UIScreenBase>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        foreach (UIScreenBase screen in allScreens)
+        {
+            screen.Register();
+        }
+    }
 
     //Generic screen access
     public UIScreenBase GetScreen(string screenName)

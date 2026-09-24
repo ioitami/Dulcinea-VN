@@ -103,7 +103,7 @@ public class DialogueTrack
         if (isFastForwarding && !GameSingleton.instance.gameStateManager.HasVisitedBlock(block.ID))
         {
             StopFastForward();
-            Debug.Log($"[DialogueTrack] Fast forward stopped — block '{block.ID}' not yet visited.");
+            Debug.Log($"[DialogueTrack] Fast forward stopped. Block '{block.ID}' not yet visited.");
         }
 
         PlayBlock(block, PlayNextBlockInGroup);

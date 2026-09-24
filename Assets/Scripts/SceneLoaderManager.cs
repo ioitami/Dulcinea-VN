@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,15 +5,12 @@ using UnityEngine.InputSystem.XR;
 
 public class SceneLoaderManager : MonoBehaviour
 {
-
-    //public List<Canvas> currentActiveUI;
-
     [Header("UI")]
     public UIController uiController;
 
     private void Start()
     {
-        if(uiController == null)
+        if (uiController == null)
         {
             uiController = FindAnyObjectByType<UIController>();
         }
@@ -32,33 +28,29 @@ public class SceneLoaderManager : MonoBehaviour
 
         //==============
 
-        GameSingleton.instance.cameraManager.DisableAllOverlay();
+        uiController.DisableAllScreens();
 
-        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.MainMenu);
+        uiController.EnableScreen("MainMenu");
         GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.MainMenu);
 
-
         // Display Dulci here? Or maybe full BG art
-
     }
+
     public void LoadWindow1()
     {
-        GameSingleton.instance.cameraManager.DisableAllOverlay();
+        uiController.DisableAllScreens();
 
         GameSingleton.instance.cameraManager.EnableMainCamera((int)MainCameraID.Window1);
         ToggleAVL(true);
         ToggleNVL(true);
         GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.Window1);
-
     }
-
-
 
     // OVERLAY CANVAS CONTROLS
 
     public void LoadLoadMenu()
     {
-        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.SaveLoadOptionsMenu);
+        uiController.EnableScreen("SaveLoadOptionsMenu");
 
         uiController.optionsMenu.gameObject.SetActive(true);
         uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
@@ -84,7 +76,7 @@ public class SceneLoaderManager : MonoBehaviour
             GameSingleton.instance.gameStateManager.CaptureScreenshotRoutine()
         );
 
-        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.SaveLoadOptionsMenu);
+        uiController.EnableScreen("SaveLoadOptionsMenu");
 
         uiController.optionsMenu.gameObject.SetActive(true);
         uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
@@ -96,12 +88,11 @@ public class SceneLoaderManager : MonoBehaviour
         // UI Transition Animation here
 
         // =====
-
     }
 
     public void LoadPreferencesOptionsMenu()
     {
-        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.PreferencesOptionsMenu);
+        uiController.EnableScreen("PreferencesOptionsMenu");
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -117,7 +108,7 @@ public class SceneLoaderManager : MonoBehaviour
 
         // =====
 
-        GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.PreferencesOptionsMenu);
+        uiController.DisableScreen("PreferencesOptionsMenu");
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
     }
@@ -128,8 +119,7 @@ public class SceneLoaderManager : MonoBehaviour
 
         // =====
 
-
-        GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.SaveLoadOptionsMenu);
+        uiController.DisableScreen("SaveLoadOptionsMenu");
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
     }
@@ -144,8 +134,7 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void LoadDialogueLogHistory()
     {
-
-        GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.DialogueLogHistory);
+        uiController.EnableScreen("DialogueLogHistory");
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -156,7 +145,7 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void CloseDialogueLogHistory()
     {
-        GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.DialogueLogHistory);
+        uiController.DisableScreen("DialogueLogHistory");
 
         GameSingleton.instance.dialogueManager.RememberGlobalAllowDialogueClickBool();
         // UI Transition Animation here
@@ -168,26 +157,23 @@ public class SceneLoaderManager : MonoBehaviour
     {
         if (toggle == true)
         {
-            GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.AVL);
+            uiController.EnableScreen("AVL");
         }
         else
         {
-            GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.AVL);
+            uiController.DisableScreen("AVL");
         }
-
     }
 
     public void ToggleNVL(bool toggle)
     {
         if (toggle == true)
         {
-            GameSingleton.instance.cameraManager.EnableOverlay((int)ScreenID.NVL);
+            uiController.EnableScreen("NVL");
         }
         else
         {
-            GameSingleton.instance.cameraManager.DisableOverlay((int)ScreenID.NVL);
+            uiController.DisableScreen("NVL");
         }
-
     }
-
 }

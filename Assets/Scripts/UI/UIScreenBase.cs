@@ -8,7 +8,10 @@ public abstract class UIScreenBase : MonoBehaviour
 
     private static readonly Dictionary<string, UIScreenBase> registry = new Dictionary<string, UIScreenBase>();
 
-    protected virtual void Awake()
+    // Called by UIController.Awake() for every UIScreenBase in the scene,
+    // including inactive ones — a screen's own Awake() never fires if it
+    // starts inactive, so registration can't rely on that.
+    public void Register()
     {
         if (string.IsNullOrEmpty(screenName)) return;
 

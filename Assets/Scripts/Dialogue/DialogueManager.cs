@@ -289,6 +289,20 @@ public class DialogueManager : MonoBehaviour
         primaryTrack.PlaySpecificBlockInGroup(resolved.nextGroup, resolved.nextBlock);
     }
 
+    // Forced convergence between the split
+    public void ForceEndSplit(DialogueGroup nextGroup, DialogueBlock nextBlock)
+    {
+        if (!CanDriveDialogueLocally()) return;
+        if (window1SplitTrack == null && window2SplitTrack == null) return;
+
+        pendingSplitEnds.Clear();
+        window1SplitTrack = null;
+        window2SplitTrack = null;
+        linkedSplitContinue = false;
+
+        primaryTrack.PlaySpecificBlockInGroup(nextGroup, nextBlock);
+    }
+
     private bool previousGlobalAllowDialogueClick = true;
 
     public void SetGlobalAllowDialogueClick(bool allow)

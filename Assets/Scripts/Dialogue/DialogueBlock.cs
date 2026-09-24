@@ -666,8 +666,7 @@ public class DialogueSetBackgroundNode : DialogueBlockNode
                 return;
             }
 
-            // Does not call onComplete — the primary track pauses here until
-            // ReportSplitEnd converges both split tracks back together.
+            // Does NOT call onComplete, prim track pauses ReportSplitEnd converges both split tracks
             manager.BeginSplit(window1Group, window1Block, window2Group, window2Block);
         }
     }
@@ -682,13 +681,21 @@ public class DialogueSetBackgroundNode : DialogueBlockNode
 
         public override void Execute(DialogueManager manager, Action onComplete)
         {
-            // Does not call onComplete — this track is done. Convergence (if
-            // this is the last side to arrive) resumes the primary track
-            // instead; otherwise this side just waits here.
             manager.ReportSplitEnd(splitID, nextGroup, nextBlock);
         }
     }
 
+    [Serializable]
+    public class DialogueForceEndSplitNode : DialogueBlockNode
+    {
+        public DialogueGroup nextGroup;
+        public DialogueBlock nextBlock;
+
+        public override void Execute(DialogueManager manager, Action onComplete)
+        {
+            manager.ForceEndSplit(nextGroup, nextBlock);
+        }
+    }
 
     [Serializable]
     public class DialogueSetLinkedSplitContinueNode : DialogueBlockNode

@@ -15,7 +15,7 @@ public class SceneLoaderManager : MonoBehaviour
             uiController = FindAnyObjectByType<UIController>();
         }
 
-        uiController.optionsMenu.saveLoadDisplayMenu.RefreshAllSaveLoadSlots();
+        uiController.saveLoadDisplayMenu.RefreshAllSaveLoadSlots();
         uiController.optionsMenu.optionsTab.SetOptionsTabButtonListeners();
 
         LoadMainMenu();
@@ -53,8 +53,8 @@ public class SceneLoaderManager : MonoBehaviour
         uiController.EnableScreen("SaveLoadOptionsMenu");
 
         uiController.optionsMenu.gameObject.SetActive(true);
-        uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
-        uiController.optionsMenu.saveLoadDisplayMenu.OpenLastVisitedLoadPage();
+        uiController.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.saveLoadDisplayMenu.OpenLastVisitedLoadPage();
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -79,8 +79,8 @@ public class SceneLoaderManager : MonoBehaviour
         uiController.EnableScreen("SaveLoadOptionsMenu");
 
         uiController.optionsMenu.gameObject.SetActive(true);
-        uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
-        uiController.optionsMenu.saveLoadDisplayMenu.OpenLastVisitedSavePage();
+        uiController.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.saveLoadDisplayMenu.OpenLastVisitedSavePage();
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -126,7 +126,7 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void ResetAVLChoiceContainer()
     {
-        foreach (Transform obj in GameSingleton.instance.sceneLoaderManager.uiController.avl.avlChoiceContainer)
+        foreach (Transform obj in uiController.avl.avlChoiceContainer)
         {
             Destroy(obj.gameObject);
         }

@@ -604,7 +604,7 @@ public class GameStateManager : MonoBehaviour
 
     private string GetSavePath(int saveID)
     {
-        int saveSlotsPerPage = GameSingleton.instance.sceneLoaderManager.uiController.saveLoadDisplayMenu.saveLoadPagePrefab.transform.childCount;
+        int saveSlotsPerPage = GameSingleton.instance.sceneLoaderManager.uiController.optionsMenu.saveLoadDisplayMenu.saveLoadPagePrefab.transform.childCount;
 
         if (saveID < 0)
         {

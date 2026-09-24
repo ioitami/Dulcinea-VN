@@ -8,8 +8,6 @@ public class UIController : MonoBehaviour
 
     [Header("Options Menu")]
     public OptionsMenu optionsMenu;
-    public SaveLoadDisplayMenu saveLoadDisplayMenu;
-    public PreferencesOptionsMenu preferencesOptionsMenu;
 
     [Header("AVL")]
     public AVL avl;

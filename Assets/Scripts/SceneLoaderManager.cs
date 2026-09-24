@@ -15,7 +15,7 @@ public class SceneLoaderManager : MonoBehaviour
             uiController = FindAnyObjectByType<UIController>();
         }
 
-        uiController.saveLoadDisplayMenu.RefreshAllSaveLoadSlots();
+        uiController.optionsMenu.saveLoadDisplayMenu.RefreshAllSaveLoadSlots();
         uiController.optionsMenu.optionsTab.SetOptionsTabButtonListeners();
 
         LoadMainMenu();
@@ -61,8 +61,8 @@ public class SceneLoaderManager : MonoBehaviour
         uiController.EnableScreen("SaveLoadOptionsMenu");
 
         uiController.optionsMenu.gameObject.SetActive(true);
-        uiController.saveLoadDisplayMenu.gameObject.SetActive(true);
-        uiController.saveLoadDisplayMenu.OpenLastVisitedLoadPage();
+        uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.optionsMenu.saveLoadDisplayMenu.OpenLastVisitedLoadPage();
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);
@@ -87,8 +87,8 @@ public class SceneLoaderManager : MonoBehaviour
         uiController.EnableScreen("SaveLoadOptionsMenu");
 
         uiController.optionsMenu.gameObject.SetActive(true);
-        uiController.saveLoadDisplayMenu.gameObject.SetActive(true);
-        uiController.saveLoadDisplayMenu.OpenLastVisitedSavePage();
+        uiController.optionsMenu.saveLoadDisplayMenu.gameObject.SetActive(true);
+        uiController.optionsMenu.saveLoadDisplayMenu.OpenLastVisitedSavePage();
 
         GameSingleton.instance.dialogueManager.StopFastForward();
         GameSingleton.instance.dialogueManager.SetGlobalAllowDialogueClick(false);

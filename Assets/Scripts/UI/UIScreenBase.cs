@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(CanvasGroup))]
 public abstract class UIScreenBase : MonoBehaviour
 {
     [Tooltip("Lookup key used by UIController.EnableScreen/DisableScreen/GetScreen.")]
     public string screenName;
 
+    public CanvasGroup canvasGroup;
+
     private static readonly Dictionary<string, UIScreenBase> registry = new Dictionary<string, UIScreenBase>();
 
-    // Called by UIController.Awake() for every UIScreenBase in the scene,
-    // including inactive ones — a screen's own Awake() never fires if it
-    // starts inactive, so registration can't rely on that.
+    // Called by UIController.Awake() for every UIScreenBase in the scene.
     public void Register()
     {
         if (string.IsNullOrEmpty(screenName)) return;
@@ -35,7 +36,15 @@ public abstract class UIScreenBase : MonoBehaviour
 
     public void SetScreenActive(bool active)
     {
-        gameObject.SetActive(active);
+        if (canvasGroup == null)
+        {
+            Debug.LogError($"[UIScreenBase] '{name}' has no CanvasGroup assigned.");
+            return;
+        }
+
+        canvasGroup.alpha = active ? 1f : 0f;
+        canvasGroup.interactable = active;
+        canvasGroup.blocksRaycasts = active;
     }
 
     public static UIScreenBase Get(string screenName)

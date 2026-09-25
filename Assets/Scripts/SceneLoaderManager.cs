@@ -65,6 +65,11 @@ public class SceneLoaderManager : MonoBehaviour
         ToggleAVL(true);
         ToggleNVL(true);
 
+        if (NVLNetworkManager.instance != null)
+        {
+            NVLNetworkManager.instance.SetAVLNVLInteractable(NetworkServer.active);
+        }
+
         MainCameraID cameraID = NetworkServer.active ? MainCameraID.Window1 : MainCameraID.Window2;
         MainCameraLocations location = NetworkServer.active ? MainCameraLocations.Window1 : MainCameraLocations.Window2;
         GameSingleton.instance.cameraManager.MoveCameraToLocation((int)cameraID, (int)location);

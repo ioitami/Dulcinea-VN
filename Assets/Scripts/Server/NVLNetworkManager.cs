@@ -91,21 +91,21 @@ public class NVLNetworkManager : NetworkManager
     // the client (window2) should be able to click NVL — both canvases stay
     // active/rendering (for easier editor testing), but only one side's
     // CanvasGroup accepts input at a time.
-    private void SetAVLNVLInteractable(bool isServer)
+    public void SetAVLNVLInteractable(bool isServer)
     {
         AVL avl = GameSingleton.instance.sceneLoaderManager.uiController.avl;
         NVL nvl = GameSingleton.instance.sceneLoaderManager.uiController.nvl;
 
-        if (avl != null && avl.avlCanvasGroup != null)
+        if (avl != null && avl.canvasGroup != null)
         {
-            avl.avlCanvasGroup.interactable = isServer;
-            avl.avlCanvasGroup.blocksRaycasts = isServer;
+            avl.canvasGroup.interactable = isServer;
+            avl.canvasGroup.blocksRaycasts = isServer;
         }
 
-        if (nvl != null && nvl.nvlCanvasGroup != null)
+        if (nvl != null && nvl.canvasGroup != null)
         {
-            nvl.nvlCanvasGroup.interactable = !isServer;
-            nvl.nvlCanvasGroup.blocksRaycasts = !isServer;
+            nvl.canvasGroup.interactable = !isServer;
+            nvl.canvasGroup.blocksRaycasts = !isServer;
         }
     }
 

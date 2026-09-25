@@ -56,7 +56,7 @@ public class DialogueManager : MonoBehaviour
 
     private void Awake()
     {
-        primaryTrack = new DialogueTrack(this, 0, nextIconWindow1);
+        primaryTrack = new DialogueTrack(this, 0);
     }
 
     // ===========================
@@ -173,7 +173,20 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        GetTrack(windowNumber).HandleContinueClick();
+        DialogueTrack track = GetTrack(windowNumber);
+
+        if (!IsClickFromMatchingWindow(track, windowNumber)) return;
+
+        track.HandleContinueClick();
+    }
+
+    private bool IsClickFromMatchingWindow(DialogueTrack track, int windowNumber)
+    {
+        if (track.currentBlock == null) return true;
+
+        DialogueBlockWindow expectedWindow = windowNumber == 1 ? DialogueBlockWindow.AVL : DialogueBlockWindow.NVL;
+
+        return track.currentBlock.window == expectedWindow;
     }
 
     public void RequestStartFastForward(int windowNumber)
@@ -258,8 +271,8 @@ public class DialogueManager : MonoBehaviour
             GameSingleton.instance.gameStateManager.RegisterVisitedBlock(primaryTrack.currentBlock.ID);
         }
 
-        window1SplitTrack = new DialogueTrack(this, 1, nextIconWindow1);
-        window2SplitTrack = new DialogueTrack(this, 2, nextIconWindow2);
+        window1SplitTrack = new DialogueTrack(this, 1);
+        window2SplitTrack = new DialogueTrack(this, 2);
 
         window1SplitTrack.PlaySpecificBlockInGroup(group1, block1);
         window2SplitTrack.PlaySpecificBlockInGroup(group2, block2);

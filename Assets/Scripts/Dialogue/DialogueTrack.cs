@@ -4,18 +4,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Main independent line for dialogue progression. DialogueManager always has
-// exactly one (primaryTrack). SplitPlayGroupNode spins up two more, bounded to win 1 and 2, which
-// runs concurrently until both converge back via matching EndSplitGroupNode calls, before being discarded and
-// primaryTrack resumes again.
 public class DialogueTrack
 {
-    // 0 for the primary track (not bound to a specific window),
-    // 1 or 2 for split track. GetTrack(windowNumber) only matches this against
-    // an active split track, primary track is returned whenever no
-    // split is active, regardless of which window clicked.
+    // 0 for the primary track (not bound to a specific window)
+    // 1 or 2 for split track
+
     public readonly int windowNumber;
-    private readonly Image nextIcon;
     private readonly DialogueManager manager;
 
     public DialogueGroup currentGroup;
@@ -33,15 +27,15 @@ public class DialogueTrack
     public Coroutine typingCoroutine;
     public Coroutine fastForwardCoroutine;
     public Coroutine blinkCoroutine;
+    private Image activeIcon;
 
     public DialogueChoiceNode activeChoiceNode;
     public Action activeChoiceOnComplete;
 
-    public DialogueTrack(DialogueManager manager, int windowNumber, Image nextIcon)
+    public DialogueTrack(DialogueManager manager, int windowNumber)
     {
         this.manager = manager;
         this.windowNumber = windowNumber;
-        this.nextIcon = nextIcon;
     }
 
     public void PlayGroup(DialogueGroup group)
@@ -412,19 +406,34 @@ public class DialogueTrack
         isFastForwarding = false;
     }
 
+    private Image ResolveNextIcon()
+    {
+        if (currentBlock == null) return null;
+
+        return currentBlock.window == DialogueBlockWindow.AVL ? manager.nextIconWindow1 : manager.nextIconWindow2;
+    }
+
     private void SetNextIconVisible(bool visible)
     {
-        if (nextIcon == null) return;
-
-        nextIcon.gameObject.SetActive(visible);
-
         if (visible)
         {
+            Image icon = ResolveNextIcon();
+            if (icon == null) return;
+
+            activeIcon = icon;
+            icon.gameObject.SetActive(true);
+
             if (blinkCoroutine != null) manager.StopCoroutine(blinkCoroutine);
-            blinkCoroutine = manager.RunBlink(nextIcon);
+            blinkCoroutine = manager.RunBlink(icon);
         }
         else
         {
+            if (activeIcon != null)
+            {
+                activeIcon.gameObject.SetActive(false);
+                activeIcon = null;
+            }
+
             if (blinkCoroutine != null)
             {
                 manager.StopCoroutine(blinkCoroutine);

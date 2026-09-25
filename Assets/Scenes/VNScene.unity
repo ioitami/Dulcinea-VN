@@ -1450,7 +1450,7 @@ MonoBehaviour:
       data:
         text: This is Group 2 Block 2 Node 2 (8)
         appendText: 1
-        requirePlayerClickContinue: 1
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1

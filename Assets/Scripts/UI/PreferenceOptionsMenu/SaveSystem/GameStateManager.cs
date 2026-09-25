@@ -27,10 +27,13 @@ public class GameStateManager : MonoBehaviour
     private void Start()
     {
         if (!Directory.Exists(Application.streamingAssetsPath))
+        {
             Directory.CreateDirectory(Application.streamingAssetsPath);
-
+        }
         if (!Directory.Exists(SaveDirectory))
+        {
             Directory.CreateDirectory(SaveDirectory);
+        }
 
         LoadVisitedBlocks();
 

@@ -47,6 +47,11 @@ public class DialogueManager : MonoBehaviour
     private Coroutine convergenceBlinkCoroutine1;
     private Coroutine convergenceBlinkCoroutine2;
 
+    private Coroutine clientIconBlinkCoroutine1;
+    private Coroutine clientIconBlinkCoroutine2;
+    private Image clientActiveIcon;
+
+
     private class PendingSplitEnd
     {
         public string splitID;
@@ -96,6 +101,50 @@ public class DialogueManager : MonoBehaviour
         DialogueTrack track = ActiveTrack ?? primaryTrack;
         track.activeChoiceNode = node;
         track.activeChoiceOnComplete = onComplete;
+    }
+
+
+    public void SetNextIconVisibleLocally(int windowNumber, bool visible)
+    {
+        Image icon = windowNumber == 1 ? nextIconWindow1 : nextIconWindow2;
+        if (icon == null) return;
+
+        if (visible)
+        {
+            icon.gameObject.SetActive(true);
+
+            if (windowNumber == 1)
+            {
+                if (clientIconBlinkCoroutine1 != null) StopCoroutine(clientIconBlinkCoroutine1);
+                clientIconBlinkCoroutine1 = RunBlink(icon);
+            }
+            else
+            {
+                if (clientIconBlinkCoroutine2 != null) StopCoroutine(clientIconBlinkCoroutine2);
+                clientIconBlinkCoroutine2 = RunBlink(icon);
+            }
+        }
+        else
+        {
+            icon.gameObject.SetActive(false);
+
+            if (windowNumber == 1)
+            {
+                if (clientIconBlinkCoroutine1 != null)
+                {
+                    StopCoroutine(clientIconBlinkCoroutine1);
+                    clientIconBlinkCoroutine1 = null;
+                }
+            }
+            else
+            {
+                if (clientIconBlinkCoroutine2 != null)
+                {
+                    StopCoroutine(clientIconBlinkCoroutine2);
+                    clientIconBlinkCoroutine2 = null;
+                }
+            }
+        }
     }
 
     public Coroutine RunBlink(Image icon)

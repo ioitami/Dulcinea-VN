@@ -3553,15 +3553,16 @@ MonoBehaviour:
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
-  - rid: 888366362075070546
+  - rid: 888366362075070548
   - rid: 7314505712279486525
   - rid: 7314505712279486527
   references:
     version: 2
     RefIds:
-    - rid: 888366362075070546
-      type: {class: DialogueWaitForClickNode, ns: , asm: Assembly-CSharp}
-      data: 
+    - rid: 888366362075070548
+      type: {class: ToggleBothWindowContinueClicksNode, ns: , asm: Assembly-CSharp}
+      data:
+        enabled: 0
     - rid: 7314505712279486525
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -12638,6 +12639,7 @@ MonoBehaviour:
         window1Block: {fileID: 565813897}
         window2Group: {fileID: 221348483}
         window2Block: {fileID: 365002142}
+        requireClickToConverge: 1
     - rid: 7314505712279486525
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:

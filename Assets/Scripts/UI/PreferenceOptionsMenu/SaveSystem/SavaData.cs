@@ -33,6 +33,11 @@ public class SaveData
     public string splitWindow2GroupID;
     public string splitWindow2BlockID;
     public bool linkedSplitContinue;
+    public bool toggleBothWindowClicksAllow;
+
+    public bool awaitingSplitConvergenceClick;
+    public string convergenceGroupID;
+    public string convergenceBlockID;
 
     public int theRandomNumber;
 }

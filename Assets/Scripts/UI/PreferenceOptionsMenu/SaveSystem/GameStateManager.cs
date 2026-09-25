@@ -321,6 +321,11 @@ public class GameStateManager : MonoBehaviour
         data.splitWindow2GroupID = dialogueManager.SplitWindow2Group != null ? dialogueManager.SplitWindow2Group.ID : "";
         data.splitWindow2BlockID = dialogueManager.SplitWindow2Block != null ? dialogueManager.SplitWindow2Block.ID : "";
         data.linkedSplitContinue = dialogueManager.LinkedSplitContinue;
+        data.toggleBothWindowClicksAllow = dialogueManager.ToggleBothWindowClicksAllow;
+
+        data.awaitingSplitConvergenceClick = dialogueManager.AwaitingSplitConvergenceClick;
+        data.convergenceGroupID = dialogueManager.PendingConvergenceGroup != null ? dialogueManager.PendingConvergenceGroup.ID : "";
+        data.convergenceBlockID = dialogueManager.PendingConvergenceBlock != null ? dialogueManager.PendingConvergenceBlock.ID : "";
 
         data.window1Text = dialogueManager.window1TextBox != null ? dialogueManager.window1TextBox.text : "";
         data.window2Text = dialogueManager.window2TextBox != null ? dialogueManager.window2TextBox.text : "";
@@ -525,6 +530,19 @@ public class GameStateManager : MonoBehaviour
 
         dialogueManager.StopAllDialogueActivity();
         dialogueManager.SetLinkedSplitContinue(data.linkedSplitContinue);
+        dialogueManager.SetToggleBothWindowClicksAllow(data.toggleBothWindowClicksAllow);
+
+        if (data.awaitingSplitConvergenceClick)
+        {
+            if (!DialogueLookup.TryFindGroupAndBlock(data.convergenceGroupID, data.convergenceBlockID, out DialogueGroup convergenceGroup, out DialogueBlock convergenceBlock))
+            {
+                Debug.LogWarning($"[GameStateManager] Convergence group '{data.convergenceGroupID}' not found.");
+                return;
+            }
+
+            dialogueManager.BeginSplitConvergenceWait(convergenceGroup, convergenceBlock);
+            return;
+        }
 
         if (data.splitActive)
         {

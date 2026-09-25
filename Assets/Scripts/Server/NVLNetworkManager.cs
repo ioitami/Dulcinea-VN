@@ -27,10 +27,12 @@ public class NVLNetworkManager : NetworkManager
 
         instance = this;
 
-        // Disable both cameras on startup
+        // Disable all main cameras on startup
         // They will be enabled when host or client starts
-        if (serverCamera != null) serverCamera.gameObject.SetActive(false);
-        if (clientCamera != null) clientCamera.gameObject.SetActive(false);
+        //foreach(Transform t in GameSingleton.instance.cameraManager.mainCameraList)
+        //{
+        //    t.gameObject.SetActive(false);
+        //}
     }
 
     public override void OnStartHost()
@@ -71,8 +73,13 @@ public class NVLNetworkManager : NetworkManager
     // (avl and nvl canvas interactable cant be active at the same time)
     public void SetActiveWindow(bool isServer)
     {
-        if (serverCamera != null) serverCamera.gameObject.SetActive(isServer);
-        if (clientCamera != null) clientCamera.gameObject.SetActive(!isServer);
+        MainCameraID cameraID = isServer ? MainCameraID.Window1 : MainCameraID.Window2;
+        MainCameraLocations location = isServer ? MainCameraLocations.Window1 : MainCameraLocations.Window2;
+
+        GameSingleton.instance.cameraManager.EnableMainCamera((int)cameraID);
+        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)cameraID, (int)location);
+
+        Debug.Log($"[NVLNetworkManager] SetActiveWindow(isServer={isServer}) -> cameraID={cameraID}, parent active={GameSingleton.instance.cameraManager.mainCameraList[(int)cameraID].gameObject.activeInHierarchy}");
 
         SetAVLNVLInteractable(isServer);
     }
@@ -100,19 +107,12 @@ public class NVLNetworkManager : NetworkManager
     {
         base.OnStopClient();
         Debug.Log("[NVLNetworkManager] Client disconnected.");
-
-        if (!NetworkServer.active)
-        {
-            if (clientCamera != null) clientCamera.gameObject.SetActive(false);
-        }
     }
 
     public override void OnStopHost()
     {
         base.OnStopHost();
         Debug.Log("[NVLNetworkManager] Host stopped.");
-
-        if (serverCamera != null) serverCamera.gameObject.SetActive(false);
     }
 
     // ===========================

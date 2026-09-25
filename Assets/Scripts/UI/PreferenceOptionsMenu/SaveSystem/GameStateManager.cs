@@ -33,6 +33,11 @@ public class GameStateManager : MonoBehaviour
             Directory.CreateDirectory(SaveDirectory);
 
         LoadVisitedBlocks();
+
+        // Force Window1/Window2 and MainMenu to load its Awake()/Start() on scene start if they start disabled
+        GameSingleton.instance.sceneLoaderManager.LoadWindows();
+        GameSingleton.instance.sceneLoaderManager.LoadMainMenu();
+
         StartNetworking();
     }
 

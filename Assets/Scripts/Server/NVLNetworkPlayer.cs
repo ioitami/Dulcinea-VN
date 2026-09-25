@@ -252,6 +252,14 @@ public class NVLNetworkPlayer : NetworkBehaviour
     }
 
     [ClientRpc]
+    public void RpcSetNextIconVisible(int windowNumber, bool visible)
+    {
+        if (isServer) return;
+
+        GameSingleton.instance.dialogueManager.SetNextIconVisibleLocally(windowNumber, visible);
+    }
+
+    [ClientRpc]
     public void RpcLoadWindowsOnClients()
     {
         if (isServer) return;

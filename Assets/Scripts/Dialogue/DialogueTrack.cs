@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
 public class DialogueTrack
 {
@@ -425,11 +426,14 @@ public class DialogueTrack
 
             if (blinkCoroutine != null) manager.StopCoroutine(blinkCoroutine);
             blinkCoroutine = manager.RunBlink(icon);
+
+            BroadcastNextIconVisible(true, icon);
         }
         else
         {
             if (activeIcon != null)
             {
+                BroadcastNextIconVisible(false, activeIcon);
                 activeIcon.gameObject.SetActive(false);
                 activeIcon = null;
             }
@@ -441,4 +445,15 @@ public class DialogueTrack
             }
         }
     }
+
+    private void BroadcastNextIconVisible(bool visible, Image icon)
+    {
+        if (!NetworkServer.active) return;
+        if (NVLNetworkPlayer.hostInstance == null) return;
+
+        int windowNumber = icon == manager.nextIconWindow1 ? 1 : 2;
+        NVLNetworkPlayer.hostInstance.RpcSetNextIconVisible(windowNumber, visible);
+    }
+
+
 }

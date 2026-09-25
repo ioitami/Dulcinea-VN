@@ -374,6 +374,19 @@ public class DialogueTrack
         callback?.Invoke();
     }
 
+    public void WaitForClick(Action onComplete)
+    {
+        if (isFastForwarding)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        isWaitingForClick = true;
+        pendingOnComplete = onComplete;
+        SetNextIconVisible(true);
+    }
+
     public void StopAllActivity()
     {
         if (typingCoroutine != null)

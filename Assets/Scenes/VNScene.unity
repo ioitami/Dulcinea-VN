@@ -3549,11 +3549,15 @@ MonoBehaviour:
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
+  - rid: 888366362075070543
   - rid: 7314505712279486525
   - rid: 7314505712279486527
   references:
     version: 2
     RefIds:
+    - rid: 888366362075070543
+      type: {class: DialogueWaitForClickNode, ns: , asm: Assembly-CSharp}
+      data: 
     - rid: 7314505712279486525
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -3962,7 +3966,7 @@ MonoBehaviour:
       data:
         text: Continue Text here
         appendText: 1
-        requirePlayerClickContinue: 1
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1
@@ -7283,7 +7287,7 @@ MonoBehaviour:
       data:
         text: This is Group 2 Block 2 Node 1 Split
         appendText: 1
-        requirePlayerClickContinue: 1
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1
@@ -10731,7 +10735,7 @@ MonoBehaviour:
       data:
         text: This is Group 2 Block 2 Node 1 Split
         appendText: 1
-        requirePlayerClickContinue: 1
+        requirePlayerClickContinue: 0
         overwriteTextSpeed: 0
         textSpeed: 0.04
         characterIndex: -1

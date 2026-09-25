@@ -6,11 +6,18 @@ using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
+public enum DialogueBlockWindow
+{
+    AVL,
+    NVL
+}
+
 public class DialogueBlock : MonoBehaviour
 {
     public string ID;
     public string saveDescription;
     public TextMeshProUGUI textBox;
+    public DialogueBlockWindow window;
 
     [Header("Dialogue UI")]
     public Image dialogueBoxImage;

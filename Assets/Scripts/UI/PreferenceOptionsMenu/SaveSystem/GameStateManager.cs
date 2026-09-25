@@ -70,17 +70,14 @@ public class GameStateManager : MonoBehaviour
     {
         try
         {
-            System.Net.Sockets.TcpClient testClient = new System.Net.Sockets.TcpClient();
-            testClient.Connect("localhost", NVLNetworkManager.instance.transport
-                .GetComponent<Mirror.TelepathyTransport>() != null
-                ? 7777
-                : 7777);
-            testClient.Close();
-            return true;
+            System.Net.Sockets.TcpListener testListener = System.Net.Sockets.TcpListener.Create(7777);
+            testListener.Start();
+            testListener.Stop();
+            return false; // we could bind it ourselves -> nothing else is listening -> we should host
         }
-        catch
+        catch (System.Net.Sockets.SocketException)
         {
-            return false;
+            return true; // port already in use -> a host is already listening -> join as client
         }
     }
 

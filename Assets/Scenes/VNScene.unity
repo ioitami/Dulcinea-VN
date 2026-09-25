@@ -9255,15 +9255,10 @@ MonoBehaviour:
   - rid: 7314505712279486525
   - rid: 7314505731947626559
   - rid: 7314505712279486527
-  - rid: 888366362075070545
   - rid: 1554742707323142212
   references:
     version: 2
     RefIds:
-    - rid: 888366362075070545
-      type: {class: ToggleBothWindowContinueClicksNode, ns: , asm: Assembly-CSharp}
-      data:
-        enabled: 1
     - rid: 1435079966179459346
       type: {class: DialogueSetBackgroundNode, ns: , asm: Assembly-CSharp}
       data:
@@ -13383,7 +13378,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zPressDown:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1325962794}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 2045766557}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   xPressDown:
     m_PersistentCalls:
       m_Calls: []

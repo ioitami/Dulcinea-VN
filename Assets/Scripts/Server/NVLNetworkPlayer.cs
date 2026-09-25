@@ -250,4 +250,12 @@ public class NVLNetworkPlayer : NetworkBehaviour
     {
         GameSingleton.instance.dialogueManager.HideChoiceUILocally(windowNumber);
     }
+
+    [ClientRpc]
+    public void RpcLoadWindowsOnClients()
+    {
+        if (isServer) return;
+
+        GameSingleton.instance.sceneLoaderManager.LoadWindowsLocally();
+    }
 }

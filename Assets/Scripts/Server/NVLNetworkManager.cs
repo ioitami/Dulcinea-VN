@@ -121,6 +121,16 @@ public class NVLNetworkManager : NetworkManager
         Debug.Log("[NVLNetworkManager] Host stopped.");
     }
 
+    public override void OnServerError(NetworkConnectionToClient conn, TransportError error, string reason)
+    {
+        Debug.LogError($"[NVLNetworkManager] Server transport error on conn={conn?.connectionId}: {error} - {reason}");
+    }
+
+    public override void OnClientError(TransportError error, string reason)
+    {
+        Debug.LogError($"[NVLNetworkManager] Client transport error: {error} - {reason}");
+    }
+
     // ===========================
     // Player spawn -> re-evaluate window requirement
     // Fires for every connection's player, including the host's own, so

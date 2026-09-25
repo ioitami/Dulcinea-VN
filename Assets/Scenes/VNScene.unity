@@ -1050,6 +1050,7 @@ MonoBehaviour:
   blocks:
   - {fileID: 1414716007}
   - {fileID: 1979431211}
+  - {fileID: 2089814771}
 --- !u!114 &195582245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9326,8 +9327,8 @@ MonoBehaviour:
             m_PersistentCalls:
               m_Calls: []
         - text: This is Choice 2
-          linkedGroup: {fileID: 1558606597}
-          linkedBlock: {fileID: 247370599}
+          linkedGroup: {fileID: 195582244}
+          linkedBlock: {fileID: 2089814771}
           onSelected:
             m_PersistentCalls:
               m_Calls: []

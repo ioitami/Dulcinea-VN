@@ -712,6 +712,11 @@ public class DialogueSetBackgroundNode : DialogueBlockNode
 
         public override void Execute(DialogueManager manager, Action onComplete)
         {
+            if (manager.ActiveTrack?.currentBlock != null)
+            {
+                GameSingleton.instance.gameStateManager.RegisterVisitedBlock(manager.ActiveTrack.currentBlock.ID);
+            }
+
             manager.ReportSplitEnd(splitID, nextGroup, nextBlock);
         }
     }
@@ -724,6 +729,11 @@ public class DialogueSetBackgroundNode : DialogueBlockNode
 
         public override void Execute(DialogueManager manager, Action onComplete)
         {
+            if (manager.ActiveTrack?.currentBlock != null)
+            {
+                GameSingleton.instance.gameStateManager.RegisterVisitedBlock(manager.ActiveTrack.currentBlock.ID);
+            }
+
             manager.ForceEndSplit(nextGroup, nextBlock);
         }
     }

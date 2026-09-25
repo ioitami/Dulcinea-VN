@@ -386,16 +386,24 @@ public class DialogueManager : MonoBehaviour
         PendingSplitEnd resolved = pendingSplitEnds[0];
         pendingSplitEnds.Clear();
 
+
+        bool eitherTrackFastForwarding = (window1SplitTrack?.isFastForwarding ?? false) || (window2SplitTrack?.isFastForwarding ?? false);
+
         window1SplitTrack = null;
         window2SplitTrack = null;
         linkedSplitContinue = false;
 
-        if (requireConvergenceClick)
+        if (requireConvergenceClick && !eitherTrackFastForwarding)
         {
             BeginSplitConvergenceWait(resolved.nextGroup, resolved.nextBlock);
         }
         else
         {
+            if (eitherTrackFastForwarding)
+            {
+                primaryTrack.isFastForwarding = true;
+            }
+
             primaryTrack.PlaySpecificBlockInGroup(resolved.nextGroup, resolved.nextBlock);
         }
     }

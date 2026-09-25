@@ -28,7 +28,6 @@ public class NVLSyncText : NetworkBehaviour
         if (text != null)
         {
             text.text = newText;
-            Debug.Log($"[NVLSyncText] OnTextChanged on '{gameObject.name}': newText='{newText}', activeInHierarchy={gameObject.activeInHierarchy}, color={text.color}, rectSize={((RectTransform)text.transform).rect.size}, canvasSortingOrder={GetComponentInParent<Canvas>()?.sortingOrder}");
         }
     }
 

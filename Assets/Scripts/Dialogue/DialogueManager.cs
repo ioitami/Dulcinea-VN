@@ -12,7 +12,7 @@ using UnityEngine.InputSystem;
 public class DialogueManager : MonoBehaviour
 {
     [Header("UI Components")]
-    public Image nextIcon;
+    public Image nextIconWindow1;
     public Image nextIconWindow2;
     public TextMeshProUGUI window1TextBox;
     public TextMeshProUGUI window2TextBox;
@@ -56,7 +56,7 @@ public class DialogueManager : MonoBehaviour
 
     private void Awake()
     {
-        primaryTrack = new DialogueTrack(this, 0, nextIcon);
+        primaryTrack = new DialogueTrack(this, 0, nextIconWindow1);
     }
 
     // ===========================
@@ -258,7 +258,7 @@ public class DialogueManager : MonoBehaviour
             GameSingleton.instance.gameStateManager.RegisterVisitedBlock(primaryTrack.currentBlock.ID);
         }
 
-        window1SplitTrack = new DialogueTrack(this, 1, nextIcon);
+        window1SplitTrack = new DialogueTrack(this, 1, nextIconWindow1);
         window2SplitTrack = new DialogueTrack(this, 2, nextIconWindow2);
 
         window1SplitTrack.PlaySpecificBlockInGroup(group1, block1);

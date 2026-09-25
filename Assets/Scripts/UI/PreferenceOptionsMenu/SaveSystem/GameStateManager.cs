@@ -70,7 +70,7 @@ public class GameStateManager : MonoBehaviour
     {
         try
         {
-            System.Net.Sockets.TcpListener testListener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 7777);
+            System.Net.Sockets.TcpListener testListener = System.Net.Sockets.TcpListener.Create(7777);
             testListener.Start();
             testListener.Stop();
             return false; // we could bind it ourselves -> nothing else is listening -> we should host

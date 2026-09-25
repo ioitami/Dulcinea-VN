@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
@@ -38,16 +39,30 @@ public class SceneLoaderManager : MonoBehaviour
 
     public void LoadWindows()
     {
+        LoadWindowsLocally();
+
+        // LoadWindows() only affects this process's own screen GameObjects —
+        // each window needs to run it on itself. The host is the only one with
+        // authority to fire that out to the other window.
+        if (NetworkServer.active && NVLNetworkPlayer.hostInstance != null)
+        {
+            NVLNetworkPlayer.hostInstance.RpcLoadWindowsOnClients();
+        }
+    }
+
+    public void LoadWindowsLocally()
+    {
         uiController.DisableAllScreens();
 
         uiController.EnableScreen("Window1");
         uiController.EnableScreen("Window2");
 
-        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.Window1);
-        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window2, (int)MainCameraLocations.Window2);
-
         ToggleAVL(true);
         ToggleNVL(true);
+
+        MainCameraID cameraID = NetworkServer.active ? MainCameraID.Window1 : MainCameraID.Window2;
+        MainCameraLocations location = NetworkServer.active ? MainCameraLocations.Window1 : MainCameraLocations.Window2;
+        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)cameraID, (int)location);
     }
 
     // OVERLAY CANVAS CONTROLS

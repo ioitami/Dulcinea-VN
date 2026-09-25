@@ -34,16 +34,9 @@ public class GameStateManager : MonoBehaviour
 
         LoadVisitedBlocks();
 
-        // Window1/Window2/AVL/NVL must still be active when StartNetworking()
-        // runs — Mirror registers scene NetworkIdentity objects (like
-        // AVLDialogueText/NVLDialogueText) as server-spawned only if they're
-        // active at the exact moment the server starts, not just at some
-        // earlier point. Hide them for the main menu only after that's done.
-        GameSingleton.instance.sceneLoaderManager.LoadWindowsLocally();
+        GameSingleton.instance.sceneLoaderManager.LoadMainMenu();
 
         StartNetworking();
-
-        GameSingleton.instance.sceneLoaderManager.LoadMainMenu();
     }
 
     private void StartNetworking()

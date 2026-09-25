@@ -162,7 +162,14 @@ public class DialogueChangeTextBoxUINode : DialogueBlockNode
     }
 }
 
-
+[Serializable]
+public class DialogueWaitForClickNode : DialogueBlockNode
+{
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        manager.ActiveTrack.WaitForClick(onComplete);
+    }
+}
 public class DialoguePauseNode : DialogueBlockNode
 {
     public float pauseDuration = 0.5f;
@@ -516,6 +523,7 @@ public class DialoguePlayGroupNode : DialogueBlockNode
 }
 
 
+// does NOT pause the text node. Just sets a flag that affects all future requireplayerclicks for text nodes
 [Serializable]
 public class DialogueRequirePlayerClickContinueNode : DialogueBlockNode
 {

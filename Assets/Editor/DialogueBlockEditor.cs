@@ -208,6 +208,7 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Text Node"), false, () => AddNode(typeof(DialogueTextNode)));
         menu.AddItem(new GUIContent("Change Text Box UI Node"), false, () => AddNode(typeof(DialogueChangeTextBoxUINode)));
         menu.AddItem(new GUIContent("Pause Node"), false, () => AddNode(typeof(DialoguePauseNode)));
+        menu.AddItem(new GUIContent("Wait For Click Node"), false, () => AddNode(typeof(DialogueWaitForClickNode)));
         menu.AddItem(new GUIContent("Choice Node"), false, () => AddNode(typeof(DialogueChoiceNode)));
         menu.AddItem(new GUIContent("Script Node"), false, () => AddNode(typeof(DialogueScriptNode)));
         menu.AddItem(new GUIContent("Change Font Node"), false, () => AddNode(typeof(DialogueChangeFontNode)));
@@ -215,7 +216,6 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Show Character Node"), false, () => AddNode(typeof(DialogueShowCharacterNode)));
         menu.AddItem(new GUIContent("Hide Character Node"), false, () => AddNode(typeof(DialogueHideCharacterNode)));
         menu.AddItem(new GUIContent("Play Animation Node"), false, () => AddNode(typeof(DialoguePlayAnimationNode)));
-        menu.AddItem(new GUIContent("Req Player Click Continue Node"), false, () => AddNode(typeof(DialogueRequirePlayerClickContinueNode)));
         menu.AddItem(new GUIContent("Play Sound Node"), false, () => AddNode(typeof(DialoguePlaySoundNode)));
         menu.AddItem(new GUIContent("Play Group Node"), false, () => AddNode(typeof(DialoguePlayGroupNode)));
         menu.AddItem(new GUIContent("Set Dialogue Click Rights Node"), false, () => AddNode(typeof(DialogueSetDialogueClickRightsNode)));

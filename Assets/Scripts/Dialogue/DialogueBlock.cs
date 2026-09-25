@@ -177,6 +177,20 @@ public class DialogueWaitForClickNode : DialogueBlockNode
         manager.ActiveTrack.WaitForClick(onComplete);
     }
 }
+
+[Serializable]
+public class ToggleBothWindowContinueClicksNode : DialogueBlockNode
+{
+    public bool enabled = true;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        manager.SetToggleBothWindowClicksAllow(enabled);
+        onComplete?.Invoke();
+    }
+}
+
+
 public class DialoguePauseNode : DialogueBlockNode
 {
     public float pauseDuration = 0.5f;
@@ -658,6 +672,9 @@ public class DialogueSetBackgroundNode : DialogueBlockNode
         public DialogueGroup window2Group;
         public DialogueBlock window2Block;
 
+        [Header("Convergence")]
+        public bool requireClickToConverge = false;
+
         public override void Execute(DialogueManager manager, Action onComplete)
         {
             if (window1Group == null || window2Group == null)
@@ -681,8 +698,7 @@ public class DialogueSetBackgroundNode : DialogueBlockNode
                 return;
             }
 
-            // Does NOT call onComplete, prim track pauses ReportSplitEnd converges both split tracks
-            manager.BeginSplit(window1Group, window1Block, window2Group, window2Block);
+            manager.BeginSplit(window1Group, window1Block, window2Group, window2Block, requireClickToConverge);
         }
     }
 

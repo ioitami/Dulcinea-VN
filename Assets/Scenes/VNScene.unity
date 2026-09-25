@@ -721,6 +721,7 @@ MonoBehaviour:
   ID: 1.5-1-2
   saveDescription: test desc 4
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -850,7 +851,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &146005142
 Transform:
   m_ObjectHideFlags: 0
@@ -864,8 +865,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2100482622}
-  - {fileID: 2051663797}
+  - {fileID: 2028362877}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &161721304
@@ -1423,6 +1423,7 @@ MonoBehaviour:
   ID: 4
   saveDescription: test desc 4
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -2101,6 +2102,7 @@ MonoBehaviour:
   ID: 1.5-2-1
   saveDescription: test desc 3
   textBox: {fileID: 1541217802}
+  window: 1
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -3546,18 +3548,20 @@ MonoBehaviour:
   ID: 3
   saveDescription: test desc 3
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
-  - rid: 888366362075070543
+  - rid: 888366362075070548
   - rid: 7314505712279486525
   - rid: 7314505712279486527
   references:
     version: 2
     RefIds:
-    - rid: 888366362075070543
-      type: {class: DialogueWaitForClickNode, ns: , asm: Assembly-CSharp}
-      data: 
+    - rid: 888366362075070548
+      type: {class: ToggleBothWindowContinueClicksNode, ns: , asm: Assembly-CSharp}
+      data:
+        enabled: 0
     - rid: 7314505712279486525
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -3925,6 +3929,7 @@ MonoBehaviour:
   ID: 1.5-1-1
   saveDescription: test desc 3
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -4197,6 +4202,7 @@ MonoBehaviour:
   ID: 1.5-3-1
   saveDescription: test desc 3
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -5124,6 +5130,7 @@ MonoBehaviour:
   ID: 
   saveDescription: 
   textBox: {fileID: 0}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes: []
@@ -6311,7 +6318,7 @@ GameObject:
   m_Component:
   - component: {fileID: 936687361}
   m_Layer: 6
-  m_Name: CameraWobbleParent
+  m_Name: CameraTransformParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7268,6 +7275,7 @@ MonoBehaviour:
   ID: 1.5-2-2
   saveDescription: test desc 4
   textBox: {fileID: 1541217802}
+  window: 1
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -9238,6 +9246,7 @@ MonoBehaviour:
   ID: 1
   saveDescription: test desc 1
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -9246,10 +9255,15 @@ MonoBehaviour:
   - rid: 7314505712279486525
   - rid: 7314505731947626559
   - rid: 7314505712279486527
+  - rid: 888366362075070545
   - rid: 1554742707323142212
   references:
     version: 2
     RefIds:
+    - rid: 888366362075070545
+      type: {class: ToggleBothWindowContinueClicksNode, ns: , asm: Assembly-CSharp}
+      data:
+        enabled: 1
     - rid: 1435079966179459346
       type: {class: DialogueSetBackgroundNode, ns: , asm: Assembly-CSharp}
       data:
@@ -10716,6 +10730,7 @@ MonoBehaviour:
   ID: 1.5-3-2
   saveDescription: test desc 4
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -12606,6 +12621,7 @@ MonoBehaviour:
   ID: 2
   saveDescription: test desc 2
   textBox: {fileID: 1541217802}
+  window: 1
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -12622,6 +12638,7 @@ MonoBehaviour:
         window1Block: {fileID: 565813897}
         window2Group: {fileID: 221348483}
         window2Block: {fileID: 365002142}
+        requireClickToConverge: 1
     - rid: 7314505712279486525
       type: {class: DialogueTextNode, ns: , asm: Assembly-CSharp}
       data:
@@ -13107,6 +13124,39 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2024234115}
   m_CullTransparentMesh: 1
+--- !u!1 &2028362876
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2028362877}
+  m_Layer: 6
+  m_Name: Camera2TransformParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2028362877
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2028362876}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2100482622}
+  - {fileID: 2051663797}
+  m_Father: {fileID: 146005142}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2031897694
 GameObject:
   m_ObjectHideFlags: 0
@@ -13284,7 +13334,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 1571311555
-  m_SortingOrder: 6
+  m_SortingOrder: 8
   m_TargetDisplay: 0
 --- !u!1 &2051292516
 GameObject:
@@ -13472,7 +13522,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 146005142}
+  m_Father: {fileID: 2028362877}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2051663798
 MonoBehaviour:
@@ -14220,7 +14270,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 146005142}
+  m_Father: {fileID: 2028362877}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2100482623
 MonoBehaviour:

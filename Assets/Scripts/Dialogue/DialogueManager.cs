@@ -39,6 +39,13 @@ public class DialogueManager : MonoBehaviour
     private DialogueTrack window2SplitTrack;
 
     private bool linkedSplitContinue = false;
+    private bool toggleBothWindowClicksAllow = false;
+    private bool requireConvergenceClick = false;
+    private bool awaitingSplitConvergenceClick = false;
+    private DialogueGroup pendingConvergenceGroup;
+    private DialogueBlock pendingConvergenceBlock;
+    private Coroutine convergenceBlinkCoroutine1;
+    private Coroutine convergenceBlinkCoroutine2;
 
     private class PendingSplitEnd
     {
@@ -139,10 +146,19 @@ public class DialogueManager : MonoBehaviour
     public DialogueGroup SplitWindow2Group => window2SplitTrack?.currentGroup;
     public DialogueBlock SplitWindow2Block => window2SplitTrack?.currentBlock;
     public bool LinkedSplitContinue => linkedSplitContinue;
+    public bool ToggleBothWindowClicksAllow => toggleBothWindowClicksAllow;
+    public bool AwaitingSplitConvergenceClick => awaitingSplitConvergenceClick;
+    public DialogueGroup PendingConvergenceGroup => pendingConvergenceGroup;
+    public DialogueBlock PendingConvergenceBlock => pendingConvergenceBlock;
 
     public void SetLinkedSplitContinue(bool value)
     {
         linkedSplitContinue = value;
+    }
+
+    public void SetToggleBothWindowClicksAllow(bool value)
+    {
+        toggleBothWindowClicksAllow = value;
     }
 
     // ===========================
@@ -166,6 +182,20 @@ public class DialogueManager : MonoBehaviour
     {
         if (!GlobalAllowDialogueClick) return;
 
+        if (awaitingSplitConvergenceClick)
+        {
+            awaitingSplitConvergenceClick = false;
+            ShowConvergenceIcons(false);
+
+            DialogueGroup group = pendingConvergenceGroup;
+            DialogueBlock block = pendingConvergenceBlock;
+            pendingConvergenceGroup = null;
+            pendingConvergenceBlock = null;
+
+            primaryTrack.PlaySpecificBlockInGroup(group, block);
+            return;
+        }
+
         if (window1SplitTrack != null && window2SplitTrack != null && linkedSplitContinue)
         {
             window1SplitTrack.HandleContinueClick();
@@ -174,8 +204,12 @@ public class DialogueManager : MonoBehaviour
         }
 
         DialogueTrack track = GetTrack(windowNumber);
+        bool isPrimaryTrack = track == primaryTrack;
 
-        if (!IsClickFromMatchingWindow(track, windowNumber)) return;
+        if (!(isPrimaryTrack && toggleBothWindowClicksAllow) && !IsClickFromMatchingWindow(track, windowNumber))
+        {
+            return;
+        }
 
         track.HandleContinueClick();
     }
@@ -250,13 +284,19 @@ public class DialogueManager : MonoBehaviour
         window2SplitTrack = null;
         pendingSplitEnds.Clear();
         linkedSplitContinue = false;
+        toggleBothWindowClicksAllow = false;
+        requireConvergenceClick = false;
+        awaitingSplitConvergenceClick = false;
+        pendingConvergenceGroup = null;
+        pendingConvergenceBlock = null;
+        ShowConvergenceIcons(false);
     }
 
     // ===========================
     // Split tracks
     // ===========================
 
-    public void BeginSplit(DialogueGroup group1, DialogueBlock block1, DialogueGroup group2, DialogueBlock block2)
+    public void BeginSplit(DialogueGroup group1, DialogueBlock block1, DialogueGroup group2, DialogueBlock block2, bool requireClickToConverge = false)
     {
         if (!CanDriveDialogueLocally()) return;
 
@@ -270,6 +310,8 @@ public class DialogueManager : MonoBehaviour
         {
             GameSingleton.instance.gameStateManager.RegisterVisitedBlock(primaryTrack.currentBlock.ID);
         }
+
+        requireConvergenceClick = requireClickToConverge;
 
         window1SplitTrack = new DialogueTrack(this, 1);
         window2SplitTrack = new DialogueTrack(this, 2);
@@ -299,7 +341,58 @@ public class DialogueManager : MonoBehaviour
         window2SplitTrack = null;
         linkedSplitContinue = false;
 
-        primaryTrack.PlaySpecificBlockInGroup(resolved.nextGroup, resolved.nextBlock);
+        if (requireConvergenceClick)
+        {
+            BeginSplitConvergenceWait(resolved.nextGroup, resolved.nextBlock);
+        }
+        else
+        {
+            primaryTrack.PlaySpecificBlockInGroup(resolved.nextGroup, resolved.nextBlock);
+        }
+    }
+
+    public void BeginSplitConvergenceWait(DialogueGroup nextGroup, DialogueBlock nextBlock)
+    {
+        awaitingSplitConvergenceClick = true;
+        pendingConvergenceGroup = nextGroup;
+        pendingConvergenceBlock = nextBlock;
+
+        ShowConvergenceIcons(true);
+    }
+
+    private void ShowConvergenceIcons(bool visible)
+    {
+        if (nextIconWindow1 != null)
+        {
+            nextIconWindow1.gameObject.SetActive(visible);
+
+            if (visible)
+            {
+                if (convergenceBlinkCoroutine1 != null) StopCoroutine(convergenceBlinkCoroutine1);
+                convergenceBlinkCoroutine1 = RunBlink(nextIconWindow1);
+            }
+            else if (convergenceBlinkCoroutine1 != null)
+            {
+                StopCoroutine(convergenceBlinkCoroutine1);
+                convergenceBlinkCoroutine1 = null;
+            }
+        }
+
+        if (nextIconWindow2 != null)
+        {
+            nextIconWindow2.gameObject.SetActive(visible);
+
+            if (visible)
+            {
+                if (convergenceBlinkCoroutine2 != null) StopCoroutine(convergenceBlinkCoroutine2);
+                convergenceBlinkCoroutine2 = RunBlink(nextIconWindow2);
+            }
+            else if (convergenceBlinkCoroutine2 != null)
+            {
+                StopCoroutine(convergenceBlinkCoroutine2);
+                convergenceBlinkCoroutine2 = null;
+            }
+        }
     }
 
     // Forced convergence between the split

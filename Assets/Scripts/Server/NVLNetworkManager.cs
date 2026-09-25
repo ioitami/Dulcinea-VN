@@ -77,7 +77,6 @@ public class NVLNetworkManager : NetworkManager
         MainCameraLocations location = isServer ? MainCameraLocations.Window1 : MainCameraLocations.Window2;
 
         GameSingleton.instance.cameraManager.EnableMainCamera((int)cameraID);
-        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)cameraID, (int)location);
 
         Debug.Log($"[NVLNetworkManager] SetActiveWindow(isServer={isServer}) -> cameraID={cameraID}, parent active={GameSingleton.instance.cameraManager.mainCameraList[(int)cameraID].gameObject.activeInHierarchy}");
 

@@ -43,8 +43,8 @@ public class SceneLoaderManager : MonoBehaviour
         uiController.EnableScreen("Window1");
         uiController.EnableScreen("Window2");
 
-        //GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.Window1);
-       // GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window2, (int)MainCameraLocations.Window2);
+        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window1, (int)MainCameraLocations.Window1);
+        GameSingleton.instance.cameraManager.MoveCameraToLocation((int)MainCameraID.Window2, (int)MainCameraLocations.Window2);
 
         ToggleAVL(true);
         ToggleNVL(true);

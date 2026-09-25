@@ -39,6 +39,8 @@ public class DialogueManager : MonoBehaviour
     private DialogueTrack window2SplitTrack;
 
     private bool linkedSplitContinue = false;
+    private bool ignorePrimaryTrackWindowMatch = false;
+
 
     private class PendingSplitEnd
     {
@@ -140,9 +142,14 @@ public class DialogueManager : MonoBehaviour
     public DialogueBlock SplitWindow2Block => window2SplitTrack?.currentBlock;
     public bool LinkedSplitContinue => linkedSplitContinue;
 
+
     public void SetLinkedSplitContinue(bool value)
     {
         linkedSplitContinue = value;
+    }
+    public void SetIgnorePrimaryTrackWindowMatch(bool value)
+    {
+        ignorePrimaryTrackWindowMatch = value;
     }
 
     // ===========================
@@ -174,8 +181,12 @@ public class DialogueManager : MonoBehaviour
         }
 
         DialogueTrack track = GetTrack(windowNumber);
+        bool isPrimaryTrack = track == primaryTrack;
 
-        if (!IsClickFromMatchingWindow(track, windowNumber)) return;
+        if (!(isPrimaryTrack && ignorePrimaryTrackWindowMatch) && !IsClickFromMatchingWindow(track, windowNumber))
+        {
+            return;
+        }
 
         track.HandleContinueClick();
     }
@@ -250,6 +261,8 @@ public class DialogueManager : MonoBehaviour
         window2SplitTrack = null;
         pendingSplitEnds.Clear();
         linkedSplitContinue = false;
+
+        ignorePrimaryTrackWindowMatch = false;
     }
 
     // ===========================

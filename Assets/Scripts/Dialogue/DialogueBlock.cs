@@ -177,6 +177,20 @@ public class DialogueWaitForClickNode : DialogueBlockNode
         manager.ActiveTrack.WaitForClick(onComplete);
     }
 }
+
+[Serializable]
+public class ToggleBothWindowContinueClicksNode : DialogueBlockNode
+{
+    public bool enabled = true;
+
+    public override void Execute(DialogueManager manager, Action onComplete)
+    {
+        manager.SetIgnorePrimaryTrackWindowMatch(enabled);
+        onComplete?.Invoke();
+    }
+}
+
+
 public class DialoguePauseNode : DialogueBlockNode
 {
     public float pauseDuration = 0.5f;

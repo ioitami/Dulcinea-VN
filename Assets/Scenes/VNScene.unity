@@ -721,6 +721,7 @@ MonoBehaviour:
   ID: 1.5-1-2
   saveDescription: test desc 4
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -1423,6 +1424,7 @@ MonoBehaviour:
   ID: 4
   saveDescription: test desc 4
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -2101,6 +2103,7 @@ MonoBehaviour:
   ID: 1.5-2-1
   saveDescription: test desc 3
   textBox: {fileID: 1541217802}
+  window: 1
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -3546,16 +3549,17 @@ MonoBehaviour:
   ID: 3
   saveDescription: test desc 3
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
-  - rid: 888366362075070543
+  - rid: 888366362075070546
   - rid: 7314505712279486525
   - rid: 7314505712279486527
   references:
     version: 2
     RefIds:
-    - rid: 888366362075070543
+    - rid: 888366362075070546
       type: {class: DialogueWaitForClickNode, ns: , asm: Assembly-CSharp}
       data: 
     - rid: 7314505712279486525
@@ -3925,6 +3929,7 @@ MonoBehaviour:
   ID: 1.5-1-1
   saveDescription: test desc 3
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -4197,6 +4202,7 @@ MonoBehaviour:
   ID: 1.5-3-1
   saveDescription: test desc 3
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -5124,6 +5130,7 @@ MonoBehaviour:
   ID: 
   saveDescription: 
   textBox: {fileID: 0}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes: []
@@ -7268,6 +7275,7 @@ MonoBehaviour:
   ID: 1.5-2-2
   saveDescription: test desc 4
   textBox: {fileID: 1541217802}
+  window: 1
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -9238,6 +9246,7 @@ MonoBehaviour:
   ID: 1
   saveDescription: test desc 1
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -9246,10 +9255,15 @@ MonoBehaviour:
   - rid: 7314505712279486525
   - rid: 7314505731947626559
   - rid: 7314505712279486527
+  - rid: 888366362075070545
   - rid: 1554742707323142212
   references:
     version: 2
     RefIds:
+    - rid: 888366362075070545
+      type: {class: ToggleBothWindowContinueClicksNode, ns: , asm: Assembly-CSharp}
+      data:
+        enabled: 1
     - rid: 1435079966179459346
       type: {class: DialogueSetBackgroundNode, ns: , asm: Assembly-CSharp}
       data:
@@ -10716,6 +10730,7 @@ MonoBehaviour:
   ID: 1.5-3-2
   saveDescription: test desc 4
   textBox: {fileID: 1388025002}
+  window: 0
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -12606,6 +12621,7 @@ MonoBehaviour:
   ID: 2
   saveDescription: test desc 2
   textBox: {fileID: 1541217802}
+  window: 1
   dialogueBoxImage: {fileID: 0}
   dialogueBoxCharIconImage: {fileID: 0}
   nodes:
@@ -13284,7 +13300,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 1571311555
-  m_SortingOrder: 6
+  m_SortingOrder: 8
   m_TargetDisplay: 0
 --- !u!1 &2051292516
 GameObject:

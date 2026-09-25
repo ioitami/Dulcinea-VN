@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEditor;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using static DialogueSetBackgroundNode;
 
@@ -9,6 +10,7 @@ public class DialogueBlockEditor : Editor
     SerializedProperty nodes;
     SerializedProperty id;
     SerializedProperty textBox;
+    SerializedProperty window;
 
     SerializedProperty dialogueBoxImage;
     SerializedProperty dialogueBoxCharIconImage;
@@ -22,6 +24,7 @@ public class DialogueBlockEditor : Editor
         nodes = serializedObject.FindProperty("nodes");
         id = serializedObject.FindProperty("ID");
         textBox = serializedObject.FindProperty("textBox");
+        window = serializedObject.FindProperty("window");
         dialogueBoxImage = serializedObject.FindProperty("dialogueBoxImage");
         dialogueBoxCharIconImage = serializedObject.FindProperty("dialogueBoxCharIconImage");
 
@@ -63,6 +66,7 @@ public class DialogueBlockEditor : Editor
 
         EditorGUILayout.PropertyField(id);
         EditorGUILayout.PropertyField(textBox);
+        EditorGUILayout.PropertyField(window);
         EditorGUILayout.PropertyField(dialogueBoxImage);
         EditorGUILayout.PropertyField(dialogueBoxCharIconImage);
 
@@ -209,6 +213,7 @@ public class DialogueBlockEditor : Editor
         menu.AddItem(new GUIContent("Change Text Box UI Node"), false, () => AddNode(typeof(DialogueChangeTextBoxUINode)));
         menu.AddItem(new GUIContent("Pause Node"), false, () => AddNode(typeof(DialoguePauseNode)));
         menu.AddItem(new GUIContent("Wait For Click Node"), false, () => AddNode(typeof(DialogueWaitForClickNode)));
+        menu.AddItem(new GUIContent("Toggle Both Window Continue Clicks Node"), false, () => AddNode(typeof(ToggleBothWindowContinueClicksNode)));
         menu.AddItem(new GUIContent("Choice Node"), false, () => AddNode(typeof(DialogueChoiceNode)));
         menu.AddItem(new GUIContent("Script Node"), false, () => AddNode(typeof(DialogueScriptNode)));
         menu.AddItem(new GUIContent("Change Font Node"), false, () => AddNode(typeof(DialogueChangeFontNode)));
